@@ -1,0 +1,52 @@
+<odoo>
+
+    <menuitem name="Care Center"
+              id="care_center_main_menu"
+              groups="support_team.group_support_staff,support_team.group_support_manager"
+              sequence="1"
+              web_icon="care_center,static/description/icon.png"
+              />
+
+        <menuitem name="Issues and Tasks"
+                  id="menu_issues_tasks"
+                  parent="care_center_main_menu"
+                  sequence="5"/>
+
+        <menuitem name="Issues"
+                  id="submenu_issue_list"
+                  parent="menu_issues_tasks"
+                  action="project_issue.project_issue_categ_act0"
+                  sequence="2"/>
+
+        <menuitem name="Tasks"
+                  id="submenu_task_list"
+                  parent="menu_issues_tasks"
+                  action="project.action_view_task"
+                  sequence="2"/>
+
+        <menuitem id="menu_partner_form"
+                  parent="menu_issues_tasks"
+                  action="base.action_partner_form"
+                  sequence="3"/>
+
+    <menuitem name="Configuration"
+              id="menu_support_config"
+              parent="care_center_main_menu"
+              sequence="100"
+              groups="support_team.group_support_manager"/>
+
+    <menuitem name="Settings"
+              id="menu_care_center_settings"
+              parent="menu_support_config"
+              sequence="1"
+              action="action_care_center_config"
+              groups="support_team.group_support_manager"/>
+
+    <menuitem name="Support Teams"
+              id="menu_support_teams"
+              parent="menu_support_config"
+              sequence="10"
+              action="support_team.support_team_config_action"
+              groups="support_team.group_support_manager"/>
+
+</odoo>
