@@ -1,4 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_support_team,support.team,model_support_team,base.group_user,1,0,0,0
-access_support_team_user,support.team.user,model_support_team,support_team.group_support_staff,1,0,0,0
+access_support_team_user,support.team.user,model_support_team,support_team.group_support_staff_level1,1,0,0,0
 access_support_team_manager,support.team.manager,model_support_team,support_team.group_support_manager,1,1,1,1
