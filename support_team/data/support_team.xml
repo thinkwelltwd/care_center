@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record model="support.team" id="team_support_department">
+            <field name="name">Direct Support</field>
+            <field name="member_ids" eval="[(4, ref('base.user_root'))]"/>
+        </record>
+
+        <record model="support.team" id="support_team_website_support">
+            <field name="name">Website Support</field>
+        </record>
+    </data>
+
+    <record model="res.groups" id="support_team.group_support_staff">
+        <field name="category_id" ref="base.module_category_support_management"/>
+    </record>
+
+    <record model="res.groups" id="support_team.group_support_manager">
+        <field name="category_id" ref="base.module_category_support_management"/>
+    </record>
+</odoo>
