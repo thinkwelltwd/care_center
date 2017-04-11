@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Add "Convert to Issue" button on tree view -->
+    <record model="ir.ui.view" id="care_center_crm_case_phone_tree_view">
+        <field name="name">crm_phonecall.create.issue</field>
+        <field name="model">crm.phonecall</field>
+        <field name="inherit_id" ref="crm_phonecall.crm_case_inbound_phone_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_make_meeting']" position="before">
+                <button string="Convert to Issue"
+                        icon="fa-life-ring"
+                        name="action_button_make_issue" type="object"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add "Convert to Issue" smart button and Issue field on form view -->
+    <record model="ir.ui.view" id="care_center_crm_case_phone_form_view">
+        <field name="name">crm_phonecall.create.issue</field>
+        <field name="model">crm.phonecall</field>
+        <field name="inherit_id" ref="crm_phonecall.crm_case_phone_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button string="Convert to Issue"
+                    class="oe_inline oe_stat_button"
+                    type="object"
+                    name="action_button_make_issue"
+                    states="open,pending"
+                    icon="fa-life-ring"
+                    attrs="{'invisible':[('opportunity_id','!=',False)]}"/>
+            </xpath>
+
+            <xpath expr="//field[@name='opportunity_id']" position="after">
+                <field name="issue_id"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>
