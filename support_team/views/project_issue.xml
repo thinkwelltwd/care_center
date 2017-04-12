@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <record model="ir.ui.view" id="issue_support_team_form_view">
-        <field name="name">project_issue.support_team_id</field>
+    <record model="ir.ui.view" id="issue_team_form_view">
+        <field name="name">project_issue.team_id</field>
         <field name="model">project.issue</field>
         <field name="inherit_id" ref="project_issue.project_issue_form_view"/>
         <field name="arch" type="xml">
             <field name="project_id" position="after">
-                <field name="support_team_id"/>
+                <field name="team_id"/>
             </field>
         </field>
     </record>
@@ -19,7 +19,7 @@
         <field name="inherit_id" ref="project_issue.view_project_issue_filter"/>
         <field name="arch" type="xml">
             <xpath expr="//group/filter[@name='Responsible']" position="after">
-                <filter string="Support Team" name="support_team_id" context="{'group_by':'support_team_id'}"/>
+                <filter string="Team" name="team_id" context="{'group_by':'team_id'}"/>
             </xpath>
         </field>
     </record>

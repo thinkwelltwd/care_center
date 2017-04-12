@@ -1,42 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="group_support_staff_level1" model="res.groups">
-        <field name="name">Level 1 Support Staff</field>
+    <record id="group_support_customer_website_support" model="res.groups">
+        <field name="name">Support - Customer</field>
         <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-        <field name="comment">the user will have access to his own data in the support application.</field>
+        <field name="comment">The user will have access to his own data in the support application.</field>
+    </record>
+
+    <record id="group_support_staff_level1" model="res.groups">
+        <field name="name">Support - Level 1 Staff</field>
+        <field name="implied_ids" eval="[(4, ref('group_support_customer_website_support'))]"/>
+        <field name="comment">The user will have access to his own team in the support application.</field>
     </record>
 
     <record id="group_support_staff_level2" model="res.groups">
-        <field name="name">Level 2 Support Staff</field>
+        <field name="name">Support - Level 2 Staff</field>
         <field name="implied_ids" eval="[(4, ref('group_support_staff_level1'))]"/>
         <field name="comment">the user will have access to all records of everyone in the support application.</field>
     </record>
 
     <record id="group_support_manager" model="res.groups">
-        <field name="name">Support Manager</field>
+        <field name="name">Support - Manager</field>
         <field name="comment">the user will have an access to the support configuration as well as statistic reports.</field>
         <field name="implied_ids" eval="[(4, ref('group_support_staff_level2'))]"/>
         <field name="users" eval="[(4, ref('base.user_root'))]"/>
     </record>
 
 
+    <record id="support_rule_customer_website_support" model="ir.rule">
+        <field name="name">Own Issues</field>
+        <field ref="sales_team.model_crm_team" name="model_id"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('partner_id','=', user.partner_id)]</field>
+        <field name="groups" eval="[(4, ref('support_team.group_support_customer_website_support'))]"/>
+    </record>
+
     <record id="support_rule_own_supportteam" model="ir.rule">
         <field name="name">Own Support Team</field>
-        <field ref="support_team.model_support_team" name="model_id"/>
-        <field name="domain_force">[('member_ids', 'in', user.id)]</field>
+        <field ref="sales_team.model_crm_team" name="model_id"/>
+        <field name="domain_force">[('team_members', 'in', user.id)]</field>
         <field name="groups" eval="[(4, ref('support_team.group_support_staff_level1'))]"/>
     </record>
 
     <record id="support_rule_all_supportteam" model="ir.rule">
         <field name="name">All Support Teams</field>
-        <field ref="support_team.model_support_team" name="model_id"/>
+        <field ref="sales_team.model_crm_team" name="model_id"/>
         <field name="domain_force">[(1,'=',1)]</field>
         <field name="groups" eval="[(4, ref('support_team.group_support_staff_level2'))]"/>
     </record>
 
     <record model="ir.rule" id="support_team_comp_rule">
         <field name="name">Support Team multi-company</field>
-        <field name="model_id" ref="model_support_team"/>
+        <field name="model_id" ref="model_crm_team"/>
         <field name="domain_force">['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]</field>
     </record>
 
@@ -52,7 +65,7 @@
 
     <data noupdate="1">
         <record id="base.default_user" model="res.users">
-            <field name="groups_id" eval="[(4,ref('support_team.group_support_manager'))]"/>
+            <field name="groups_id" eval="[(4,ref('support_team.group_support_customer_website_support'))]"/>
         </record>
     </data>
 </odoo>

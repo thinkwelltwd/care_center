@@ -4,12 +4,14 @@ from odoo import models, fields, api, _
 class ProjectIssue(models.Model):
     _inherit = 'project.issue'
 
-    support_team_id = fields.Many2one(
-        'support.team', 'Support Team',
+    team_id = fields.Many2one(
+        comodel_name='crm.team',
+        string='Team',
+        index=True,
         help='Team responsible for resolving this Issue'
     )
 
-    @api.onchange('partner_id')
-    def _set_support_team(self):
-        if self.partner_id.support_team_id:
-            self.support_team_id = self.partner_id.support_team_id.id
+    @api.onchange('project_id')
+    def _set_team_from_project(self):
+        if self.project_id.team_id:
+            self.team_id = self.project_id.team_id.id
