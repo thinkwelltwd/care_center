@@ -2,3 +2,4 @@
 
 from . import res_config
 from . import project_issue
+from . import project_project

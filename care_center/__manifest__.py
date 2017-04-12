@@ -13,7 +13,10 @@
     'version': '0.1',
 
     'depends': [
+        'crm_phonecall',
+        'project',
         'project_issue',
+        'support_team',
     ],
 
     'data': [

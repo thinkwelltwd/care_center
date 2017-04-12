@@ -20,3 +20,32 @@ class ProjectIssue(models.Model):
         if not self.active:
             update_vals['active'] = True
         return super(ProjectIssue, self).message_update(msg, update_vals=update_vals)
+
+
+    @api.multi
+    def redirect_issue_view(self):
+        """Enable redirecting to an issue when created from a phone call."""
+        self.ensure_one()
+
+        form_view = self.env.ref('project_issue.project_issue_form_view')
+        tree_view = self.env.ref('project_issue.project_issue_tree_view')
+        kanban_view = self.env.ref('project_issue.project_issue_view_kanban_inherit_no_group_create')
+        calendar_view = self.env.ref('project_issue.project_issue_calendar_view')
+        graph_view = self.env.ref('project_issue.project_issue_graph_view')
+
+        return {
+            'name': _('Issue'),
+            'view_type': 'form',
+            'view_mode': 'tree, form, calendar, kanban',
+            'res_model': 'project.issue',
+            'res_id': self.id,
+            'view_id': False,
+            'views': [
+                (form_view.id, 'form'),
+                (tree_view.id, 'tree'),
+                (kanban_view.id, 'kanban'),
+                (calendar_view.id, 'calendar'),
+                (graph_view.id, 'graph')
+            ],
+            'type': 'ir.actions.act_window',
+        }
