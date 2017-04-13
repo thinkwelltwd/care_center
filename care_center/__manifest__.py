@@ -23,6 +23,7 @@
         # 'security/ir.model.access.csv',
         'views/res_config.xml',
         'views/care_center.xml',
+        'views/project_issue.xml',
     ],
     'installable': True,
     'auto_install': False,

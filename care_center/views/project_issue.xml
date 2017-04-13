@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- the project_issue_code module has an impoverished filter_domain, so add issue_code search in addition to other fields -->
+    <record model="ir.ui.view" id="project_issue_code_search_view">
+        <field name="name">Search Project Issue Code</field>
+        <field name="model">project.issue</field>
+        <field name="inherit_id" ref="project_issue.view_project_issue_filter" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="filter_domain">['|', '|', '|', '|', ('partner_id','child_of',self), ('description','ilike',self),('email_from','ilike',self),('name','ilike',self), ('issue_code', 'ilike', self)]</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
