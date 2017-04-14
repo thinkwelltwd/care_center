@@ -21,6 +21,7 @@
 
     'data': [
         # 'security/ir.model.access.csv',
+        'views/fetchmail_server.xml',
         'views/res_config.xml',
         'views/care_center.xml',
         'views/project_issue.xml',

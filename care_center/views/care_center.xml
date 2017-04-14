@@ -82,6 +82,26 @@
                   sequence="10"
                   action="crm_phonecall.crm_phonecall_categ_action"
                   groups="support_team.group_support_manager"/>
+
+        <menuitem name="Email Settings"
+                  id="menu_care_center_email_settings"
+                  parent="menu_support_config"
+                  sequence="50"
+                  groups="support_team.group_support_manager"/>
+
+            <menuitem name="Incoming Email Servers"
+                      id="menu_care_center_incoming_email_servers"
+                      parent="menu_care_center_email_settings"
+                      sequence="10"
+                      action="action_incoming_email_server_tree"
+                      groups="support_team.group_support_manager"/>
+
+            <menuitem name="Outgoing Email Servers"
+                      id="menu_care_center_outgoing_email_servers"
+                      parent="menu_care_center_email_settings"
+                      sequence="11"
+                      action="base.action_ir_mail_server_list"
+                      groups="support_team.group_support_manager"/>
     <!-- End of Configuration menu -->
 
 </odoo>
