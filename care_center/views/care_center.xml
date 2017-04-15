@@ -37,7 +37,7 @@
             <menuitem name="Issues"
                       id="submenu_issue_list"
                       parent="menu_issues_tasks"
-                      action="project_issue.project_issue_categ_act0"
+                      action="project_issue_categ_act"
                       sequence="2"
                       groups="support_team.group_support_customer_website_support"/>
 

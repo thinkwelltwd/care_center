@@ -4,13 +4,19 @@ from odoo import models, fields, api, _
 class ProjectIssue(models.Model):
     _inherit = 'project.issue'
 
+    medium_id = fields.Many2one('utm.medium', 'Medium',
+                                help="This is the method of delivery. Ex: Email / Phonecall / API / Website")
+
     @api.model
     def message_new(self, msg, custom_values=None):
         """Override to set message body to be in the
         Issue Description rather than first Chatter message
         """
         custom_values = dict(custom_values or {})
-        custom_values['description'] = msg.get('body', None)
+        if 'medium_id' not in custom_values and 'medium_id' not in msg:
+            custom_values['medium_id'] = self.env.ref('utm.utm_medium_email').id
+        if not msg.get('description', None):
+            custom_values['description'] = msg.get('body', None)
         msg['body'] = None
         return super(ProjectIssue, self).message_new(msg, custom_values=custom_values)
 

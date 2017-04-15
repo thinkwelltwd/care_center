@@ -13,6 +13,7 @@
     'version': '0.1',
 
     'depends': [
+        'utm',
         'crm_phonecall',
         'project',
         'project_issue',
@@ -21,10 +22,11 @@
 
     'data': [
         # 'security/ir.model.access.csv',
+        'data/utm.xml',
         'views/fetchmail_server.xml',
         'views/res_config.xml',
-        'views/care_center.xml',
         'views/project_issue.xml',
+        'views/care_center.xml',
     ],
     'installable': True,
     'auto_install': False,

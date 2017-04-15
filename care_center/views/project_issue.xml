@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Add default medium_id to context -->
+    <record id="project_issue_categ_act" model="ir.actions.act_window">
+        <field name="name">Issues</field>
+        <field name="res_model">project.issue</field>
+        <field name="inherit_id" ref="project_issue.project_issue_categ_act0"/>
+        <field name="context" eval="{'search_default_my_issues': 1, 'default_medium_id': ref('utm.utm_medium_phone')}"/>
+    </record>
+
+        <record id="project_issue_form_view_source_id" model="ir.ui.view">
+        <field name="name">project.issue.view.form.inherit.source</field>
+        <field name="model">project.issue</field>
+        <field name="inherit_id" ref="project_issue.project_issue_form_view"/>
+        <field name="arch" type="xml">
+            <field name="day_close"  position="after">
+                <field name="medium_id"/>
+            </field>
+        </field>
+    </record>
+
     <!-- the project_issue_code module has an impoverished filter_domain, so add issue_code search in addition to other fields -->
     <record model="ir.ui.view" id="project_issue_code_search_view">
         <field name="name">Search Project Issue Code</field>
