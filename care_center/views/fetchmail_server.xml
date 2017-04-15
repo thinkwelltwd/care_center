@@ -19,4 +19,22 @@
         </field>
     </record>
 
+    <record model="ir.actions.act_window" id="action_email_template_tree_all">
+        <field name="name">Templates</field>
+        <field name="res_model">mail.template</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="domain">[('model_id','=', 'Project Issue')]</field>
+        <field name="context">{'default_model_id': 255}</field> <!-- got to be a way to look up the Project Issue model id :-( -->
+        <field name="view_id" ref="mail.email_template_tree" />
+        <field name="search_view_id" ref="mail.view_email_template_search"/>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Canned responses to Issues.
+            </p><p>
+                Save time and standardize communications with email templates.
+            </p>
+        </field>
+    </record>
+
 </odoo>

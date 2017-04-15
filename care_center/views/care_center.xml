@@ -89,6 +89,13 @@
                   sequence="50"
                   groups="support_team.group_support_manager"/>
 
+            <menuitem name="Canned Replies"
+                      id="menu_care_center_canned_replies"
+                      parent="menu_care_center_email_settings"
+                      sequence="9"
+                      action="action_email_template_tree_all"
+                      groups="support_team.group_support_manager"/>
+
             <menuitem name="Incoming Email Servers"
                       id="menu_care_center_incoming_email_servers"
                       parent="menu_care_center_email_settings"
