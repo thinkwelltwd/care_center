@@ -7,7 +7,7 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('object_id','=', 'Project Issue')]</field>
-        <field name="context">{'default_object_id': 255}</field> <!-- got to be a way to look up the Project Issue model id :-( -->
+        <field name="context" eval="{'default_object_id': ref('project_issue.model_project_issue')}"/>
         <field name="view_id" ref="fetchmail.view_email_server_tree"/>
         <field name="search_view_id" ref="fetchmail.view_email_server_search"/>
         <field name="help" type="html">
@@ -25,7 +25,7 @@
         <field name="view_type">form</field>
         <field name="view_mode">form,tree</field>
         <field name="domain">[('model_id','=', 'Project Issue')]</field>
-        <field name="context">{'default_model_id': 255}</field> <!-- got to be a way to look up the Project Issue model id :-( -->
+        <field name="context" eval="{'default_model_id': ref('project_issue.model_project_issue')}"/>
         <field name="view_id" ref="mail.email_template_tree" />
         <field name="search_view_id" ref="mail.view_email_template_search"/>
         <field name="help" type="html">
