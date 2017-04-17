@@ -38,7 +38,7 @@
                       id="submenu_issue_list"
                       parent="menu_issues_tasks"
                       action="project_issue_categ_act"
-                      sequence="2"
+                      sequence="1"
                       groups="support_team.group_support_customer_website_support"/>
 
             <menuitem name="Tasks"
