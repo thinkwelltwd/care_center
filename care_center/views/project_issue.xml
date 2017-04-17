@@ -20,6 +20,26 @@
         </field>
     </record>
 
+
+    <record model="ir.ui.view" id="view_task_search_form">
+        <field name="name">Search Project Task</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_search_form" />
+        <field name="arch" type="xml">
+
+            <field name="user_id" position="after">
+                <field name="team_id"/>
+            </field>
+
+            <xpath expr="//filter[@name='my_tasks']" position="before">
+                <separator/>
+               <filter string="Assigned To My Team" name="my_team_tasks" domain="[('team_id.member_ids','in',uid)]"/>
+            </xpath>
+
+        </field>
+    </record>
+
+
     <!-- the project_issue_code module has an impoverished filter_domain, so add issue_code search in addition to other fields -->
     <record model="ir.ui.view" id="project_issue_code_search_view">
         <field name="name">Search Project Issue Code</field>
@@ -29,6 +49,16 @@
             <xpath expr="//field[@name='name']" position="attributes">
                 <attribute name="filter_domain">['|', '|', '|', '|', ('partner_id','child_of',self), ('description','ilike',self),('email_from','ilike',self),('name','ilike',self), ('issue_code', 'ilike', self)]</attribute>
             </xpath>
+
+            <field name="user_id" position="after">
+                <field name="team_id"/>
+            </field>
+
+            <xpath expr="//filter[@name='my_issues']" position="before">
+                <separator/>
+               <filter string="Assigned To My Team" name="my_team_issues" domain="[('team_id.member_ids','in',uid)]"/>
+            </xpath>
+
         </field>
     </record>
 
