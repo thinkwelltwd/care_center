@@ -109,6 +109,26 @@
                       sequence="11"
                       action="base.action_ir_mail_server_list"
                       groups="support_team.group_support_manager"/>
+
+        <menuitem name="Issue Processing"
+              id="menu_care_center_issue_processing"
+              parent="menu_support_config"
+              sequence="60"
+              groups="support_team.group_support_manager"/>
+
+            <menuitem name="Issue Rules"
+                      id="menu_care_center_issue_rules"
+                      parent="menu_care_center_issue_processing"
+                      sequence="10"
+                      action="base_action_rule_issue"
+                      groups="support_team.group_support_manager"/>
+
+            <menuitem name="Issue Actions"
+                  id="menu_care_center_issue_actions"
+                  parent="menu_care_center_issue_processing"
+                  sequence="11"
+                  action="action_issue_action"
+                  groups="support_team.group_support_manager"/>
     <!-- End of Configuration menu -->
 
 </odoo>

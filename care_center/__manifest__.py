@@ -14,6 +14,7 @@
 
     'depends': [
         'utm',
+        'base_action_rule',
         'crm_phonecall',
         'project',
         'project_issue',
@@ -26,6 +27,7 @@
         'views/fetchmail_server.xml',
         'views/res_config.xml',
         'views/project_issue.xml',
+        'views/base_action_rule.xml',
         'views/care_center.xml',
     ],
     'installable': True,

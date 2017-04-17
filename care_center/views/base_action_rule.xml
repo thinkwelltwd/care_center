@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_issue_action" model="ir.actions.act_window">
+        <field name="name">Issue Actions</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">ir.actions.server</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('model_id','=', 'Project Issue')]</field>
+        <field name="context" eval="{'default_model_id': ref('project_issue.model_project_issue'), 'default_kind': 'on_create', 'key': 'server_action'}"/>
+        <field name="view_id" ref="base.view_server_action_tree"/>
+        <field name="search_view_id" ref="base.view_server_action_search"/>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            Apply Actions to Issues.
+          </p>
+          <p>
+              For example, specify the Issue team based on the Issue Tag.
+          </p>
+          <p>
+              Actions may be applied from the More menu, or called from Issue Rules.
+          </p>
+        </field>
+    </record>
+
+
+    <record id="base_action_rule_issue" model="ir.actions.act_window">
+        <field name="name">Issue Rules</field>
+        <field name="res_model">base.action.rule</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('model_id','=', 'Project Issue')]</field>
+        <field name="context" eval="{'default_model_id': ref('project_issue.model_project_issue')}"/>
+        <field name="view_id" ref="base_action_rule.view_base_action_rule_tree"/>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            Apply Rules to Issues.
+          </p><p>
+            Issue Rules group one or more Actions together to process
+            Issues base on filter conditions and predefined Issue data.
+          </p>
+
+        </field>
+    </record>
+
+</odoo>
