@@ -32,9 +32,30 @@
         <field name="model">project.issue</field>
         <field name="inherit_id" ref="project_issue.project_issue_form_view"/>
         <field name="arch" type="xml">
+
+            <!-- Toggle Status shoudn't only be available in debug mode -->
+            <xpath expr="//button[@name='toggle_active']" position="replace">
+                <button name="toggle_active" type="object"
+                        class="oe_stat_button" icon="fa-archive">
+                    <field name="active" widget="boolean_button"
+                        options='{"terminology": "archive"}'/>
+                </button>
+            </xpath>
+
             <field name="day_close"  position="after">
                 <field name="medium_id"/>
             </field>
+
+            <field name="stage_id" position="before">
+                <button name="reopen_issue" string="Reopen Issue" type="object" class="oe_highlight"
+                    attrs="{'invisible': ['|', ('stage_id', '!=', 7), ('active', '!=', False)]}"/>
+                <button name="claim_issue" string="Claim" type="object" class="oe_highlight"
+                    attrs="{'invisible': [('user_id', '!=', False)]}"/>
+                <button name="email_customer" string="Email Customer" type="object"/>
+                <button name="close_issue" string="Reply and Close" type="object" class="oe_highlight"
+                    attrs="{'invisible': [('stage_id', 'in', (7,8))]}"/>
+            </field>
+
         </field>
     </record>
 

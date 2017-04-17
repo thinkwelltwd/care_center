@@ -6,6 +6,7 @@ class ProjectIssue(models.Model):
 
     medium_id = fields.Many2one('utm.medium', 'Medium',
                                 help="This is the method of delivery. Ex: Email / Phonecall / API / Website")
+    description = fields.Html('Private Note')
 
     @api.model
     def message_new(self, msg, custom_values=None):
@@ -87,3 +88,76 @@ class ProjectIssue(models.Model):
             ],
             'type': 'ir.actions.act_window',
         }
+
+    @api.onchange('project_id')
+    def _default_settings(self):
+
+        if self.env.context.get('project_id', None):
+            project = self.env['project.project'].browse(self.env.context['project_id'])
+        else:
+            project = self.project_id
+
+        contract = project.analytic_account_id
+        self.project_id = project.id
+        self.partner_id = project.partner_id
+        if contract.contact_id:
+            self.email_from = contract.contact_id.email
+        else:
+            self.email_from = project.partner_id.email
+
+        if self.env.context.get('project_tag', None):
+            if not self.tag_ids:
+                self.tag_ids = self.env['project.tags'].search([('name', '=', self.env.context['project_tag'])])
+
+    def email_the_customer(self):
+        """
+        Helper function to be called from close_issue or email_customer.
+        Can't be a decorated and be called from other dectorated methods
+        """
+
+        compose_form = self.env.ref('mail.email_compose_message_wizard_form', False)
+        template = self.env['mail.template'].search([('name', '=', 'CF Issue Reply')])
+        ctx = {
+            'default_model': 'project.issue',
+            'default_res_id': self.id,
+            'default_use_template': bool(template),
+            'default_template_id': template.id,
+            'default_composition_mode': 'mass_mail',
+        }
+        return {
+            'name': 'Compose Email',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'mail.compose.message',
+            'views': [(compose_form.id, 'form')],
+            'view_id': compose_form.id,
+            'target': 'new',
+            'context': ctx,
+        }
+
+    @api.multi
+    def claim_issue(self):
+        self.ensure_one()
+        self.user_id = self._uid
+
+    @api.multi
+    def close_issue(self):
+        self.ensure_one()
+        self.stage_id = self.env['project.task.type'].search([('name', '=', 'Done')])
+        self.active = False
+        return self.email_the_customer()
+
+    @api.multi
+    def reopen_issue(self):
+        self.ensure_one()
+        self.stage_id = self.env['project.task.type'].search([('name', '=', 'Troubleshooting')])
+        self.active = True
+
+    @api.multi
+    def email_customer(self):
+        """
+        Open a window to compose an email
+        """
+        self.ensure_one()
+        return self.email_the_customer()
