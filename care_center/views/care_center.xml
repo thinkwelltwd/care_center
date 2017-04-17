@@ -56,6 +56,13 @@
         <!-- End of Phone Calls menu -->
 
 
+    <menuitem name="Notes"
+              id="care_center_menu_notes"
+              parent="care_center_main_menu"
+              action="note.action_note_note"
+              sequence="10"/>
+
+
     <!-- Configuration menu -->
     <menuitem name="Configuration"
               id="menu_support_config"
@@ -77,12 +84,32 @@
                   action="support_team.support_team_config_action"
                   groups="support_team.group_support_manager"/>
 
-        <menuitem name="Call Categories"
-                  id="menu_care_center_phonecall_categories23"
+        <menuitem name="Metadata"
+                  id="menu_care_center_metadata"
                   parent="menu_support_config"
-                  sequence="10"
-                  action="crm_phonecall.crm_phonecall_categ_action"
+                  sequence="20"
                   groups="support_team.group_support_manager"/>
+
+            <menuitem name="Issue Tags"
+                      id="menu_care_center_issue_tags"
+                      parent="menu_care_center_metadata"
+                      sequence="10"
+                      action="project.project_tags_action"
+                      groups="support_team.group_support_manager"/>
+
+            <menuitem name="Issue Stages"
+                      id="menu_care_center_issue_stages"
+                      parent="menu_care_center_metadata"
+                      sequence="15"
+                      action="project.open_task_type_form"
+                      groups="support_team.group_support_manager"/>
+
+            <menuitem name="Call Categories"
+                      id="menu_care_center_phonecall_categories"
+                      parent="menu_care_center_metadata"
+                      sequence="20"
+                      action="crm_phonecall.crm_phonecall_categ_action"
+                      groups="support_team.group_support_manager"/>
 
         <menuitem name="Email Settings"
                   id="menu_care_center_email_settings"
