@@ -27,6 +27,38 @@ class ProjectIssue(models.Model):
             update_vals['active'] = True
         return super(ProjectIssue, self).message_update(msg, update_vals=update_vals)
 
+    @api.model
+    def api_message_new(self, msg):
+        """
+        Create an Issue via API call. Should be callable with the same signature as
+        python's sending emails.
+
+        @param dict msg: dictionary of message variables 
+       :rtype: int
+       :return: the id of the new Issue
+        """
+
+        Tag = self.env['project.tags']
+        Project = self.env['project.project']
+        project = msg.get('project', None) and Project.search([('name', '=', msg['project'])])
+
+        data = {
+            'project_id': project and project.id,
+            'medium_id': self.env.ref('care_center.utm_medium_api').id,
+            'tag_ids': [(6, False, [tag.id for tag in Tag.search([('name', 'in', msg.get('tags', []))])])],
+        }
+
+        if 'partner_id' not in msg and project and project.partner_id:
+            data['partner_id'] = project.partner_id.id
+            data['email_from'] = project.partner_id.email
+
+        # Python's CC email param takes a list, so cast to string if necessary
+        if isinstance(msg.get('cc', ''), (list, tuple)):
+            msg['cc'] = ','.join(msg['cc'])
+
+        msg.update(data)
+
+        return super(ProjectIssue, self).message_new(msg, custom_values=data)
 
     @api.multi
     def redirect_issue_view(self):
