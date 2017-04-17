@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record model="ir.ui.view" id="view_task_search_form">
+        <field name="name">Search Project Task</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_search_form" />
+        <field name="arch" type="xml">
+
+            <field name="user_id" position="after">
+                <field name="team_id"/>
+            </field>
+
+            <xpath expr="//filter[@name='my_tasks']" position="before">
+                <separator/>
+               <filter string="Assigned To My Team" name="my_team_tasks" domain="[('team_id.member_ids','in',uid)]"/>
+            </xpath>
+
+        </field>
+    </record>
+
+
+    <record id="project_task_tree_view" model="ir.ui.view">
+        <field name="name">projet.task.tree.coloring</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_tree2"/>
+        <field name="arch" type="xml">
+
+            <field name="project_id" position="before">
+                <field name="priority" invisible="1"/>
+            </field>
+            <xpath expr="//tree" position="attributes">
+                <attribute name="colors">red:priority == '1';</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+
+</odoo>

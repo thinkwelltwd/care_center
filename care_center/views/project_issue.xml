@@ -6,10 +6,28 @@
         <field name="name">Issues</field>
         <field name="res_model">project.issue</field>
         <field name="inherit_id" ref="project_issue.project_issue_categ_act0"/>
+        <field name="view_type">form</field>
+        <field name="view_mode">kanban,tree,calendar,form,pivot,graph</field>
+        <field name="view_id" eval="False"/>
+        <field name="domain" eval=""/>
         <field name="context" eval="{'search_default_my_issues': 1, 'default_medium_id': ref('utm.utm_medium_phone')}"/>
+        <field name="search_view_id" ref="project_issue.view_project_issue_filter"/>
     </record>
 
-        <record id="project_issue_form_view_source_id" model="ir.ui.view">
+
+    <record id="project_issue_tree_view" model="ir.ui.view">
+        <field name="name">project.issue.tree.view</field>
+        <field name="model">project.issue</field>
+        <field name="inherit_id" ref="project_issue.project_issue_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="colors">gray:priority == '0'; red:priority == '2'</attribute>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="project_issue_form_view_source_id" model="ir.ui.view">
         <field name="name">project.issue.view.form.inherit.source</field>
         <field name="model">project.issue</field>
         <field name="inherit_id" ref="project_issue.project_issue_form_view"/>
@@ -17,25 +35,6 @@
             <field name="day_close"  position="after">
                 <field name="medium_id"/>
             </field>
-        </field>
-    </record>
-
-
-    <record model="ir.ui.view" id="view_task_search_form">
-        <field name="name">Search Project Task</field>
-        <field name="model">project.task</field>
-        <field name="inherit_id" ref="project.view_task_search_form" />
-        <field name="arch" type="xml">
-
-            <field name="user_id" position="after">
-                <field name="team_id"/>
-            </field>
-
-            <xpath expr="//filter[@name='my_tasks']" position="before">
-                <separator/>
-               <filter string="Assigned To My Team" name="my_team_tasks" domain="[('team_id.member_ids','in',uid)]"/>
-            </xpath>
-
         </field>
     </record>
 
