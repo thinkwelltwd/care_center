@@ -1,5 +1,13 @@
 <odoo>
 
+        <!-- Show Contacts Menu so users can get back to Contacts List after clicking Phone Calls -->
+        <menuitem name="Contacts"
+              id="action_contacts_menu"
+              parent="contacts.menu_contacts"
+              sequence="5"
+              action="contacts.action_contacts"
+              groups="support_team.group_support_customer_website_support,sales_team.group_sale_salesman"/>
+
         <!-- Phone Calls menu -->
         <menuitem name="Phone Calls"
                   id="contacts_menu_crm_phonecall_logs"
