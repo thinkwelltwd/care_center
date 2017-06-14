@@ -42,6 +42,10 @@
                 </button>
             </xpath>
 
+            <field name="tag_ids"  position="before">
+                <field name="date_deadline"/>
+            </field>
+
             <field name="day_close"  position="after">
                 <field name="medium_id"/>
             </field>

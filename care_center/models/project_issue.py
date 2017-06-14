@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 from odoo import models, fields, api, _
 
 
@@ -24,6 +26,7 @@ class ProjectIssue(models.Model):
     @api.multi
     def message_update(self, msg, update_vals=None):
         """Override to re-open issue if it was closed."""
+        update_vals = dict(update_vals or {})
         if not self.active:
             update_vals['active'] = True
         return super(ProjectIssue, self).message_update(msg, update_vals=update_vals)
@@ -89,13 +92,40 @@ class ProjectIssue(models.Model):
             'type': 'ir.actions.act_window',
         }
 
+    @api.onchange('partner_id')
+    def _partner_id(self):
+        if not self.partner_id:
+            self.project_id = None
+            return {
+                'domain': {'partner_id': []}
+            }
+
+        partner_ids = [False, self.partner_id.id]
+        if self.partner_id.parent_id:
+            partner_ids.append(self.partner_id.parent_id.id)
+
+        return {
+            'domain': {'project_id': [('partner_id', 'in', partner_ids)]},
+        }
+
     @api.onchange('project_id')
     def _default_settings(self):
+
+        if not self.date_deadline:
+            self.date_deadline = fields.Date.to_string(date.today() + timedelta(hours=48))
+
+        if self.env.context.get('project_tag', None):
+            if not self.tag_ids:
+                self.tag_ids = self.env['project.tags'].search([('name', '=', self.env.context['project_tag'])])
 
         if self.env.context.get('project_id', None):
             project = self.env['project.project'].browse(self.env.context['project_id'])
         else:
             project = self.project_id
+
+        # Don't reset partner_id field if the project has no partner assigned!
+        if not project or not project.partner_id:
+            return
 
         contract = project.analytic_account_id
         self.project_id = project.id
@@ -105,9 +135,13 @@ class ProjectIssue(models.Model):
         else:
             self.email_from = project.partner_id.email
 
-        if self.env.context.get('project_tag', None):
-            if not self.tag_ids:
-                self.tag_ids = self.env['project.tags'].search([('name', '=', self.env.context['project_tag'])])
+    @api.model
+    def message_get_reply_to(self, res_ids, default=None):
+        """ Override to get the reply_to of the parent project. """
+        issues = self.browse(res_ids)
+        project_ids = set(issues.mapped('project_id').ids)
+        aliases = self.env['project.project'].message_get_reply_to(list(project_ids), default=default)
+        return dict((issue.id, aliases.get(issue.project_id and issue.project_id.id or 0, False)) for issue in issues)
 
     def email_the_customer(self):
         """
