@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record model="ir.ui.view" id="project_task_search">
+        <field name="name">Search Project Tasks</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_search_form" />
+        <field name="arch" type="xml">
+
+            <xpath expr="//filter[@name='message_needaction']" position="before">
+                <separator/>
+
+                <filter string="Due Today" name="due_today" domain="[('stage_id', '!=', 'Done'), ('date_deadline', '&lt;=', datetime.date.today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Due This Week" name="due_this_week" domain="[('stage_id', '!=', 'Done'), ('date_deadline', '&lt;=', (datetime.date.today() + datetime.timedelta(7)).strftime('%Y-%m-%d'))]"/>
+                <filter string="No Deadline" name="due_this_week" domain="[('stage_id', '!=', 'Done'), ('date_deadline', '=', False)]"/>
+
+                <separator/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

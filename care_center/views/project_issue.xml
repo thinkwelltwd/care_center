@@ -77,10 +77,20 @@
             <field name="user_id" position="after">
                 <field name="team_id"/>
             </field>
+            <separator/>
 
             <xpath expr="//filter[@name='my_issues']" position="before">
                 <separator/>
                <filter string="Assigned To My Team" name="my_team_issues" domain="[('team_id.member_ids','in',uid)]"/>
+            </xpath>
+
+            <xpath expr="//filter[@name='message_needaction']" position="before">
+                <separator/>
+
+                <filter string="Due Today" name="due_today" domain="[('stage_id', '!=', 'Done'), ('date_deadline', '&lt;=', datetime.date.today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Due This Week" name="due_this_week" domain="[('stage_id', '!=', 'Done'), ('date_deadline', '&lt;=', (datetime.date.today() + datetime.timedelta(7)).strftime('%Y-%m-%d'))]"/>
+                <filter string="No Deadline" name="no_deadline" domain="[('stage_id', '!=', 'Done'), ('date_deadline', '=', False)]"/>
+                <separator/>
             </xpath>
 
         </field>
