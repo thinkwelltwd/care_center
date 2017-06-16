@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="project_issue_tree_view" model="ir.ui.view">
+        <field name="name">project.issue.tree.view</field>
+        <field name="model">project.issue</field>
+        <field name="inherit_id" ref="project_issue.project_issue_tree_view"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//tree" position="attributes">
+                <attribute name="colors">gray:priority == '0'; blue:priority == '2'; purple:priority == '3'; fuchsia:priority == '4'; red:priority == '5'</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

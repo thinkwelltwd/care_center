@@ -15,18 +15,6 @@
     </record>
 
 
-    <record id="project_issue_tree_view" model="ir.ui.view">
-        <field name="name">project.issue.tree.view</field>
-        <field name="model">project.issue</field>
-        <field name="inherit_id" ref="project_issue.project_issue_tree_view"/>
-        <field name="arch" type="xml">
-            <xpath expr="//tree" position="attributes">
-                <attribute name="colors">gray:priority == '0'; red:priority == '2'</attribute>
-            </xpath>
-        </field>
-    </record>
-
-
     <record id="project_issue_form_view_source_id" model="ir.ui.view">
         <field name="name">project.issue.view.form.inherit.source</field>
         <field name="model">project.issue</field>

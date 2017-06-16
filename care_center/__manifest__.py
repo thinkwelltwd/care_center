@@ -26,7 +26,6 @@
         'data/utm.xml',
         'views/fetchmail_server.xml',
         'views/res_config.xml',
-        'views/project.xml',
         'views/project_issue.xml',
         'views/project_task.xml',
         'views/base_action_rule.xml',

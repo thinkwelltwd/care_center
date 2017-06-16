@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="project_task_tree_view" model="ir.ui.view">
+        <field name="name">projet.task.tree.coloring</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_tree2"/>
+        <field name="arch" type="xml">
+
+            <field name="user_id" position="after">
+                <field name="priority"/>
+            </field>
+
+            <xpath expr="//tree" position="attributes">
+                <attribute name="colors">gray:priority == '0'; blue:priority == '2'; purple:priority == '3'; fuchsia:priority == '4'; red:priority == '5'</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>
