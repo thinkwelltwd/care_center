@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+
+    <report id="project_issue_timesheets_report"
+        string="Issue Timesheets"
+        model="project.issue"
+        report_type="qweb-pdf"
+        name="care_center_timesheets.project_issue_template"
+    />
+
+    <report id="task_timesheets_report"
+        string="Task Timesheets"
+        model="project.task"
+        report_type="qweb-pdf"
+        name="care_center_timesheets.project_task_template"
+    />
+
+
+</odoo>

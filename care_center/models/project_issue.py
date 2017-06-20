@@ -150,7 +150,7 @@ class ProjectIssue(models.Model):
         """
 
         compose_form = self.env.ref('mail.email_compose_message_wizard_form', False)
-        template = self.env['mail.template'].search([('name', '=', 'CF Issue Reply')])
+        template = self.env['mail.template'].search([('name', '=', 'CF Issue - Close')])
         ctx = {
             'default_model': 'project.issue',
             'default_res_id': self.id,

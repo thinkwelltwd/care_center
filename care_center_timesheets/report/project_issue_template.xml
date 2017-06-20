@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<template id="project_issue_template">
+    <t t-call="report.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="report.external_layout">
+                <div class="page">
+
+                      <br /><br />
+                      <div class="row">
+
+                          <h3 style="text-align: center;">Issue Summary</h3>
+                          <table style="border:1px solid;width:100%;">
+                                <thead>
+                                    <tr style="height:35px;border:1px solid">
+                                        <th style="vertical-align:middle;text-align:center;border:1px solid">Code</th>
+                                        <th style="vertical-align:middle;text-align:center;border:1px solid">Date</th>
+                                        <th style="vertical-align:middle;text-align:center;border:1px solid">Customer</th>
+                                        <th style="vertical-align:middle;text-align:center;border:1px solid">Agent</th>
+                                    </tr>
+                                </thead>
+                              <tbody>
+                                  <tr style="width:100%;height:30px;border:1px solid">
+                                        <td style="vertical-align:middle;text-align:center;border:1px solid"><span t-esc="o.issue_code"/></td>
+                                        <td style="vertical-align:middle;text-align:center;border:1px solid"><span t-esc="o.create_date"/></td>
+                                        <th style="vertical-align:middle;text-align:center;border:1px solid"><span t-esc="o.partner_id.display_name"/></th>
+                                        <th style="vertical-align:middle;text-align:center;border:1px solid"><span t-esc="o.user_id.display_name"/></th>
+                                    </tr>
+                              </tbody>
+                          </table>
+
+                      </div>
+                      <br /><br />
+                      <t t-call="care_center_timesheets.timesheets_template"/>
+
+                </div><!-- End of Page div -->
+            </t>
+        </t>
+    </t>
+</template>
+
+</odoo>
