@@ -14,7 +14,7 @@
 
     'depends': [
         'utm',
-        'base_action_rule',
+        'calendar',
         'crm_phonecall',
         'project',
         'project_issue',
