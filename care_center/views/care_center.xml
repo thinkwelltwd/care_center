@@ -26,14 +26,13 @@
                       action="project.action_view_task"
                       sequence="2"
                       groups="support_team.group_support_customer_website_support"/>
-
-            <menuitem id="menu_partner_form"
-                      parent="menu_issues_tasks"
-                      action="base.action_partner_form"
-                      sequence="3"
-                      groups="support_team.group_support_customer_website_support"/>
         <!-- End of Issues and Tasks menu -->
 
+        <menuitem id="menu_partner_form"
+              parent="care_center_main_menu"
+              action="base.action_partner_form"
+              sequence="6"
+              groups="support_team.group_support_customer_website_support"/>
 
         <!-- Phone Calls menu -->
         <menuitem name="Phone Calls"
