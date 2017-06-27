@@ -11,6 +11,72 @@ class CrmPhonecall(models.Model):
     )
     description = fields.Html('Description')
 
+    @api.onchange('partner_id')
+    def _partner_id(self):
+        """
+        Filter Issues by Partner, including all
+        Issues of Partner Parent or Children
+        """
+        partner = self.partner_id
+        issue = self.issue_id
+        opportunity = self.opportunity_id
+
+        if not partner:
+            return {
+                'domain': {
+                    'issue_id': [],
+                    'opportunity_id': [],
+                }
+            }
+
+        # Always get ALL issues related to the company,
+        # whether the partner_id is Company or Contact
+        partner_ids = [partner.id]
+        parent_id = partner.parent_id and partner.parent_id.id or partner.id
+        partner_ids.extend(
+                [rp.id for rp in self.env['res.partner'].search([('parent_id', '=', parent_id)])]
+            )
+
+        domain = [
+            '|',
+            ('partner_id', '=', False),
+            ('partner_id', 'in', partner_ids),
+        ]
+        # Reset fields ONLY if the partner doesn't match! Otherwise, will always
+        # clear partner_id field, due onchange methods on issue_id / opportunity_id
+        if issue and issue.partner_id and issue.partner_id.id not in partner_ids:
+            self.issue_id = False
+        if opportunity and opportunity.partner_id and opportunity.partner_id.id not in partner_ids:
+            self.opportunity_id = False
+
+        return {
+            'domain': {
+                'issue_id': domain,
+                'opportunity_id': domain,
+            },
+        }
+
+    @api.onchange('issue_id')
+    def _issue_id(self):
+        """
+        Set Team if possible. Search by name, to handle
+        CRM & Support Teams which have different FKs
+        """
+        if not self.issue_id:
+            return
+        if self.issue_id.team_id:
+            team = self.env['crm.team'].search([('name', '=', self.issue_id.team_id.name)])
+            self.team_id = team and team.id
+
+        # Issues with blank partners shouldn't erase self.partner_id!
+        if self.issue_id.partner_id and self.issue_id.partner_id != self.partner_id:
+            self.partner_id = self.issue_id.partner_id.id
+
+    @api.onchange('opportunity_id')
+    def _opportunity_id(self):
+        if self.opportunity_id and self.opportunity_id.team_id:
+            self.team_id = self.opportunity_id.team_id.id
+
     @api.multi
     def convert_issue(self):
         """
