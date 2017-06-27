@@ -8,18 +8,25 @@
     'author': "Dave Burkholder <dave@thinkwelldesigns.com>",
     'website': "http://www.thinkwelldesigns.com",
 
-    'category': 'Employees',
-    'version': '0.1',
+    'category': 'Projects and Sales',
+    'version': '0.2',
 
     'depends': [
-        'project_issue_code',
-        'project_task_code',
+        'hr_timesheet',
+        'project_issue_sheet',
     ],
 
     'data': [
+        'data/invoice_factors.xml',
+        'security/ir.model.access.csv',
         'report/project_issue_template.xml',
         'report/project_task_template.xml',
         'report/timesheets_report.xml',
         'report/timesheets_template.xml',
+        'views/hr_timesheet.xml',
+        'views/project_issue.xml',
+        'views/project_task.xml',
+        'views/res_config.xml',
+        'views/timesheet_timer.xml',
     ],
 }

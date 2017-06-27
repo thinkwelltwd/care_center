@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record model="ir.ui.view" id="project_task_search">
+        <field name="name">Search Tasks With Work In Progress</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_search_form" />
+        <field name="arch" type="xml">
+
+            <xpath expr="//filter[@name='draft']" position="after">
+                <separator/>
+                <filter string="Work In Progress" name="work_in_progress" domain="[('timesheet_ids.full_duration', '=', 0.0), ('timesheet_ids.date_stop', '=', False)]"/>
+                <separator/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="care_center_timesheetstask_form_timesheet_inherited">
+        <field name="name">Care Center Task Timesheets</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="hr_timesheet.view_task_form2_inherited" />
+        <field name="arch" type="xml">
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_start" string="Start" type="object" attrs="{'invisible': [('user_clocked_in', '=', True)]}" class="oe_inline oe_stat_button" icon="fa-play"/>
+                <button name="action_stop" string="Stop" type="object" attrs="{'invisible': [('user_clocked_in', '=', False)]}" class="oe_stat_button oe_inline" icon="fa-stop"/>
+            </xpath>
+            <field name="project_id" position="after">
+                <field name="user_clocked_in" invisible="1"/>
+            </field>
+
+            <field name="partner_id" position="before">
+                <field name="invoiceable"/>
+            </field>
+
+            <field name="timesheet_ids" position="replace">
+                <field name="timesheet_ids" colspan="4" nolabel="1" context="{'default_user_id' : uid, 'default_project_id': project_id}" groups="base.group_user">
+                    <tree editable="top" string="Timesheet Activities">
+                        <field name="user_id" required="1"/>
+                        <field name="name"/>
+                        <field name="date_start" string="Started" required="1"/>
+                        <field name="date_stop" string="Stopped"/>
+                        <field name="to_invoice"/>
+                        <field name="full_duration" string="Time" widget="float_time"/>
+                        <field name="unit_amount" string="Duration" widget="float_time" readonly="0"/>
+                        <field name="project_id" invisible="1" required="0"/>
+                    </tree>
+                </field>
+            </field>
+        </field>
+
+    </record>
+</odoo>

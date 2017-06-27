@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record model="hr_timesheet_invoice.factor" id="fully_invoiceable">
+        <field name="name">Yes</field>
+        <field name="factor">0.0</field>
+    </record>
+
+    <record model="hr_timesheet_invoice.factor" id="75_percent_invoiceable">
+        <field name="name">75%</field>
+        <field name="factor">25.0</field>
+    </record>
+
+    <record model="hr_timesheet_invoice.factor" id="50_percent_invoiceable">
+        <field name="name">50%</field>
+        <field name="factor">50.0</field>
+    </record>
+
+    <record model="hr_timesheet_invoice.factor" id="25_percent_invoiceable">
+        <field name="name">25%</field>
+        <field name="factor">75.0</field>
+    </record>
+
+    <record model="hr_timesheet_invoice.factor" id="confirm_invoiceable">
+        <field name="name">Confirm</field>
+        <field name="factor">100.0</field>
+    </record>
+
+    <record model="hr_timesheet_invoice.factor" id="not_invoiceable">
+        <field name="name">No</field>
+        <field name="factor">100.0</field>
+    </record>
+
+</odoo>

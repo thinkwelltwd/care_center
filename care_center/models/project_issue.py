@@ -94,18 +94,39 @@ class ProjectIssue(models.Model):
 
     @api.onchange('partner_id')
     def _partner_id(self):
-        if not self.partner_id:
-            self.project_id = None
+        """
+        Filter Issues by Partner, including all
+        Issues of Partner Parent or Children
+        """
+        partner = self.partner_id
+
+        if not partner:
             return {
-                'domain': {'partner_id': []}
+                'domain': {
+                    'project_id': [],
+                }
             }
 
-        partner_ids = [False, self.partner_id.id]
-        if self.partner_id.parent_id:
-            partner_ids.append(self.partner_id.parent_id.id)
+        # Always get ALL issues related to the company,
+        # whether the partner_id is Company or Contact
+        partner_ids = [partner.id]
+        parent_id = partner.parent_id and partner.parent_id.id or partner.id
+        if parent_id:
+            partner_ids.append(parent_id)
+            partner_ids.extend(
+                    [rp.id for rp in self.env['res.partner'].search([('parent_id', '=', parent_id)])]
+                )
+
+        domain = [
+            '|',
+            ('partner_id', '=', False),
+            ('partner_id', 'in', partner_ids),
+        ]
 
         return {
-            'domain': {'project_id': [('partner_id', 'in', partner_ids)]},
+            'domain': {
+                'project_id': domain,
+            },
         }
 
     @api.onchange('project_id')
@@ -123,17 +144,9 @@ class ProjectIssue(models.Model):
         else:
             project = self.project_id
 
-        # Don't reset partner_id field if the project has no partner assigned!
-        if not project or not project.partner_id:
-            return
-
-        contract = project.analytic_account_id
-        self.project_id = project.id
-        self.partner_id = project.partner_id
-        if contract.contact_id:
+        contract = project and project.analytic_account_id
+        if contract and contract.contact_id and contract.contact_id.email:
             self.email_from = contract.contact_id.email
-        else:
-            self.email_from = project.partner_id.email
 
     @api.model
     def message_get_reply_to(self, res_ids, default=None):
