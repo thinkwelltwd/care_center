@@ -29,4 +29,17 @@
         </field>
     </record>
 
+    <record model="ir.ui.view" id="project_task_required_fields">
+        <field name="name">Project Task Required Fields</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2" />
+        <field name="arch" type="xml">
+
+            <field name="project_id" position="attributes">
+               <attribute name="required">True</attribute>
+            </field>
+
+        </field>
+    </record>
+
 </odoo>

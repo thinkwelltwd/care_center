@@ -53,13 +53,17 @@
                     attrs="{'invisible':[('opportunity_id','!=',False)]}"/>
             </xpath>
 
-            <xpath expr="//field[@name='opportunity_id']" position="after">
-                <field name="issue_id"/>
-            </xpath>
+            <field name="opportunity_id" position="after">
+               <field name="issue_id"/>
+            </field>
 
-            <xpath expr="//field[@name='team_id']" position="attributes">
-                <attribute name="string">Team</attribute>
-            </xpath>
+            <field name="team_id" position="attributes">
+               <attribute name="string">Team</attribute>
+            </field>
+
+            <field name="partner_id" position="attributes">
+               <attribute name="required">True</attribute>
+            </field>
 
         </field>
     </record>
