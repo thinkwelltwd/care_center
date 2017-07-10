@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 
 from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 
 class ProjectIssue(models.Model):
@@ -109,18 +110,24 @@ class ProjectIssue(models.Model):
 
         # Always get ALL issues related to the company,
         # whether the partner_id is Company or Contact
-        partner_ids = [partner.id]
+        partner_ids = {partner.id}
         parent_id = partner.parent_id and partner.parent_id.id or partner.id
         if parent_id:
-            partner_ids.append(parent_id)
-            partner_ids.extend(
+            partner_ids.add(parent_id)
+            partner_ids.update(
                     [rp.id for rp in self.env['res.partner'].search([('parent_id', '=', parent_id)])]
                 )
+
+        # Only reset project if the Partner is set, and is
+        # NOT related to the current Contact selected
+        proj_partner = self.project_id.partner_id and self.project_id.partner_id.id
+        if proj_partner and proj_partner not in partner_ids:
+            self.project_id = None
 
         domain = [
             '|',
             ('partner_id', '=', False),
-            ('partner_id', 'in', partner_ids),
+            ('partner_id', 'in', list(partner_ids)),
         ]
 
         return {
@@ -130,7 +137,7 @@ class ProjectIssue(models.Model):
         }
 
     @api.onchange('project_id')
-    def _default_settings(self):
+    def _project_id(self):
 
         if not self.date_deadline:
             self.date_deadline = fields.Date.to_string(date.today() + timedelta(hours=48))
@@ -139,14 +146,38 @@ class ProjectIssue(models.Model):
             if not self.tag_ids:
                 self.tag_ids = self.env['project.tags'].search([('name', '=', self.env.context['project_tag'])])
 
-        if self.env.context.get('project_id', None):
-            project = self.env['project.project'].browse(self.env.context['project_id'])
-        else:
-            project = self.project_id
+        if not self.project_id or not self.project_id.partner_id:
+            return
 
-        contract = project and project.analytic_account_id
-        if contract and contract.contact_id and contract.contact_id.email:
-            self.email_from = contract.contact_id.email
+        proj_partner = self.project_id.partner_id.id
+        issue_partner = self.partner_id and self.partner_id.id
+        issue_parent_partner = self.partner_id and \
+                               self.partner_id.parent_id and \
+                               self.partner_id.parent_id.id
+
+        if proj_partner != issue_partner and proj_partner != issue_parent_partner:
+            self.partner_id = proj_partner
+
+    @api.constrains('project_id')
+    def check_relationships(self):
+        """
+        If project has partner assigned, it must
+        be related to the Issue Partner
+        """
+        proj_partner = self.project_id.partner_id.id
+        if not proj_partner:
+            return
+
+        issue_partner = self.partner_id and self.partner_id.id
+        issue_parent_partner = self.partner_id and \
+                               self.partner_id.parent_id and \
+                               self.partner_id.parent_id.id
+
+        if proj_partner != issue_partner and proj_partner != issue_parent_partner:
+            raise ValidationError(
+                'Project Contact and Issue Contact must be the same, '
+                'or have the same parent Company.'
+            )
 
     @api.model
     def message_get_reply_to(self, res_ids, default=None):
