@@ -2,12 +2,11 @@
    :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
    :alt: License: AGPL-3
 
-=====================
-Contract Show Invoice
-=====================
+============
+Support Team
+============
 
-This module add a button in contracts to show their invoices.
-All invoices including lines for the Contract and other related invoices will be shown.
+Add concept of Support Team for Issues and Tasks.
 
 Usage
 =====
@@ -19,7 +18,7 @@ Assign default Support Team to Partners as well, to prepopulate the value for ne
 Bug Tracker
 ===========
 
-Bugs are tracked on `GitHub Issues <https://github.com/thinkwelltwd/care_center/support_team/issues>`_.
+Bugs are tracked on `GitHub Issues <https://github.com/thinkwelltwd/care_center/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 
 Credits

@@ -24,7 +24,7 @@ help us smash it by providing detailed and welcomed feedback.
 Credits
 =======
 
-Images
+Imag
 ------
 
 Contributors
