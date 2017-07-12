@@ -30,6 +30,10 @@
                 </button>
             </xpath>
 
+            <field name="day_close" position="before">
+                <field name="date_closed"/>
+            </field>
+
             <field name="tag_ids"  position="before">
                 <field name="date_deadline"/>
             </field>
@@ -87,7 +91,14 @@
                 <filter string="Due This Week" name="due_this_week" domain="[('stage_id', '!=', 'Done'), ('date_deadline', '&lt;=', (datetime.date.today() + datetime.timedelta(7)).strftime('%Y-%m-%d'))]"/>
                 <filter string="No Deadline" name="no_deadline" domain="[('stage_id', '!=', 'Done'), ('date_deadline', '=', False)]"/>
                 <separator/>
+                <filter string="Closed Today" name="closed_today" domain="[('active', '=', False), ('date_closed', '&gt;=', datetime.date.today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Closed This Week" name="closed_this_week" domain="[('active', '=', False), ('date_closed', '&gt;=', (datetime.date.today() - datetime.timedelta(7)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
             </xpath>
+
+            <filter name="group_message_last_post" position="before">
+                <filter string="Closed Day" name="group_date_closed" context="{'group_by':'date_closed:day'}" domain="[('active', '=', False)]" help="Closed Date"/>
+            </filter>
 
         </field>
     </record>

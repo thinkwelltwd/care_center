@@ -224,6 +224,7 @@ class ProjectIssue(models.Model):
         self.ensure_one()
         self.stage_id = self.env['project.task.type'].search([('name', '=', 'Done')])
         self.active = False
+        self.date_close = fields.Datetime.now()
         return self.email_the_customer()
 
     @api.multi
@@ -231,6 +232,7 @@ class ProjectIssue(models.Model):
         self.ensure_one()
         self.stage_id = self.env['project.task.type'].search([('name', '=', 'Troubleshooting')])
         self.active = True
+        self.date_close = None
 
     @api.multi
     def email_customer(self):
@@ -239,3 +241,15 @@ class ProjectIssue(models.Model):
         """
         self.ensure_one()
         return self.email_the_customer()
+
+    @api.multi
+    def toggle_active(self):
+        """ Inverse the value of the field ``active`` on the records in ``self``. """
+
+        for record in self:
+            if record.active:
+                self.date_close = fields.Datetime.now()
+            else:
+                self.date_close = None
+
+        super(ProjectIssue, self).toggle_active()
