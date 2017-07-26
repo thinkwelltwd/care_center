@@ -34,4 +34,21 @@
               action="note.action_note_note"
               sequence="15"/>
 
+    <!-- Add more search fields for contacts -->
+    <record model='ir.ui.view' id='phone_zipcode_search'>
+        <field name="name">Phone and Zip Code Search</field>
+        <field name='model'>res.partner</field>
+        <field name='inherit_id' ref='base.view_res_partner_filter'/>
+        <field name='arch' type='xml'>
+
+            <!-- Search phone in name, and move email to separate field-->
+            <field name="name" position="replace">
+               <field name="name" string="Name/Phone"
+                      filter_domain="['|','|','|','|',('display_name','ilike',self),('ref','=',self),('phone','ilike', self), ('mobile','ilike', self), ('fax','ilike', self)]"/>
+                <field name="email" filter_domain="[('email','ilike', self)]"/>
+                <field name="city" string="City/Zip" filter_domain="['|', ('city','ilike', self), ('zip','ilike', self)]"/>
+            </field>
+        </field>
+    </record>
+
 </odoo>
