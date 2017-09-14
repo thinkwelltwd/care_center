@@ -3,7 +3,7 @@
     <menuitem name="Care Center"
               id="care_center_main_menu"
               groups="support_team.group_support_customer_website_support,sales_team.group_sale_salesman"
-              sequence="1"
+              sequence="2"
               web_icon="care_center,static/description/icon.png"/>
 
 
