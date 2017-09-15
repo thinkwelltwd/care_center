@@ -14,6 +14,7 @@
     'depends': [
         'hr_timesheet',
         'project_issue_sheet',
+        'support_team',
     ],
 
     'data': [

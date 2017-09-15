@@ -5,9 +5,6 @@ from odoo import api, models, fields
 class ProjectProject(models.Model):
     _inherit = 'project.project'
 
-    team_id = fields.Many2one('crm.team', string="Project Team",
-                              domain=[('type_team', 'in', ('project', 'support'))])
-
     @api.model
     def create(self, vals):
         project = super(ProjectProject, self).create(vals)

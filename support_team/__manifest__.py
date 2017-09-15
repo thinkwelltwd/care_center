@@ -11,13 +11,14 @@
     'website': "http://www.thinkwelldesigns.com",
 
     'depends': [
-        'project_team',
-        'project',
+        'crm',
+        'sales_team',
         'project_issue',
     ],
     'data': [
         'security/support_team.xml',
-        'security/ir.model.access.csv',
+        'views/crm.xml',
+        'views/project_project.xml',
         'views/support_team.xml',
         'views/project_task.xml',
         'views/project_issue.xml',

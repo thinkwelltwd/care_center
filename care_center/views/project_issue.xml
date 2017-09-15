@@ -21,7 +21,7 @@
         <field name="inherit_id" ref="project_issue.project_issue_form_view"/>
         <field name="arch" type="xml">
 
-            <!-- Toggle Status shoudn't only be available in debug mode -->
+            <!-- Toggle Status shouldn't only be available in debug mode -->
             <xpath expr="//button[@name='toggle_active']" position="replace">
                 <button name="toggle_active" type="object"
                         class="oe_stat_button" icon="fa-archive">
@@ -56,8 +56,8 @@
                <attribute name="required">True</attribute>
             </field>
 
-            <field name="project_id" position="attributes">
-               <attribute name="required">True</attribute>
+            <field name="project_id" position="replace">
+                <field name="project_id" options="{'no_quick_create': True}" required="1"/>
             </field>
 
         </field>

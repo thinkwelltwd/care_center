@@ -14,6 +14,7 @@
 
     'depends': [
         'utm',
+        'note',
         'calendar',
         'crm_phonecall',
         'project',
@@ -34,4 +35,5 @@
     ],
     'installable': True,
     'auto_install': False,
+    'application': True,
 }

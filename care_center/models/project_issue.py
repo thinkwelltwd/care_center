@@ -8,7 +8,8 @@ class ProjectIssue(models.Model):
     _inherit = 'project.issue'
 
     medium_id = fields.Many2one('utm.medium', 'Medium',
-                                help="This is the method of delivery. Ex: Email / Phonecall / API / Website")
+                                help="This is the method of delivery. "
+                                     "Ex: Email / Phonecall / API / Website")
     description = fields.Html('Private Note')
 
     @api.model
@@ -145,18 +146,6 @@ class ProjectIssue(models.Model):
         if self.env.context.get('project_tag', None):
             if not self.tag_ids:
                 self.tag_ids = self.env['project.tags'].search([('name', '=', self.env.context['project_tag'])])
-
-        if not self.project_id or not self.project_id.partner_id:
-            return
-
-        proj_partner = self.project_id.partner_id.id
-        issue_partner = self.partner_id and self.partner_id.id
-        issue_parent_partner = self.partner_id and \
-                               self.partner_id.parent_id and \
-                               self.partner_id.parent_id.id
-
-        if proj_partner != issue_partner and proj_partner != issue_parent_partner:
-            self.partner_id = proj_partner
 
     @api.constrains('project_id')
     def check_relationships(self):

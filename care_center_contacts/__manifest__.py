@@ -17,6 +17,7 @@
     'depends': [
         'contacts',
         'crm_phonecall',
+        'support_team',
     ],
 
     'data': [

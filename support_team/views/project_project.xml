@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_project_form_team" model="ir.ui.view">
+        <field name="name">Support Team</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="priority">16</field>
+        <field name="arch" type="xml">
+            <field name="department_id" position="after">
+                <field name="team_id" required="1" options="{'no_quick_create': True}"/>
+            </field>
+        </field>
+   </record>
+
+</odoo>

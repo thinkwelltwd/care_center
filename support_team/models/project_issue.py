@@ -8,7 +8,8 @@ class ProjectIssue(models.Model):
         comodel_name='crm.team',
         string='Team',
         index=True,
-        help='Team responsible for resolving this Issue'
+        help='Team responsible for resolving this Issue',
+        domain=[('type_team', 'in', ('support', 'project'))],
     )
 
     @api.onchange('project_id')
