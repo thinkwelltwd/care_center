@@ -1,5 +1,5 @@
 # coding: utf-8
-from ..utils import get_duration, get_factored_duration
+from ..utils import get_factored_duration
 from odoo import fields, models, api, _
 
 
@@ -7,9 +7,14 @@ from odoo import fields, models, api, _
 class AccountAnalyticLine(models.Model):
     _inherit = 'account.analytic.line'
 
-    date_start = fields.Datetime('Started')
-    date_stop = fields.Datetime('Stopped')
+    timer_status = fields.Selection(selection=[
+        ('stopped', 'Stopped'),
+        ('paused', 'Paused'),
+        ('running', 'Running'),
+        ],
+        string='Timer Status')
 
+    date_start = fields.Datetime('Started')
     to_invoice = fields.Many2one(
         'hr_timesheet_invoice.factor',
         'Invoiceable',
@@ -22,14 +27,6 @@ class AccountAnalyticLine(models.Model):
         'Time',
         default=0.0,
         help='Total and undiscounted amount of time spent on timesheet')
-
-    @api.onchange('date_start', 'date_stop')
-    def _compute_duration(self):
-        if self.date_start and self.date_stop:
-            self.full_duration = get_duration(
-                start=fields.Datetime.from_string(self.date_start),
-                stop=fields.Datetime.from_string(self.date_stop),
-            )
 
     @api.onchange('full_duration', 'to_invoice')
     def _compute_durations(self):

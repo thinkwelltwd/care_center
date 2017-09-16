@@ -37,7 +37,7 @@
 
             <field name="department_id" position="after">
                 <separator/>
-                <filter string="Work In Progress" name="work_in_progress" domain="[('full_duration', '=', 0.0), ('date_stop', '=', False)]"/>
+                <filter string="Work In Progress" name="work_in_progress" domain="[('timer_status', '=', ('running', 'paused'))]"/>
                 <separator/>
                 <filter string="Fully Invoiceable" name="invoiceable_timesheets" domain="[('to_invoice.factor', '=', 0.0)]"/>
                 <filter string="Partially Invoiceable" name="invoiceable_timesheets" domain="[('to_invoice.factor', '&lt;', 100.0), ('to_invoice.factor', '&gt;=', 0.0)]"/>

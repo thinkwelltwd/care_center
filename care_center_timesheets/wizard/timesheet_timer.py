@@ -1,5 +1,5 @@
-from datetime import datetime
-from ..utils import get_duration, get_factored_duration, round_to
+from datetime import datetime, timedelta
+from ..utils import get_factored_duration, round_timedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
@@ -11,7 +11,7 @@ class TimesheetTimerWizard(models.TransientModel):
 
     name = fields.Char(string='Work Description')
     date_stop = fields.Datetime(string='Stop Time')
-    current_total_time = fields.Float(string='Time So Far')
+    completed_timesheets = fields.Float(string='Time So Far')
     timesheet_id = fields.Many2one('account.analytic.line', string='Timesheet')
 
     to_invoice = fields.Many2one(
@@ -38,16 +38,22 @@ class TimesheetTimerWizard(models.TransientModel):
         """
         start = fields.Datetime.from_string(self.timesheet_id.date_start)
         stop = fields.Datetime.from_string(self.date_stop) or datetime.now()
-        base_duration = get_duration(start, stop)
-        rounding_increment = self.get_rounding_increment(duration=base_duration)
 
-        rounded_stop = round_to(start, stop, increment=rounding_increment)
-        self.full_duration = get_duration(start=start, stop=rounded_stop)
+        this_timesheet = self.get_minimum_duration(
+            duration=(stop - start).total_seconds() / 3600
+        )
+
+        rounded_time = round_timedelta(
+            td=timedelta(seconds=this_timesheet * 3600),
+            period=self.get_rounded_minutes(),
+        )
+
+        self.full_duration = rounded_time.total_seconds() / 3600.0
         self.unit_amount = get_factored_duration(self.full_duration, self.to_invoice)
 
         return {
             'name': self.name,
-            'date_stop': rounded_stop,
+            'timer_status': 'stopped',
             'full_duration': self.full_duration,
             'to_invoice': self.to_invoice.id,
             'unit_amount': self.unit_amount,
@@ -71,24 +77,36 @@ class TimesheetTimerWizard(models.TransientModel):
                     'Stop time must be later than Start time'
                 ))
 
-    def get_rounding_increment(self, duration=0):
+    def get_minimum_duration(self, duration):
         """
-        Timesheets are rounded per minimums on entire Issue / Task,
-        and if that minumimum is reached, then minimum time per timesheet
+        Projects / Tasks can have a minimum total turation
+
+        :param duration: Duration of this ticket in hours
         """
         Param = self.env['ir.config_parameter']
         work_log_min = float(Param.get_param('start_stop.minimum_work_log', default=0))
+        cs = self.completed_timesheets
+        total_minutes = (cs + duration) * 60
 
-        if self.current_total_time + duration < (work_log_min / 60):
-            return work_log_min
+        if work_log_min and total_minutes < work_log_min:
+            return work_log_min / 60
 
-        return float(Param.get_param('start_stop.minutes_increment', default=0))
+        return duration
+
+    def get_rounded_minutes(self):
+        """
+        Timesheets are rounded per minimum minutes on entire Issue / Task,
+        and if that minumimum is reached, then minimum time per timesheet
+        """
+        Param = self.env['ir.config_parameter']
+        minutes = float(Param.get_param('start_stop.minutes_increment', default=0))
+        return timedelta(seconds=minutes * 60)
 
     @api.multi
     def save_timesheet(self):
         """
         'write' method wants to return a view so, we use custom function
-        so that we can' just go back to current Issue/Task page
+        so that we can just go back to current Issue/Task page
         """
 
         # re-call stats because we didn't persist the wizard

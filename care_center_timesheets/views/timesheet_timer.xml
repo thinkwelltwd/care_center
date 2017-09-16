@@ -14,7 +14,6 @@
                 <group col="4">
                     <field name="full_duration" readonly="1" widget="float_time"/>
                     <field name="unit_amount" readonly="1" widget="float_time"/>
-                    <field name="current_total_time" invisible="1"/>
                     <field name="timesheet_id" invisible="1"/>
                 </group>
                 <footer>
