@@ -189,7 +189,7 @@ class ProjectIssue(models.Model):
             'default_res_id': self.id,
             'default_use_template': bool(template),
             'default_template_id': template.id,
-            'default_composition_mode': 'mass_mail',
+            'default_composition_mode': 'comment',
         }
         return {
             'name': 'Compose Email',
