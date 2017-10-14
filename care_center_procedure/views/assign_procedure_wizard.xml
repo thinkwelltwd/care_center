@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="assign_procedure_wizard" model="ir.ui.view">
+        <field name="name">Assign Procedure</field>
+        <field name="model">assign_procedure.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Assign Procedure">
+                <group col="4" colspan="4">
+                    <field name="procedure_id"/>
+                    <field name="sequence"/>
+                    <field name="issue_id" readonly="1"/>
+                </group>
+                <footer>
+                    <button name="assign_procedure"
+                        string="Assign" type="object"
+                        class="btn-primary"/>
+                    <button string="Cancel"
+                        class="btn-default"
+                        special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_assign_procedure_wizard" model="ir.actions.act_window">
+        <field name="name">Assign Procedure action</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">assign_procedure.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="assign_procedure_wizard"/>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

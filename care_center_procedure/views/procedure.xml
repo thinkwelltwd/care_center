@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Checklist form view -->
+    <record id="view_procedure_checklist_form" model="ir.ui.view">
+        <field name="name">procedure.checklist.form</field>
+        <field name="model">procedure.procedure</field>
+        <field name="type">form</field>
+        <field name="priority" eval="17"/>
+        <field name="arch" type="xml">
+            <form string="Checklist">
+                <sheet>
+                    <group name="checklist_info" string="Checklist Info" colspan="4" col="4">
+                        <field name="name"/>
+                        <field name="sequence"/>
+                        <field name="parent_id" string="Procedure"/>
+                        <separator string="Documentation" colspan="4"/>
+                        <field name="description" nolabel="1" colspan="4"/>
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Procedure tree view -->
+    <record id="view_procedure_tree" model="ir.ui.view">
+        <field name="name">procedure.procedure.tree</field>
+        <field name="model">procedure.procedure</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence"/>
+                <field name="name"/>
+                <field name="parent_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Procedure form view -->
+    <record id="view_procedure_form_view" model="ir.ui.view">
+        <field name="name">procedure.procedure.form</field>
+        <field name="model">procedure.procedure</field>
+        <field name="type">form</field>
+        <field name="priority" eval="15"/>
+        <field name="arch" type="xml">
+            <form string="Procedure">
+                <header>
+                    <button name="add_checklist" string="Add Checklist" type="object" invisible="context.get('hide_checklist',False)" attrs="{'invisible': [('parent_id', '!=', False)]}"/>
+                    <button name="show_documentation" string="Show Documentation" type="object" attrs="{'invisible': [('parent_id', '!=', False)]}"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+
+                    <group name="procedure_info" string="Procedure Info" colspan="4" col="4">
+                        <field name="name"/>
+                        <field name="sequence"/>
+                        <field name="parent_id" string="Parent"/>
+                        <field name="tag_ids" widget="many2many_tags"/>
+                        <separator string="Documentation" colspan="4"/>
+                        <field name="description" nolabel="1" colspan="4"/>
+                    </group>
+                    <group string="Checklists" colspan="4" col="4" invisible="context.get('hide_checklist',False)" attrs="{'invisible': [('parent_id', '!=', False)]}">
+                        <field name="child_ids" nolabel="1">
+                          <tree editable="bottom">
+                              <field name="sequence"/>
+                              <field name="name"/>
+                            </tree>
+                        </field>
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Procedure search view -->
+    <record id="view_procedure_filter" model="ir.ui.view">
+        <field name="name">procedure.procedure.filter</field>
+        <field name="model">procedure.procedure</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="tag_ids"/>
+                <field name="parent_id"/>
+                <field name="description"/>
+                <group expand="1" string="Group By">
+                    <filter name="group_by_procedure" string="Parent Procedure"
+                            context="{'group_by':'parent_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Procedure action -->
+    <record id="action_procedures" model="ir.actions.act_window">
+        <field name="name">Procedures</field>
+        <field name="res_model">procedure.procedure</field>
+        <field name="view_type">form</field>
+        <field name="domain">[('parent_id', '=', False)]</field>
+        <field name="view_id" ref="view_procedure_tree"/>
+        <field name="search_view_id" ref="view_procedure_filter"/>
+        <field name="help">
+            Procedures are actions that must be performed to resolve an Issue. Procedures can be
+            used to ensure that actions are checked or performed. Quality Control should be
+            increased by attaching Procedures to Issues.
+        </field>
+    </record>
+
+    <!-- Checklists action -->
+    <record id="action_checklists" model="ir.actions.act_window">
+        <field name="name">Checklists</field>
+        <field name="res_model">procedure.procedure</field>
+        <field name="view_type">form</field>
+        <field name="domain">[('parent_id', '!=', False)]</field>
+        <field name="view_id" ref="view_procedure_tree"/>
+        <field name="search_view_id" ref="view_procedure_filter"/>
+        <field name="help">
+            Checklists are sub-procedures that attached to an Issue to ensure Quality Control.
+            Issues cannot be archived until all Checklists are completed.
+        </field>
+    </record>
+
+    <!-- Show in CareCenter menu -->
+    <menuitem name="Procedures"
+              id="menu_procedures_view"
+              parent="care_center.menu_issues_tasks"
+              sequence="100"
+              action="action_procedures"/>
+
+    <menuitem name="Checklists"
+              id="menu_checklists_view"
+              parent="care_center.menu_issues_tasks"
+              sequence="101"
+              action="action_checklists"/>
+
+    <!-- Procedure Assignment form view -->
+    <record id="view_procedure_assignment_form" model="ir.ui.view">
+        <field name="name">procedure.assignment.form</field>
+        <field name="model">procedure.assignment</field>
+        <field name="type">form</field>
+        <field name="context">{'hide_checklist': True}</field>
+        <field name="arch" type="xml">
+            <form string="Checklist">
+                <sheet>
+                    <group name="checklist_info" string="Checklist" colspan="4" col="4">
+                        <field name="procedure_id" string="Name"/>
+                        <field name="sequence"/>
+                        <separator string="Documentation" colspan="4"/>
+                        <field name="description" nolabel="1" colspan="4"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Procedure Documentation view -->
+    <record id="view_procedure_documentation_form" model="ir.ui.view">
+        <field name="name">procedure.procedure.documentation.form</field>
+        <field name="model">procedure.procedure</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Documentation">
+                <sheet>
+                    <separator string="Documentation" colspan="4"/>
+                    <field name="documentation" nolabel="1" colspan="4"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Procedure Assignment Documentation view -->
+    <record id="view_procedure_documentation_form2" model="ir.ui.view">
+        <field name="name">procedure.assignment.documentation.form</field>
+        <field name="model">procedure.assignment</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Documentation">
+                <sheet>
+                    <separator string="Documentation" colspan="4"/>
+                    <field name="documentation" nolabel="1" colspan="4"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>
