@@ -40,7 +40,7 @@ class TimesheetTimerWizard(models.TransientModel):
         stop = fields.Datetime.from_string(self.date_stop) or datetime.now()
 
         this_timesheet = self.get_minimum_duration(
-            duration=(stop - start).total_seconds() / 3600
+            duration=self.get_timesheet_duration(start, stop)
         )
 
         rounded_time = round_timedelta(
@@ -77,6 +77,14 @@ class TimesheetTimerWizard(models.TransientModel):
                     'Stop time must be later than Start time'
                 ))
 
+    def get_timesheet_duration(self, start, stop):
+        """
+        Get complete timesheet duration. full_duration is populated
+        from Pause / Resume cycles, so include full_duration
+        """
+        duration = (stop - start).total_seconds() / 3600
+        return self.timesheet_id.full_duration + duration
+
     def get_minimum_duration(self, duration):
         """
         Projects / Tasks can have a minimum total turation
@@ -85,8 +93,7 @@ class TimesheetTimerWizard(models.TransientModel):
         """
         Param = self.env['ir.config_parameter']
         work_log_min = float(Param.get_param('start_stop.minimum_work_log', default=0))
-        cs = self.completed_timesheets
-        total_minutes = (cs + duration) * 60
+        total_minutes = (self.completed_timesheets + duration) * 60
 
         if work_log_min and total_minutes < work_log_min:
             return work_log_min / 60

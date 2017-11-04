@@ -20,7 +20,7 @@
                         <td style="vertical-align:middle;text-align:center;border:1px solid"><span t-esc="t.date"/></td>
                         <td style="vertical-align:middle;text-align:left;border:1px solid; padding-left: 10px;"><span t-esc="t.display_name"/></td>
                         <td style="vertical-align:middle;text-align:left;border:1px solid; padding-left: 10px;"><span t-esc="t.user_id.display_name"/></td>
-                        <td style="vertical-align:middle;text-align:right;border:1px solid; padding-right: 10px;"><span t-esc="t.unit_amount"/></td>
+                        <td style="vertical-align:middle;text-align:right;border:1px solid; padding-right: 10px;"><span t-esc="t.full_duration"/></td>
                     </tr>
               </tbody>
         </table>

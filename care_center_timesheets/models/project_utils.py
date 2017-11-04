@@ -27,17 +27,6 @@ class ProjectUtils(models.AbstractModel):
         help='Current user is working on this Issue',
     )
 
-    @api.multi
-    def _update_time_spent(self):
-        """Total project time on all completed timesheets"""
-        total = 0.0
-        for timesheet in self.timesheet_ids.search([
-            ('timer_status', '=', 'stopped'),
-            ('project_id', '=', self.project_id.id),
-        ]):
-            total += timesheet.unit_amount
-        return total
-
     @api.one
     def _user_timer_status(self):
         clocked_in_count = self.timesheet_ids.search_count([
@@ -114,7 +103,7 @@ class ProjectUtils(models.AbstractModel):
         ])
         if not timesheet:
             raise UserError(_(
-                'You have no "%s" timesheet! % status'
+                'You have no "%s" timesheet!' % status
             ))
         if len(timesheet) > 1:
             raise UserError(_(
@@ -164,7 +153,7 @@ class ProjectUtils(models.AbstractModel):
         Timer = self.env['timesheet_timer.wizard']
 
         new = Timer.create({
-            'completed_timesheets': self._update_time_spent(),
+            'completed_timesheets': sum([ts.full_duration for ts in self.timesheet_ids]),
             'timesheet_id': timesheet.id,
             'to_invoice': timesheet.to_invoice.id,
         })
