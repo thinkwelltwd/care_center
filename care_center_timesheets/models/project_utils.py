@@ -82,7 +82,6 @@ class ProjectUtils(models.AbstractModel):
                 'date_start': datetime.now(),
                 'timer_status': 'running',
                 'account_id': self.project_id.analytic_account_id.id,
-                'company_id': self.env.user.company_id.id,
                 'user_id': self.env.uid,
                 'project_id': self.project_id.id,
                 'to_invoice': factor,
