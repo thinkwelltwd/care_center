@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="project.edit_project"/>
         <field name="priority">16</field>
         <field name="arch" type="xml">
-            <field name="department_id" position="after">
+            <field name="user_id" position="after">
                 <field name="team_id" required="1" options="{'no_quick_create': True}"/>
             </field>
         </field>
