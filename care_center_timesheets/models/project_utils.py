@@ -27,6 +27,25 @@ class ProjectUtils(models.AbstractModel):
         help='Current user is working on this Issue',
     )
 
+    def _update_timesheets(self):
+        """
+        If the Project or Partner changes,
+        then update the Timesheets as well.
+        """
+        aa = self.project_id.analytic_account_id
+        team = self.project_id.team_id
+
+        data = {
+            'project_id': self.project_id.id,
+            'partner_id': self.partner_id.id,
+            'analytic_account_id': aa and aa.id,
+            'team_id': team and team.id,
+            'so_line': None,
+        }
+
+        for ts in self.timesheet_ids:
+            ts.write(data)
+
     @api.one
     def _user_timer_status(self):
         clocked_in_count = self.timesheet_ids.search_count([
