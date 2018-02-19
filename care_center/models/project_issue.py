@@ -212,8 +212,8 @@ class ProjectIssue(models.Model):
     def close_issue(self):
         self.ensure_one()
         self.stage_id = self.env['project.task.type'].search([('name', '=', 'Done')])
-        self.active = False
-        self.date_close = fields.Datetime.now()
+        if self.active:
+            self.toggle_active()
         return self.email_the_customer()
 
     @api.multi

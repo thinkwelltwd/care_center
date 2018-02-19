@@ -107,6 +107,15 @@ class ProjectUtils(models.AbstractModel):
              })]
         })
 
+    @api.multi
+    def has_active_timers(self):
+        """
+        Check for active timesheets before closing / deactivation
+        """
+        for record in self:
+            if record.timesheet_ids.filtered(lambda ts: ts.timer_status in ('running', 'paused')):
+                raise UserError('Please close all Running / Paused Timesheets first!')
+
     def _get_timesheet(self, status):
         """Get currently running timesheet to Pause / Stop timer"""
         if not self.project_id:
