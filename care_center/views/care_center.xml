@@ -7,26 +7,19 @@
               web_icon="care_center,static/description/icon.png"/>
 
 
-        <!-- Issues and Tasks menu -->
-        <menuitem name="Issues and Tasks"
-                  id="menu_issues_tasks"
+        <!-- Tickes / Tasks menu -->
+        <menuitem name="Tickets"
+                  id="menu_tickets_tasks"
                   parent="care_center_main_menu"
                   sequence="5"/>
 
-            <menuitem name="Issues"
-                      id="submenu_issue_list"
-                      parent="menu_issues_tasks"
-                      action="project_issue_categ_act"
-                      sequence="1"
-                      groups="support_team.group_support_customer_website_support"/>
-
-            <menuitem name="Tasks"
+            <menuitem name="Tickets"
                       id="submenu_task_list"
-                      parent="menu_issues_tasks"
+                      parent="menu_tickets_tasks"
                       action="project.action_view_task"
                       sequence="2"
                       groups="support_team.group_support_customer_website_support"/>
-        <!-- End of Issues and Tasks menu -->
+        <!-- End of Tickets menu -->
 
         <menuitem id="menu_partner_form"
               parent="care_center_main_menu"
@@ -101,15 +94,15 @@
                   sequence="20"
                   groups="support_team.group_support_manager"/>
 
-            <menuitem name="Issue Tags"
-                      id="menu_care_center_issue_tags"
+            <menuitem name="Ticket Tags"
+                      id="menu_care_center_ticket_tags"
                       parent="menu_care_center_metadata"
                       sequence="10"
                       action="project.project_tags_action"
                       groups="support_team.group_support_manager"/>
 
-            <menuitem name="Issue Stages"
-                      id="menu_care_center_issue_stages"
+            <menuitem name="Ticket Stages"
+                      id="menu_care_center_ticket_stages"
                       parent="menu_care_center_metadata"
                       sequence="15"
                       action="project.open_task_type_form"
@@ -149,24 +142,24 @@
                       action="base.action_ir_mail_server_list"
                       groups="support_team.group_support_manager"/>
 
-        <menuitem name="Issue Processing"
-              id="menu_care_center_issue_processing"
+        <menuitem name="Ticket Processing"
+              id="menu_care_center_ticket_processing"
               parent="menu_support_config"
               sequence="60"
               groups="support_team.group_support_manager"/>
 
-            <menuitem name="Issue Rules"
-                      id="menu_care_center_issue_rules"
-                      parent="menu_care_center_issue_processing"
+            <menuitem name="Ticket Rules"
+                      id="menu_care_center_ticket_rules"
+                      parent="menu_care_center_ticket_processing"
                       sequence="10"
-                      action="base_action_rule_issue"
+                      action="base_action_rule_ticket"
                       groups="support_team.group_support_manager"/>
 
-            <menuitem name="Issue Actions"
-                  id="menu_care_center_issue_actions"
-                  parent="menu_care_center_issue_processing"
+            <menuitem name="Ticket Actions"
+                  id="menu_care_center_ticket_actions"
+                  parent="menu_care_center_ticket_processing"
                   sequence="11"
-                  action="action_issue_action"
+                  action="action_ticket_action"
                   groups="support_team.group_support_manager"/>
     <!-- End of Configuration menu -->
 

@@ -27,18 +27,19 @@
 
 
     <record id="support_rule_customer_website_support" model="ir.rule">
-        <field name="name">Own Issues</field>
+        <field name="name">Own Tickets</field>
         <field ref="sales_team.model_crm_team" name="model_id"/>
         <field name="domain_force">['|', ('user_id', '=', user.id), ('partner_id','=', user.partner_id)]</field>
         <field name="groups" eval="[(4, ref('group_support_customer_website_support'))]"/>
     </record>
 
-    <record id="support_rule_own_supportteam" model="ir.rule">
-        <field name="name">Own Support Team</field>
-        <field ref="sales_team.model_crm_team" name="model_id"/>
-        <field name="domain_force">[('team_members', 'in', user.id)]</field>
-        <field name="groups" eval="[(4, ref('group_support_staff_level1'))]"/>
-    </record>
+    <!-- TODO Record Model changed. Fix domain after allowing membership in multiple teams -->
+    <!--<record id="support_rule_own_supportteam" model="ir.rule">-->
+        <!--<field name="name">Own Support Team</field>-->
+        <!--<field ref="sales_team.model_crm_team" name="model_id"/>-->
+        <!--<field name="domain_force">[('team_members', 'in', user.id)]</field>-->
+        <!--<field name="groups" eval="[(4, ref('group_support_staff_level1'))]"/>-->
+    <!--</record>-->
 
     <record id="support_rule_all_supportteam" model="ir.rule">
         <field name="name">All Support Teams</field>

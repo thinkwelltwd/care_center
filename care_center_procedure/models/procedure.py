@@ -111,13 +111,14 @@ class ProcedureAssignment(models.Model):
 
     procedure_id = fields.Many2one('procedure.procedure', required=True)
     sequence = fields.Integer()
-    issue_id = fields.Many2one('project.issue', 'Issue', ondelete='cascade', required=False, index="1")
+    task_id = fields.Many2one('project.task', 'Ticket',
+                              ondelete='cascade', required=False, index=True)
     description = fields.Html('Description', related='procedure_id.description')
     documentation = fields.Html('Documentation', related='procedure_id.documentation')
     recolor = fields.Boolean(compute='_compute_recolor')
 
     _sql_constraints = [
-        ('procedure_issue_uniq', 'unique(procedure_id, issue_id)', 'A procedure may only be assigned once!'),
+        ('procedure_task_uniq', 'unique(procedure_id, task_id)', 'A procedure may only be assigned once!'),
     ]
 
     @api.multi
@@ -157,12 +158,12 @@ class ProcedureAssignment(models.Model):
         procedure = self.procedure_id.parent_id
         unfinished_checklist = self.env['procedure.assignment'].search_count([
             ('procedure_id.parent_id', '=', procedure.id),
-            ('issue_id', '=', self.issue_id.id),
+            ('task_id', '=', self.task_id.id),
             ('status', 'in', ['todo', 'waiting'])
         ])
 
         procedure_assignment = self.env['procedure.assignment'].search([
-            ('issue_id', '=', self.issue_id.id),
+            ('task_id', '=', self.task_id.id),
             ('procedure_id', '=', procedure.id),
         ])
 

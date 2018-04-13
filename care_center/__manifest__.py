@@ -10,7 +10,7 @@
     'website': "http://www.thinkwelldesigns.com",
 
     'category': 'Support',
-    'version': '0.1',
+    'version': '0.2',
 
     'depends': [
         'utm',
@@ -18,7 +18,6 @@
         'calendar',
         'crm_phonecall',
         'project',
-        'project_issue',
         'support_team',
     ],
 
@@ -28,7 +27,6 @@
         'views/fetchmail_server.xml',
         'views/res_config.xml',
         'views/project.xml',
-        'views/project_issue.xml',
         'views/project_task.xml',
         'views/base_action_rule.xml',
         'views/care_center.xml',

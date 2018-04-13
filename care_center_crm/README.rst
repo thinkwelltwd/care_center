@@ -6,13 +6,13 @@
 Care Center CRM
 ===============
 
-Easily create Issues from CRM Phone Calls.
+Easily create Tasks / Tickets from CRM Phone Calls.
 
 
 Usage
 =====
 
-Install module and record phone call. Click the "Convert to Issue" buttons in List / Form views.
+Install module and record phone call. Click the "Convert to Task" buttons in List / Form views.
 
 Bug Tracker
 ===========

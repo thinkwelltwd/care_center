@@ -5,31 +5,31 @@ from odoo import api, fields, models
 class CrmPhonecall(models.Model):
     _inherit = "crm.phonecall"
 
-    issue_id = fields.Many2one(
-        comodel_name='project.issue',
-        string='Issue',
+    task_id = fields.Many2one(
+        comodel_name='project.task',
+        string='Task',
     )
     description = fields.Html('Description')
 
     @api.onchange('partner_id')
     def _partner_id(self):
         """
-        Filter Issues by Partner, including all
-        Issues of Partner Parent or Children
+        Filter Tasks by Partner, including all
+        Tasks of Partner Parent or Children
         """
         partner = self.partner_id
-        issue = self.issue_id
+        task = self.task_id
         opportunity = self.opportunity_id
 
         if not partner:
             return {
                 'domain': {
-                    'issue_id': [],
+                    'task_id': [],
                     'opportunity_id': [],
                 }
             }
 
-        # Always get ALL issues related to the company,
+        # Always get ALL tasks related to the company,
         # whether the partner_id is Company or Contact
         partner_ids = [partner.id]
         parent_id = partner.parent_id and partner.parent_id.id or partner.id
@@ -43,34 +43,34 @@ class CrmPhonecall(models.Model):
             ('partner_id', 'in', partner_ids),
         ]
         # Reset fields ONLY if the partner doesn't match! Otherwise, will always
-        # clear partner_id field, due onchange methods on issue_id / opportunity_id
-        if issue and issue.partner_id and issue.partner_id.id not in partner_ids:
-            self.issue_id = False
+        # clear partner_id field, due onchange methods on task_id / opportunity_id
+        if task and task.partner_id and task.partner_id.id not in partner_ids:
+            self.task_id = False
         if opportunity and opportunity.partner_id and opportunity.partner_id.id not in partner_ids:
             self.opportunity_id = False
 
         return {
             'domain': {
-                'issue_id': domain,
+                'task_id': domain,
                 'opportunity_id': domain,
             },
         }
 
-    @api.onchange('issue_id')
-    def _issue_id(self):
+    @api.onchange('task_id')
+    def _task_id(self):
         """
         Set Team if possible. Search by name, to handle
         CRM & Support Teams which have different FKs
         """
-        if not self.issue_id:
+        if not self.task_id:
             return
-        if self.issue_id.team_id:
-            team = self.env['crm.team'].search([('name', '=', self.issue_id.team_id.name)])
+        if self.task_id.team_id:
+            team = self.env['crm.team'].search([('name', '=', self.task_id.team_id.name)])
             self.team_id = team and team.id
 
-        # Issues with blank partners shouldn't erase self.partner_id!
-        if self.issue_id.partner_id and self.issue_id.partner_id != self.partner_id:
-            self.partner_id = self.issue_id.partner_id.id
+        # Tasks with blank partners shouldn't erase self.partner_id!
+        if self.task_id.partner_id and self.task_id.partner_id != self.partner_id:
+            self.partner_id = self.task_id.partner_id.id
 
     @api.onchange('opportunity_id')
     def _opportunity_id(self):
@@ -78,13 +78,13 @@ class CrmPhonecall(models.Model):
             self.team_id = self.opportunity_id.team_id.id
 
     @api.multi
-    def convert_issue(self):
+    def convert_task(self):
         """
-        Convert a phone call to an issue
+        Convert a phone call to an task
         """
-        Issue = self.env['project.issue']
+        Task = self.env['project.task']
         ProjectTags = self.env['project.tags']
-        issue = {}
+        task = {}
         for call in self:
             tags = ProjectTags.search([('name', 'in', [tag.name for tag in call.tag_ids])])
             partner_id = call.partner_id
@@ -93,7 +93,7 @@ class CrmPhonecall(models.Model):
             else:
                 email_from = None
 
-            issue_id = Issue.create({
+            task_id = Task.create({
                 'name': call.name,
                 'partner_id': partner_id.id or False,
                 'description': call.description or False,
@@ -104,20 +104,20 @@ class CrmPhonecall(models.Model):
             })
             vals = {
                 'partner_id': partner_id.id,
-                'issue_id': issue_id.id,
+                'task_id': task_id.id,
                 'state': 'done',
             }
             call.write(vals)
-            issue[call.id] = issue_id
-        return issue
+            task[call.id] = task_id
+        return task
 
     @api.multi
-    def action_button_make_issue(self):
+    def action_button_make_task(self):
         """
-        Convert a phonecall into an issue and then redirect to the issue view.
+        Convert a phonecall into an task and then redirect to the task view.
         """
-        issue = {}
+        task = {}
         for call in self:
-            issue = call.convert_issue()
-            return issue[call.id].redirect_issue_view()
-        return issue
+            task = call.convert_task()
+            return task[call.id].redirect_task_view()
+        return task

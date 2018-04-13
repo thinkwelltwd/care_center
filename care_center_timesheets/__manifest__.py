@@ -9,23 +9,21 @@
     'website': "http://www.thinkwelldesigns.com",
 
     'category': 'Projects and Sales',
-    'version': '0.2',
+    'version': '0.3',
 
     'depends': [
         'hr_timesheet',
-        'project_issue_sheet',
+        'project',
         'support_team',
     ],
 
     'data': [
         'data/invoice_factors.xml',
         'security/ir.model.access.csv',
-        'report/project_issue_template.xml',
         'report/project_task_template.xml',
         'report/timesheets_report.xml',
         'report/timesheets_template.xml',
         'views/hr_timesheet.xml',
-        'views/project_issue.xml',
         'views/project_task.xml',
         'views/res_config.xml',
         'views/timesheet_timer.xml',

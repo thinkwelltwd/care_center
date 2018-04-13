@@ -3,15 +3,15 @@ from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 
-class ProjectIssue(models.Model):
-    _inherit = 'project.issue'
+class ProjectTask(models.Model):
+    _inherit = 'project.task'
 
-    procedure_ids = fields.One2many('procedure.assignment', 'issue_id',
+    procedure_ids = fields.One2many('procedure.assignment', 'task_id',
                                     string='Procedures',
                                     domain=[('procedure_id.parent_id', '=', False)],
                                     )
 
-    checklist_ids = fields.One2many('procedure.assignment', 'issue_id',
+    checklist_ids = fields.One2many('procedure.assignment', 'task_id',
                                     string='Checklist',
                                     domain=[('procedure_id.parent_id', '!=', False)],
                                     )
@@ -28,7 +28,7 @@ class ProjectIssue(models.Model):
 
     @api.multi
     def assign_procedure(self, procedure, sequence):
-        """Assign a procedure to this issue"""
+        """Assign a procedure to this Task / Ticket"""
         if sequence == 1:
             sequence = len(self.procedure_ids) + 1
 
@@ -49,7 +49,7 @@ class ProjectIssue(models.Model):
             self.env['procedure.assignment'].create({
                 'procedure_id': proc.id,
                 'sequence': sequence,
-                'issue_id': self.id,
+                'task_id': self.id,
             })
 
     def _delete_related_checklists(self, assigned_procedures):
@@ -64,19 +64,19 @@ class ProjectIssue(models.Model):
 
         if deletes:
             self.env['procedure.assignment'].search([
-                ('issue_id', '=', self.id),
+                ('task_id', '=', self.id),
                 ('procedure_id.parent_id', 'in', deletes),
             ]).unlink()
 
     def write(self, vals):
         if 'procedure_ids' in vals:
             self._delete_related_checklists(assigned_procedures=vals['procedure_ids'])
-        return super(ProjectIssue, self).write(vals)
+        return super(ProjectTask, self).write(vals)
 
     @api.multi
     def confirm_checklists_done(self):
         open_checklists = self.env['procedure.assignment'].search_count([
-            ('issue_id', '=', self.id),
+            ('task_id', '=', self.id),
             ('status', 'in', ['todo', 'waiting', 'working'])
         ])
         if open_checklists:
@@ -85,12 +85,12 @@ class ProjectIssue(models.Model):
             )
 
     @api.multi
-    def close_issue(self):
+    def close_ticket(self):
         self.confirm_checklists_done()
-        return super(ProjectIssue, self).close_issue()
+        return super(ProjectTask, self).close_ticket()
 
     @api.multi
     def toggle_active(self):
         if self.active:
             self.confirm_checklists_done()
-        return super(ProjectIssue, self).toggle_active()
+        return super(ProjectTask, self).toggle_active()

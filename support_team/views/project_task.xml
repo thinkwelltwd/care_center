@@ -6,8 +6,8 @@
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
-            <field name="partner_id" position="after">
-                <field name="team_id"/>
+            <field name="user_id" position="after">
+                <field name="team_id" options="{'no_create': True, 'no_open': True}"/>
             </field>
         </field>
     </record>

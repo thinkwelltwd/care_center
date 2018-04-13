@@ -12,7 +12,7 @@
     'website': "http://www.thinkwelldesigns.com",
 
     'category': 'Sales',
-    'version': '0.1',
+    'version': '0.2',
 
     'depends': [
         'crm_phonecall',

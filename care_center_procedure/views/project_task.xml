@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="project_issue_procedure_form_view" model="ir.ui.view">
-        <field name="name">Project Issue Procedure</field>
-        <field name="model">project.issue</field>
-        <field name="inherit_id" ref="project_issue.project_issue_form_view"/>
+    <record id="project_task_procedure_form_view" model="ir.ui.view">
+        <field name="name">Ticket Procedure</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
 
             <header position="inside">
+                <field name="task_active" invisible="1"/>
                 <button string="Assign Procedure"
                         type="action"
                         name="%(action_assign_procedure_wizard)d"
                         class="oe_highlight"
-                        context="{'issue_id': active_id, 'default_issue_id': active_id}"
-                        help="Assign a Procedure to this Issue"/>
+                        context="{'task_id': active_id, 'default_task_id': active_id}"
+                        attrs="{'invisible': [('task_active', '=', False)]}"
+                        help="Assign a Procedure to this Ticket"/>
             </header>
 
             <field name="user_id" position="before">

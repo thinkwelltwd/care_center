@@ -27,9 +27,9 @@ class MailThread(models.AbstractModel):
             if word.startswith(prefix):
                 return word
 
-    def get_issue_id(self, subject):
+    def get_task_id(self, subject):
         """Get Model ID by looking up code from subject line"""
-        code_prefix = self.get_prefix(model='project.issue')
+        code_prefix = self.get_prefix(model='project.task')
         if not code_prefix:
             return None
 
@@ -38,8 +38,8 @@ class MailThread(models.AbstractModel):
             return None
 
         try:
-            issue = self.env['project.issue'].search([('issue_code', '=', code)])
-            return issue and issue.id
+            task = self.env['project.task'].search([('code', '=', code)])
+            return task and task.id
         except ValueError:
             return None
 
@@ -50,12 +50,12 @@ class MailThread(models.AbstractModel):
         """
         Some email clients strip out the Message-ID header :-(
 
-        When thread_id is None, try to extract the Issue Code from the subject line
-        to increase chance that incoming emails will be attached to existing Issue.
+        When thread_id is None, try to extract the Task Code from the subject line
+        to increase chance that incoming emails will be attached to existing Task.
         """
         msg = message
 
-        if not thread_id and model == 'project.issue':
+        if not thread_id and model == 'project.task':
             if not isinstance(msg, Message):
                 if isinstance(msg, unicode):
                     # Warning: message_from_string doesn't always work correctly on unicode,
@@ -63,7 +63,7 @@ class MailThread(models.AbstractModel):
                     msg = message.encode('utf-8')
                 msg = email.message_from_string(msg)
 
-            thread_id = self.get_issue_id(subject=msg['subject'])
+            thread_id = self.get_task_id(subject=msg['subject'])
             if thread_id:
                 _logger.info('Found %s thread_id %s for %s' % (model, thread_id, msg['subject']))
 

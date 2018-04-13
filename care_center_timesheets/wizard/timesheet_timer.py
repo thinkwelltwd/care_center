@@ -102,7 +102,7 @@ class TimesheetTimerWizard(models.TransientModel):
 
     def get_rounded_minutes(self):
         """
-        Timesheets are rounded per minimum minutes on entire Issue / Task,
+        Timesheets are rounded per minimum minutes on entire Ticket / Task,
         and if that minumimum is reached, then minimum time per timesheet
         """
         Param = self.env['ir.config_parameter']
@@ -113,7 +113,7 @@ class TimesheetTimerWizard(models.TransientModel):
     def save_timesheet(self):
         """
         'write' method wants to return a view so, we use custom function
-        so that we can just go back to current Issue/Task page
+        so that we can just go back to current Ticket/Task page
         """
 
         # re-call stats because we didn't persist the wizard

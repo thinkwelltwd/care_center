@@ -105,9 +105,9 @@
         <field name="view_id" ref="view_procedure_tree"/>
         <field name="search_view_id" ref="view_procedure_filter"/>
         <field name="help">
-            Procedures are actions that must be performed to resolve an Issue. Procedures can be
-            used to ensure that actions are checked or performed. Quality Control should be
-            increased by attaching Procedures to Issues.
+            Procedures are actions that must be performed to resolve a Task / Ticket.
+            Procedures can be used to ensure that actions are checked or performed.
+            Quality Control should be increased by attaching Procedures to Tasks / Tickets.
         </field>
     </record>
 
@@ -120,21 +120,21 @@
         <field name="view_id" ref="view_procedure_tree"/>
         <field name="search_view_id" ref="view_procedure_filter"/>
         <field name="help">
-            Checklists are sub-procedures that attached to an Issue to ensure Quality Control.
-            Issues cannot be archived until all Checklists are completed.
+            Checklists are sub-procedures that attached to Tasks / Tickets to ensure Quality Control.
+            Tasks / Tickets cannot be archived until all Checklists are completed.
         </field>
     </record>
 
     <!-- Show in CareCenter menu -->
     <menuitem name="Procedures"
               id="menu_procedures_view"
-              parent="care_center.menu_issues_tasks"
+              parent="care_center.menu_tickets_tasks"
               sequence="100"
               action="action_procedures"/>
 
     <menuitem name="Checklists"
               id="menu_checklists_view"
-              parent="care_center.menu_issues_tasks"
+              parent="care_center.menu_tickets_tasks"
               sequence="101"
               action="action_checklists"/>
 

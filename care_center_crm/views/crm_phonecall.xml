@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <!-- Replacing this form from crm_phonecall, to remove editable="top". Also adding "Convert to Issue button-->
+    <!-- Replacing this form from crm_phonecall, to remove editable="top". Also adding "Convert to Task button-->
     <record model="ir.ui.view" id="crm_phonecall.crm_case_inbound_phone_tree_view">
         <field name="name">CRM - Logged Phone Calls Tree</field>
         <field name="model">crm.phonecall</field>
@@ -21,9 +21,9 @@
                         icon="fa-phone"
                         name="%(crm_phonecall.phonecall_to_phonecall_act)d"
                         type="action"/>
-                <button string="Convert to Issue"
+                <button string="Convert to Task"
                         icon="fa-life-ring"
-                        name="action_button_make_issue"
+                        name="action_button_make_task"
                         type="object"/>
                 <button string="Meeting"
                         icon="fa-calendar"
@@ -37,24 +37,24 @@
         </field>
     </record>
 
-    <!-- Add "Convert to Issue" smart button and Issue field on form view -->
+    <!-- Add "Convert to Task" smart button and Task field on form view -->
     <record model="ir.ui.view" id="care_center_crm_case_phone_form_view">
-        <field name="name">crm_phonecall.create.issue</field>
+        <field name="name">crm_phonecall.create.task</field>
         <field name="model">crm.phonecall</field>
         <field name="inherit_id" ref="crm_phonecall.crm_case_phone_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//div[@name='button_box']" position="inside">
-                <button string="Convert to Issue"
+                <button string="Convert to Task"
                     class="oe_inline oe_stat_button"
                     type="object"
-                    name="action_button_make_issue"
+                    name="action_button_make_task"
                     states="open,pending"
                     icon="fa-life-ring"
                     attrs="{'invisible':[('opportunity_id','!=',False)]}"/>
             </xpath>
 
             <field name="opportunity_id" position="after">
-               <field name="issue_id"/>
+               <field name="task_id"/>
             </field>
 
             <field name="team_id" position="attributes">

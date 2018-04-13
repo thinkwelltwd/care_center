@@ -2,7 +2,7 @@
 <odoo>
 
     <record model="ir.ui.view" id="project_task_search">
-        <field name="name">Search Project Tasks</field>
+        <field name="name">Search Project Tickets</field>
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_search_form" />
         <field name="arch" type="xml">
@@ -30,13 +30,33 @@
     </record>
 
     <record model="ir.ui.view" id="project_task_required_fields">
-        <field name="name">Project Task Required Fields</field>
+        <field name="name">Project Tickets Required Fields</field>
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2" />
         <field name="arch" type="xml">
 
+            <field name="partner_id" position="replace">
+                <field name="medium_id" options="{'no_create': True, 'no_open': True}"/>
+            </field>
+
+            <field name="project_id" position="before">
+                <field name="partner_id" options="{'no_create': True}" required="True"/>
+            </field>
+
             <field name="project_id" position="attributes">
                <attribute name="required">True</attribute>
+               <attribute name="no_create">True</attribute>
+            </field>
+
+            <field name="stage_id" position="before">
+                <field name="task_active" invisible="1"/>
+                <button name="reopen_ticket" string="Reopen Tickets" type="object" class="oe_highlight"
+                    attrs="{'invisible': [('task_active', '=', True)]}"/>
+                <button name="claim_ticket" string="Claim" type="object" class="oe_highlight"
+                    attrs="{'invisible': [('user_id', '!=', False)]}"/>
+                <button name="email_customer" string="Email Customer" type="object"/>
+                <button name="close_ticket" string="Reply and Close" type="object" class="oe_highlight"
+                    attrs="{'invisible': [('task_active', '=', False)]}"/>
             </field>
 
         </field>

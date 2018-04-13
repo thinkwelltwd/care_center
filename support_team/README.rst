@@ -6,14 +6,14 @@
 Support Team
 ============
 
-Add concept of Support Team for Issues and Tasks.
+Add concept of Support Team for Tasks / Tickets.
 
 Usage
 =====
 
 Go to Project / Configuration / Support Teams to create support teams.
 
-Assign default Support Team to Partners as well, to prepopulate the value for new Issues / Tasks.
+Assign default Support Team to Partners as well, to prepopulate the value for new Tasks / Tickets.
 
 Bug Tracker
 ===========

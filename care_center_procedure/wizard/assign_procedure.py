@@ -9,11 +9,11 @@ class AssignProcedureWizard(models.TransientModel):
     procedure_id = fields.Many2one('procedure.procedure', string='Procedure',
                                    domain=[('parent_id', '=', False)])
     sequence = fields.Integer('Sequence', default=1)
-    issue_id = fields.Many2one('project.issue', string='Issue')
+    task_id = fields.Many2one('project.task', string='Task')
 
     @api.multi
     def assign_procedure(self):
-        self.issue_id.assign_procedure(
+        self.task_id.assign_procedure(
             procedure=self.procedure_id, sequence=self.sequence,
         )
         return True

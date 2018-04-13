@@ -2,19 +2,19 @@
 <odoo>
 
     <record id="action_incoming_email_server_tree" model="ir.actions.act_window">
-        <field name="name">Issues From Incoming Emails</field>
+        <field name="name">Tickets From Incoming Emails</field>
         <field name="res_model">fetchmail.server</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('object_id','=', 'Project Issue')]</field>
-        <field name="context" eval="{'default_object_id': ref('project_issue.model_project_issue')}"/>
+        <field name="domain">[('object_id','=', 'Task')]</field>
+        <field name="context" eval="{'default_object_id': ref('project.model_project_task')}"/>
         <field name="view_id" ref="fetchmail.view_email_server_tree"/>
         <field name="search_view_id" ref="fetchmail.view_email_server_search"/>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
                 Click here to define a new incoming email address.
             </p><p>
-                Issues will be automatically created from incoming email messages.
+                Tickets will be automatically created from incoming email messages.
             </p>
         </field>
     </record>
@@ -24,13 +24,13 @@
         <field name="res_model">mail.template</field>
         <field name="view_type">form</field>
         <field name="view_mode">form,tree</field>
-        <field name="domain">[('model_id', 'in', ('Project Issue', 'Task', 'Phonecall'))]</field>
-        <field name="context" eval="{'default_model_id': ref('project_issue.model_project_issue')}"/>
+        <field name="domain">[('model_id', 'in', ( 'Task', 'Phonecall'))]</field>
+        <field name="context" eval="{'default_model_id': ref('project.model_project_task')}"/>
         <field name="view_id" ref="mail.email_template_tree" />
         <field name="search_view_id" ref="mail.view_email_template_search"/>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
-                Canned responses to Issues.
+                Canned responses to Tickets.
             </p><p>
                 Save time and standardize communications with email templates.
             </p>

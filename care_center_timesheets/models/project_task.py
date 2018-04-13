@@ -8,12 +8,12 @@ class ProjectTask(models.Model):
 
     @api.multi
     def write(self, vals):
-        issue = super(ProjectTask, self).write(vals)
+        task = super(ProjectTask, self).write(vals)
 
         if vals.get('partner_id') or vals.get('project_id'):
             self._update_timesheets()
 
-        return issue
+        return task
 
     @api.multi
     def toggle_active(self):

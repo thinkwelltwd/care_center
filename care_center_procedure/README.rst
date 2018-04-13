@@ -6,13 +6,13 @@
 Care Center Prodecures
 ======================
 
-Add Procedures to Tasks and Issues to increase quality control. A given Issue or Task may consist
+Add Procedures to Tasks / Tickets  to increase quality control. A given Task / Ticket may consist
 of multiple Procedures that need to be accomplished. Each Procedure may have multiple items that
 must be confirmed Done.
 
 Usage
 =====
-To use this module, add one or more Procedures to an Issue or Task.
+To use this module, add one or more Procedures to an Task / Ticket .
 
 Bug Tracker
 ===========

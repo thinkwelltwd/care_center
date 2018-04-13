@@ -4,16 +4,16 @@
 
 {
     'name': 'Support Teams',
-    'version': '1.0',
+    'version': '1.1',
     'category': 'Support',
-    'summary': 'Manage Support Teams on Issues & Tasks',
+    'summary': 'Manage Support Teams on Tickets & Tasks',
     'author': "Thinkwell Designs",
     'website': "http://www.thinkwelldesigns.com",
 
     'depends': [
         'crm',
         'sales_team',
-        'project_issue',
+        'project',
     ],
     'data': [
         'security/support_team.xml',
@@ -21,7 +21,6 @@
         'views/project_project.xml',
         'views/support_team.xml',
         'views/project_task.xml',
-        'views/project_issue.xml',
      ],
     'installable': True,
     'auto_install': False,

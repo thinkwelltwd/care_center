@@ -6,16 +6,16 @@
 Care Center Timesheets
 ======================
 
-Add Start / Pause / Stop buttons to Issues and Tasks, in Kanban and Form views,
-so users can easily clock In / Out as they work on Issues and Tasks.
+Add Start / Pause / Stop buttons to Tasks / Tickets, in Kanban and Form views,
+so users can easily clock In / Out as they work on Tasks / Tickets.
 
-Also ads Project and Issue reports that include all the timesheets so that customers
+Also adds Project and Task reports that include all the timesheets so that customers
 can get a quick summary of the work that was done, for which they will be invoiced.
 
 Usage
 =====
 
-To use this module, attached the report to an Issue / Task email
+To use this module, attached the report to an Task / Ticket email
 Bug Tracker
 ===========
 

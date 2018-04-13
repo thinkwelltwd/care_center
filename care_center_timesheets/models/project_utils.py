@@ -7,7 +7,7 @@ from odoo.exceptions import UserError
 
 class ProjectUtils(models.AbstractModel):
     _name = 'project.utils'
-    _description = "Utils for Issues and Tasks"
+    _description = "Utils for Tasks / Tickets"
 
     invoiceable = fields.Selection([
         ('yes', 'Yes'),
@@ -24,7 +24,7 @@ class ProjectUtils(models.AbstractModel):
     user_timer_status = fields.Char(
         string='Timer Status',
         compute='_user_timer_status',
-        help='Current user is working on this Issue',
+        help='Current user is working on this Ticket',
     )
 
     def _update_timesheets(self):
@@ -134,7 +134,7 @@ class ProjectUtils(models.AbstractModel):
             ))
         if len(timesheet) > 1:
             raise UserError(_(
-                'Multiple %s timesheets found for this Issue/Task. '
+                'Multiple %s timesheets found for this Ticket/Task. '
                 'Resolve any %s "Work In Progress" timesheet(s) manually.' % (status, status)
             ))
         return timesheet
@@ -186,7 +186,7 @@ class ProjectUtils(models.AbstractModel):
         })
 
         return {
-            'name': 'Record Issue Timesheet Log',
+            'name': 'Ticket Timesheet Log',
             'type': 'ir.actions.act_window',
             'res_model': 'timesheet_timer.wizard',
             'res_id': new.id,

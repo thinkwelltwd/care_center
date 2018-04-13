@@ -15,12 +15,12 @@ Usage
 
 Install module and go to the Care Center application. Assign Odoo users to
 
-* Assign Issues and Tasks to Support Teams
+* Assign Tasks/Tickets to Support Teams
 * Track tickets by Code
-* Create Issues and Tasks, with flexible range of Priorities
+* Create Tasks/Tickets , with flexible range of Priorities
 * Record timesheets, and send customer a PDF report of Timesheet activity
 
-Configuration menu groups Issues/Task related settings together so administration
+Configuration menu groups Tasks/Tickets  related settings together so administration
 can be performed within the Care Center application.
 
 

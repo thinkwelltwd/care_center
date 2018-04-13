@@ -1,21 +1,30 @@
 from datetime import date, timedelta
 
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
 
 
-class ProjectIssue(models.Model):
-    _inherit = 'project.issue'
+class ProjectTask(models.Model):
+    _inherit = 'project.task'
 
     medium_id = fields.Many2one('utm.medium', 'Medium',
                                 help="This is the method of delivery. "
                                      "Ex: Email / Phonecall / API / Website")
     description = fields.Html('Private Note')
+    task_active = fields.Boolean(compute='_task_active')
+
+    @api.multi
+    def _task_active(self):
+        if not self.active:
+            self.task_active = False
+        elif self.stage_id.fold:
+            self.task_active = False
+        else:
+            self.task_active = True
 
     @api.model
     def message_new(self, msg, custom_values=None):
         """Override to set message body to be in the
-        Issue Description rather than first Chatter message
+        Ticket Description rather than first Chatter message
         """
         custom_values = dict(custom_values or {})
         if 'medium_id' not in custom_values and 'medium_id' not in msg:
@@ -23,25 +32,25 @@ class ProjectIssue(models.Model):
         if not msg.get('description', None):
             custom_values['description'] = msg.get('body', None)
         msg['body'] = None
-        return super(ProjectIssue, self).message_new(msg, custom_values=custom_values)
+        return super(ProjectTask, self).message_new(msg, custom_values=custom_values)
 
     @api.multi
     def message_update(self, msg, update_vals=None):
-        """Override to re-open issue if it was closed."""
+        """Override to re-open task if it was closed."""
         update_vals = dict(update_vals or {})
         if not self.active:
             update_vals['active'] = True
-        return super(ProjectIssue, self).message_update(msg, update_vals=update_vals)
+        return super(ProjectTask, self).message_update(msg, update_vals=update_vals)
 
     @api.model
     def api_message_new(self, msg):
         """
-        Create an Issue via API call. Should be callable with the same signature as
+        Create a Ticket via API call. Should be callable with the same signature as
         python's sending emails.
 
         @param dict msg: dictionary of message variables 
        :rtype: int
-       :return: the id of the new Issue
+       :return: the id of the new Ticket
         """
 
         Tag = self.env['project.tags']
@@ -64,24 +73,24 @@ class ProjectIssue(models.Model):
 
         msg.update(data)
 
-        return super(ProjectIssue, self).message_new(msg, custom_values=data)
+        return super(ProjectTask, self).message_new(msg, custom_values=data)
 
     @api.multi
-    def redirect_issue_view(self):
-        """Enable redirecting to an issue when created from a phone call."""
+    def redirect_task_view(self):
+        """Enable redirecting to a Ticket when created from a phone call."""
         self.ensure_one()
 
-        form_view = self.env.ref('project_issue.project_issue_form_view')
-        tree_view = self.env.ref('project_issue.project_issue_tree_view')
-        kanban_view = self.env.ref('project_issue.project_issue_view_kanban_inherit_no_group_create')
-        calendar_view = self.env.ref('project_issue.project_issue_calendar_view')
-        graph_view = self.env.ref('project_issue.project_issue_graph_view')
+        form_view = self.env.ref('project.view_task_form2')
+        tree_view = self.env.ref('project.view_task_tree2')
+        kanban_view = self.env.ref('project.view_task_kanban')
+        calendar_view = self.env.ref('project.view_task_calendar')
+        graph_view = self.env.ref('project.view_project_task_graph')
 
         return {
-            'name': _('Issue'),
+            'name': _('Ticket'),
             'view_type': 'form',
             'view_mode': 'tree, form, calendar, kanban',
-            'res_model': 'project.issue',
+            'res_model': 'project.task',
             'res_id': self.id,
             'view_id': False,
             'views': [
@@ -97,8 +106,8 @@ class ProjectIssue(models.Model):
     @api.onchange('partner_id')
     def _partner_id(self):
         """
-        Filter Issues by Partner, including all
-        Issues of Partner Parent or Children
+        Filter Tickets by Partner, including all
+        Tickets of Partner Parent or Children
         """
         partner = self.partner_id
 
@@ -109,7 +118,7 @@ class ProjectIssue(models.Model):
                 }
             }
 
-        # Always get ALL issues related to the company,
+        # Always get ALL Tickets related to the company,
         # whether the partner_id is Company or Contact
         partner_ids = {partner.id}
         parent_id = partner.parent_id and partner.parent_id.id or partner.id
@@ -147,45 +156,45 @@ class ProjectIssue(models.Model):
             if not self.tag_ids:
                 self.tag_ids = self.env['project.tags'].search([('name', '=', self.env.context['project_tag'])])
 
-    @api.constrains('project_id')
-    def check_relationships(self):
-        """
-        If project has partner assigned, it must
-        be related to the Issue Partner
-        """
-        proj_partner = self.project_id.partner_id.id
-        if not proj_partner:
-            return
-
-        issue_partner = self.partner_id and self.partner_id.id
-        issue_parent_partner = self.partner_id and \
-                               self.partner_id.parent_id and \
-                               self.partner_id.parent_id.id
-
-        if proj_partner != issue_partner and proj_partner != issue_parent_partner:
-            raise ValidationError(
-                'Project Contact and Issue Contact must be the same, '
-                'or have the same parent Company.'
-            )
+    # @api.constrains('project_id')
+    # def check_relationships(self):
+    #     """
+    #     If project has partner assigned, it must
+    #     be related to the Ticket Partner
+    #     """
+    #     proj_partner = self.project_id.partner_id.id
+    #     if not proj_partner:
+    #         return
+    #
+    #     ticket_partner = self.partner_id and self.partner_id.id
+    #     ticket_parent_partner = self.partner_id and \
+    #                            self.partner_id.parent_id and \
+    #                            self.partner_id.parent_id.id
+    #
+    #     if proj_partner != ticket_partner and proj_partner != ticket_parent_partner:
+    #         raise ValidationError(
+    #             'Project Contact and Ticket Contact must be the same, '
+    #             'or have the same parent Company.'
+    #         )
 
     @api.model
     def message_get_reply_to(self, res_ids, default=None):
         """ Override to get the reply_to of the parent project. """
-        issues = self.browse(res_ids)
-        project_ids = set(issues.mapped('project_id').ids)
+        tasks = self.browse(res_ids)
+        project_ids = set(tasks.mapped('project_id').ids)
         aliases = self.env['project.project'].message_get_reply_to(list(project_ids), default=default)
-        return dict((issue.id, aliases.get(issue.project_id and issue.project_id.id or 0, False)) for issue in issues)
+        return dict((task.id, aliases.get(task.project_id and task.project_id.id or 0, False)) for task in tasks)
 
     def email_the_customer(self):
         """
-        Helper function to be called from close_issue or email_customer.
+        Helper function to be called from close_ticket or email_customer.
         Can't be a decorated and be called from other dectorated methods
         """
 
         compose_form = self.env.ref('mail.email_compose_message_wizard_form', False)
-        template = self.env['mail.template'].search([('name', '=', 'CF Issue - Close')])
+        template = self.env['mail.template'].search([('name', '=', 'CF Ticket - Close')])
         ctx = {
-            'default_model': 'project.issue',
+            'default_model': 'project.task',
             'default_res_id': self.id,
             'default_use_template': bool(template),
             'default_template_id': template.id,
@@ -204,12 +213,12 @@ class ProjectIssue(models.Model):
         }
 
     @api.multi
-    def claim_issue(self):
+    def claim_ticket(self):
         self.ensure_one()
         self.user_id = self._uid
 
     @api.multi
-    def close_issue(self):
+    def close_ticket(self):
         self.ensure_one()
         self.stage_id = self.env['project.task.type'].search([('name', '=', 'Done')])
         if self.active:
@@ -217,9 +226,9 @@ class ProjectIssue(models.Model):
         return self.email_the_customer()
 
     @api.multi
-    def reopen_issue(self):
+    def reopen_ticket(self):
         self.ensure_one()
-        self.stage_id = self.env['project.task.type'].search([('name', '=', 'Troubleshooting')])
+        self.stage_id = self.env['project.task.type'].search([('name', '=', 'In Progress')])
         self.active = True
         self.date_close = None
 
@@ -241,4 +250,4 @@ class ProjectIssue(models.Model):
             else:
                 self.date_close = None
 
-        super(ProjectIssue, self).toggle_active()
+        super(ProjectTask, self).toggle_active()

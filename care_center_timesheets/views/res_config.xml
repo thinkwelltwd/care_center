@@ -10,7 +10,7 @@
                 <attribute name="string">Timesheets</attribute>
             </xpath>
             <xpath expr="//group[@name='timesheets']" position="after">
-                <group string="Issue &amp; Task Timesheets" col="4">
+                <group string="Task &amp; Ticket Timesheets" col="4">
                     <field name="minutes_increment"/>
                     <field name="minimum_work_log"/>
                 </group>
