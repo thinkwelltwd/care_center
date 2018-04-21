@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
+    <record model="ir.ui.view" id="task_lead_phone_filters">
+        <field name="name">Filter Calls by Leads and Tsaks</field>
+        <field name="model">crm.phonecall</field>
+        <field name="inherit_id" ref="crm_phonecall.view_crm_case_phonecalls_filter"/>
+        <field name="arch" type="xml">
+
+            <field name="opportunity_id" position="before">
+               <field name="task_id"/>
+            </field>
+
+        </field>
+    </record>
+
     <!-- Replacing this form from crm_phonecall, to remove editable="top". Also adding "Convert to Task button-->
     <record model="ir.ui.view" id="crm_phonecall.crm_case_inbound_phone_tree_view">
         <field name="name">CRM - Logged Phone Calls Tree</field>

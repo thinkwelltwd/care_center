@@ -10,7 +10,7 @@
     'website': "http://www.thinkwelldesigns.com",
 
     'category': 'Support',
-    'version': '0.2',
+    'version': '0.3',
 
     'depends': [
         'utm',

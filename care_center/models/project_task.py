@@ -4,7 +4,8 @@ from odoo import models, fields, api, _
 
 
 class ProjectTask(models.Model):
-    _inherit = 'project.task'
+    _name = 'project.task'
+    _inherit = ['care_center.base', 'project.task']
 
     medium_id = fields.Many2one('utm.medium', 'Medium',
                                 help="This is the method of delivery. "
@@ -112,33 +113,18 @@ class ProjectTask(models.Model):
         partner = self.partner_id
 
         if not partner:
-            return {
-                'domain': {
-                    'project_id': [],
-                }
-            }
+            domain = []
 
-        # Always get ALL Tickets related to the company,
-        # whether the partner_id is Company or Contact
-        partner_ids = {partner.id}
-        parent_id = partner.parent_id and partner.parent_id.id or partner.id
-        if parent_id:
-            partner_ids.add(parent_id)
-            partner_ids.update(
-                    [rp.id for rp in self.env['res.partner'].search([('parent_id', '=', parent_id)])]
-                )
+        else:
 
-        # Only reset project if the Partner is set, and is
-        # NOT related to the current Contact selected
-        proj_partner = self.project_id.partner_id and self.project_id.partner_id.id
-        if proj_partner and proj_partner not in partner_ids:
-            self.project_id = None
+            partner_ids = self.get_partner_ids()
+            domain = self.get_partner_domain(partner_ids)
 
-        domain = [
-            '|',
-            ('partner_id', '=', False),
-            ('partner_id', 'in', list(partner_ids)),
-        ]
+            # Only reset project if the Partner is set, and is
+            # NOT related to the current Contact selected
+            proj_partner = self.project_id.partner_id and self.project_id.partner_id.id
+            if proj_partner and proj_partner not in partner_ids:
+                self.project_id = None
 
         return {
             'domain': {

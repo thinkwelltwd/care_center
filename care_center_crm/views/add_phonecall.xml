@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Wizard to Link Phonecalls to Tasks from Task form -->
+    <record id="add_task_to_phonecall_wizard" model="ir.ui.view">
+        <field name="name">Add Task to Phonecall Wizard</field>
+        <field name="model">set_task_on_phone.wizard</field>
+        <field name="arch" type="xml">
+           <form string="Link Phone call to Task" create="false" edit="false">
+                <group>
+                    <field name="task_id" options="{'no_create': True}"/>
+                    <field name="phonecall_id" options="{'no_create': True}"/>
+                </group>
+                <footer>
+                    <button string="Save" type="object" name="set_task_on_phonecall" class="oe_highlight"/>
+                    <button string="Cancel" special="cancel" class="oe_link"/>
+                </footer>
+           </form>
+        </field>
+    </record>
+
+    <act_window id="action_add_task_to_phonecall"
+                name="Link to Phonecall"
+                res_model="set_task_on_phone.wizard"
+                src_model="project.task"
+                view_mode="form"
+                target="new"
+                />
+
+    <!-- Wizard to Link Phonecalls to Leads from Lead form -->
+    <record id="add_lead_to_phonecall_wizard" model="ir.ui.view">
+        <field name="name">Add Lead to Phonecall Wizard</field>
+        <field name="model">set_lead_on_phone.wizard</field>
+        <field name="arch" type="xml">
+           <form string="Link Phone call to Lead" create="false" edit="false">
+                <group>
+                    <field name="lead_id" options="{'no_create': True}"/>
+                    <field name="phonecall_id" options="{'no_create': True}"/>
+                </group>
+                <footer>
+                    <button string="Save" type="object" name="set_lead_on_phonecall" class="oe_highlight"/>
+                    <button string="Cancel" special="cancel" class="oe_link"/>
+                </footer>
+           </form>
+        </field>
+    </record>
+
+    <act_window id="action_add_lead_to_phonecall"
+                name="Link to Phonecall"
+                res_model="set_lead_on_phone.wizard"
+                src_model="crm.lead"
+                view_mode="form"
+                target="new"
+                />
+
+</odoo>

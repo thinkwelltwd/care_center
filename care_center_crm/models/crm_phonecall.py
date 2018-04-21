@@ -3,7 +3,8 @@ from odoo import api, fields, models
 
 
 class CrmPhonecall(models.Model):
-    _inherit = "crm.phonecall"
+    _name = 'crm.phonecall'
+    _inherit = ['care_center.base', 'crm.phonecall']
 
     task_id = fields.Many2one(
         comodel_name='project.task',
@@ -12,7 +13,7 @@ class CrmPhonecall(models.Model):
     description = fields.Html('Description')
 
     @api.onchange('partner_id')
-    def _partner_id(self):
+    def _update_partner_id_domain(self):
         """
         Filter Tasks by Partner, including all
         Tasks of Partner Parent or Children
@@ -29,19 +30,9 @@ class CrmPhonecall(models.Model):
                 }
             }
 
-        # Always get ALL tasks related to the company,
-        # whether the partner_id is Company or Contact
-        partner_ids = [partner.id]
-        parent_id = partner.parent_id and partner.parent_id.id or partner.id
-        partner_ids.extend(
-                [rp.id for rp in self.env['res.partner'].search([('parent_id', '=', parent_id)])]
-            )
+        partner_ids = self.get_partner_ids()
+        domain = self.get_partner_domain(partner_ids)
 
-        domain = [
-            '|',
-            ('partner_id', '=', False),
-            ('partner_id', 'in', partner_ids),
-        ]
         # Reset fields ONLY if the partner doesn't match! Otherwise, will always
         # clear partner_id field, due onchange methods on task_id / opportunity_id
         if task and task.partner_id and task.partner_id.id not in partner_ids:
@@ -57,7 +48,7 @@ class CrmPhonecall(models.Model):
         }
 
     @api.onchange('task_id')
-    def _task_id(self):
+    def _set_task_team(self):
         """
         Set Team if possible. Search by name, to handle
         CRM & Support Teams which have different FKs
@@ -73,7 +64,7 @@ class CrmPhonecall(models.Model):
             self.partner_id = self.task_id.partner_id.id
 
     @api.onchange('opportunity_id')
-    def _opportunity_id(self):
+    def _set_opportunity_team(self):
         if self.opportunity_id and self.opportunity_id.team_id:
             self.team_id = self.opportunity_id.team_id.id
 

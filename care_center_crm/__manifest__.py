@@ -12,13 +12,16 @@
     'website': "http://www.thinkwelldesigns.com",
 
     'category': 'Sales',
-    'version': '0.2',
+    'version': '0.3',
 
     'depends': [
+        'care_center',
         'crm_phonecall',
     ],
 
     'data': [
         'views/crm_phonecall.xml',
+        'views/project_task.xml',
+        'views/add_phonecall.xml',
     ],
 }
