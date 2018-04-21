@@ -14,11 +14,12 @@ class TimesheetTimerWizard(models.TransientModel):
     completed_timesheets = fields.Float(string='Time So Far')
     timesheet_id = fields.Many2one('account.analytic.line', string='Timesheet')
 
-    to_invoice = fields.Many2one(
+    factor = fields.Many2one(
         'hr_timesheet_invoice.factor',
-        'Invoiceable',
+        'Factor',
         default=lambda s: s.env['hr_timesheet_invoice.factor'].search(
-            [], order='factor asc', limit=1),
+            [('factor', '=', 0.0)], limit=1),
+        required=True,
         help="Allows setting the discount while making invoice."
         " Set to 'No' if the time should not be invoiced.")
     full_duration = fields.Float(
@@ -30,7 +31,7 @@ class TimesheetTimerWizard(models.TransientModel):
         default=0.0,
         help='Invoiceable amount of time spent on timesheet')
 
-    @api.onchange('name', 'date_stop', 'to_invoice')
+    @api.onchange('name', 'date_stop', 'factor')
     def timesheet_stats(self):
         """
         Display calculated data to the user, and return a dict
@@ -49,14 +50,14 @@ class TimesheetTimerWizard(models.TransientModel):
         )
 
         self.full_duration = rounded_time.total_seconds() / 3600.0
-        self.unit_amount = get_factored_duration(self.full_duration, self.to_invoice)
+        self.unit_amount = get_factored_duration(self.full_duration, self.factor)
 
         return {
             'name': self.name,
             'timer_status': 'stopped',
             'full_duration': self.full_duration,
-            'to_invoice': self.to_invoice.id,
-            'unit_amount': self.unit_amount,
+            'factor': self.factor.id,
+            'unit_amount': 0.0,  # set to 0.0 because invoiceability toggle sets it
         }
 
     @api.constrains('name')

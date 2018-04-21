@@ -2,7 +2,7 @@
 <odoo>
 
     <record model="hr_timesheet_invoice.factor" id="fully_invoiceable">
-        <field name="name">Yes</field>
+        <field name="name">Yes (100%)</field>
         <field name="factor">0.0</field>
     </record>
 
@@ -27,7 +27,7 @@
     </record>
 
     <record model="hr_timesheet_invoice.factor" id="not_invoiceable">
-        <field name="name">No</field>
+        <field name="name">No (0%)</field>
         <field name="factor">100.0</field>
     </record>
 

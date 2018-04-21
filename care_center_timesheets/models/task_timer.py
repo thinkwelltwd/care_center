@@ -5,21 +5,9 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 
-class ProjectUtils(models.AbstractModel):
-    _name = 'project.utils'
+class TaskTimer(models.AbstractModel):
+    _name = 'task.timer'
     _description = "Utils for Tasks / Tickets"
-
-    invoiceable = fields.Selection([
-        ('yes', 'Yes'),
-        ('no', 'No'),
-        ('contract', 'Contract'),
-        ('confirm', 'Confirm'),
-    ],
-        string='Invoicable',
-        default='yes',
-        help='Default invoice status for timesheets. Can be '
-             'overridden per each timesheet entry.'
-    )
 
     user_timer_status = fields.Char(
         string='Timer Status',
@@ -43,7 +31,10 @@ class ProjectUtils(models.AbstractModel):
             'so_line': None,
         }
 
+        # add date field so _get_timesheet_cost method
+        # in project_timesheet_currency app doesn't crash
         for ts in self.timesheet_ids:
+            data['date'] = ts.date
             ts.write(data)
 
     @api.one
@@ -86,14 +77,7 @@ class ProjectUtils(models.AbstractModel):
 
         self._prevent_multiple_clocked_in()
 
-        Factor = self.env['hr_timesheet_invoice.factor']
-        if not self.invoiceable or self.invoiceable == 'yes':
-            factor = Factor.search([('name', '=', 'Yes')])
-        elif self.invoiceable == 'confirm':
-            factor = Factor.search([('name', '=', 'Confirm')])
-        else:
-            factor = Factor.search([('name', '=', 'No')])
-        factor = factor and factor[0].id
+        factor = self.env['hr_timesheet_invoice.factor'].search([('factor', '=', 100.0)], limit=1)
 
         self.write({
             'timesheet_ids': [(0, 0, {
@@ -103,7 +87,7 @@ class ProjectUtils(models.AbstractModel):
                 'account_id': self.project_id.analytic_account_id.id,
                 'user_id': self.env.uid,
                 'project_id': self.project_id.id,
-                'to_invoice': factor,
+                'factor': factor and factor[0].id,
              })]
         })
 
@@ -182,7 +166,7 @@ class ProjectUtils(models.AbstractModel):
         new = Timer.create({
             'completed_timesheets': sum([ts.full_duration for ts in self.timesheet_ids]),
             'timesheet_id': timesheet.id,
-            'to_invoice': timesheet.to_invoice.id,
+            'factor': timesheet.factor.id,
         })
 
         return {

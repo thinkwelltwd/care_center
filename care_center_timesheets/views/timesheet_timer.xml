@@ -8,7 +8,7 @@
            <form string="Work Description" create="false" edit="false">
                 <group>
                     <field name="name" placeholder="Briefly describe work performed"/>
-                    <field name="to_invoice"/>
+                    <field name="factor" options="{'no_create': True}"/>
                     <field name="date_stop" placeholder="Leave blank to auto-caculate"/>
                 </group>
                 <group col="4">

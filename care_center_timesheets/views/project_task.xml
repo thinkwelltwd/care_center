@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <record id="task_type_edit_invoiceable" model="ir.ui.view">
+        <field name="name">Invoiceable Task Type</field>
+        <field name="model">project.task.type</field>
+        <field name="inherit_id" ref="project.task_type_edit"/>
+        <field name="arch" type="xml">
+            <field name="fold" position="after">
+                <field name="is_invoiceable"/>
+            </field>
+        </field>
+    </record>
+
+
     <record model="ir.ui.view" id="project_task_search">
         <field name="name">Search Tasks With Work In Progress</field>
         <field name="model">project.task</field>
@@ -11,6 +23,8 @@
                 <separator/>
                 <filter string="Work In Progress" name="work_in_progress" domain="[('timesheet_ids.timer_status', 'in', ('running', 'paused'))]"/>
                 <filter string="My Timers" name="agent_timers_running" domain="[('timesheet_ids.user_id', '=', uid), ('timesheet_ids.timer_status', 'in', ('running', 'paused'))]"/>
+                <separator/>
+                <filter string="Confirm Invoicing" name="confirm_invoiceability" domain="['&amp;', ('is_invoiceable', '=', 'confirm'), ('stage_id.name', '=', 'Done')]"/>
                 <separator/>
             </xpath>
 
@@ -24,29 +38,43 @@
         <field name="arch" type="xml">
 
             <xpath expr="//div[@name='button_box']" position="inside">
-                <button name="timer_start" string="Start" type="object" attrs="{'invisible': [('user_timer_status', 'in', ('running', 'paused'))]}" class="oe_inline oe_stat_button" icon="fa-play"/>
-                <button name="timer_resume" string="Resume" type="object" attrs="{'invisible': [('user_timer_status', '!=', 'paused')]}" class="oe_inline oe_stat_button" icon="fa-play-circle"/>
-                <button name="timer_pause" string="Pause" type="object" attrs="{'invisible': [('user_timer_status', '!=', 'running')]}" class="oe_inline oe_stat_button" icon="fa-pause"/>
-                <button name="timer_stop" string="Stop" type="object" attrs="{'invisible': [('user_timer_status', 'in', ('paused', 'stopped'))]}" class="oe_stat_button oe_inline" icon="fa-stop"/>
-            </xpath>
-            <field name="project_id" position="after">
-                <field name="user_timer_status" invisible="1"/>
-            </field>
+                <button name="timer_start" string="Start" type="object" attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', 'in', ('running', 'paused'))]}" class="oe_inline oe_stat_button" icon="fa-play"/>
+                <button name="timer_resume" string="Resume" type="object" attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', '!=', 'paused')]}" class="oe_inline oe_stat_button" icon="fa-play-circle"/>
+                <button name="timer_pause" string="Pause" type="object" attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', '!=', 'running')]}" class="oe_inline oe_stat_button" icon="fa-pause"/>
+                <button name="timer_stop" string="Stop" type="object" attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', 'in', ('paused', 'stopped'))]}" class="oe_stat_button oe_inline" icon="fa-stop"/>
 
-            <field name="partner_id" position="before">
-                <field name="invoiceable"/>
+                <button name="toggle_ready_to_invoice" type="object"
+                    class="oe_stat_button" icon="fa-file">
+                    <field name="ready_to_invoice" widget="boolean_button"
+                        options='{"terminology": {
+                                        "string_true": "Invoiceable",
+                                        "hover_true": "Not Invoiceable",
+                                        "string_false": "Not Invoiceable",
+                                        "hover_false": "Invoiceable"
+                                    }}'/>
+                </button>
+
+            </xpath>
+            <field name="progress" position="after">
+                <field name="is_invoiceable"/>
+            </field>
+            <field name="project_id" position="replace">
+                <field name="project_id" options="{'no_create': True}" required="1"/>
+                <field name="task_active" invisible="1"/>
+                <field name="user_timer_status" invisible="1"/>
             </field>
 
             <field name="timesheet_ids" position="replace">
                 <field name="timesheet_ids" colspan="4" nolabel="1" context="{'default_user_id' : uid, 'default_project_id': project_id}" groups="base.group_user">
-                    <tree editable="top" string="Timesheet Activities">
+                    <tree string="Timesheet Activities" editable="top" colors="red:timesheet_ready_to_invoice == False;green:timesheet_ready_to_invoice == True;">
                         <field name="date"/>
                         <field name="user_id" required="1" options="{'no_create': True}"/>
                         <field name="name"/>
-                        <field name="to_invoice" options="{'no_create': True}"/>
+                        <field name="factor" options="{'no_create': True}"/>
                         <field name="full_duration" string="Time" widget="float_time"/>
                         <field name="unit_amount" string="Duration" widget="float_time" readonly="0"/>
                         <field name="project_id" invisible="1" required="0"/>
+                        <field name="timesheet_ready_to_invoice" string="Ready" invisible="1"/>
                     </tree>
                 </field>
             </field>

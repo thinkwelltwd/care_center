@@ -50,7 +50,7 @@
 
             <field name="stage_id" position="before">
                 <field name="task_active" invisible="1"/>
-                <button name="reopen_ticket" string="Reopen Tickets" type="object" class="oe_highlight"
+                <button name="reopen_ticket" string="Reopen Ticket" type="object" class="oe_highlight"
                     attrs="{'invisible': [('task_active', '=', True)]}"/>
                 <button name="claim_ticket" string="Claim" type="object" class="oe_highlight"
                     attrs="{'invisible': [('user_id', '!=', False)]}"/>

@@ -7,6 +7,8 @@ from odoo import fields, models, api, _
 class AccountAnalyticLine(models.Model):
     _inherit = 'account.analytic.line'
 
+    timesheet_ready_to_invoice = fields.Boolean(default=False, copy=False)
+
     timer_status = fields.Selection(selection=[
         ('stopped', 'Stopped'),
         ('paused', 'Paused'),
@@ -15,11 +17,12 @@ class AccountAnalyticLine(models.Model):
         string='Timer Status')
 
     date_start = fields.Datetime('Started')
-    to_invoice = fields.Many2one(
+    factor = fields.Many2one(
         'hr_timesheet_invoice.factor',
-        'Invoiceable',
+        'Factor',
         default=lambda s: s.env['hr_timesheet_invoice.factor'].search(
-            [], order='factor asc', limit=1),
+            [('factor', '=', 0.0)], limit=1),
+        oldname='to_invoice',
         help="Allows setting the discount while making invoice, keep"
         " empty if the activities should not be invoiced.")
 
@@ -28,10 +31,13 @@ class AccountAnalyticLine(models.Model):
         default=0.0,
         help='Total and undiscounted amount of time spent on timesheet')
 
-    @api.onchange('full_duration', 'to_invoice')
+    @api.onchange('full_duration', 'factor', 'timesheet_ready_to_invoice')
     def _compute_durations(self):
+        if not self.timesheet_ready_to_invoice:
+            self.unit_amount = 0.0
+            return
         self.unit_amount = get_factored_duration(
-            hours=self.full_duration, invoice_factor=self.to_invoice,
+            hours=self.full_duration, invoice_factor=self.factor,
         )
 
     def _get_timesheet_cost(self, values):
