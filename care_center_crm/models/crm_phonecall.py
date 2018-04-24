@@ -6,10 +6,29 @@ class CrmPhonecall(models.Model):
     _name = 'crm.phonecall'
     _inherit = ['care_center.base', 'crm.phonecall']
 
+    def _available_task_lead_ids(self):
+        """
+        Enable dynamic domain filters when Editing
+        records where the on_change doesn't fire
+        """
+        self.available_task_ids = self.env['project.task'].search([
+            '|',
+            ('partner_id', '=', False),
+            ('partner_id', 'in', self.get_partner_ids()),
+        ])
+        self.available_lead_ids = self.env['crm.lead'].search([
+            '|',
+            ('partner_id', '=', False),
+            ('partner_id', 'in', self.get_partner_ids()),
+        ])
+
     task_id = fields.Many2one(
         comodel_name='project.task',
         string='Task',
     )
+    available_task_ids = fields.Many2many('project.task', compute='_available_task_lead_ids')
+    available_lead_ids = fields.Many2many('crm.lead', compute='_available_task_lead_ids')
+
     description = fields.Html('Description')
 
     @api.onchange('partner_id')

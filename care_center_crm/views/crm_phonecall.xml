@@ -66,8 +66,11 @@
                     attrs="{'invisible':[('opportunity_id','!=',False)]}"/>
             </xpath>
 
-            <field name="opportunity_id" position="after">
-               <field name="task_id"/>
+            <field name="opportunity_id" position="replace">
+               <field name="available_task_ids" invisible="1"/>
+               <field name="available_lead_ids" invisible="1"/>
+               <field name="opportunity_id"  domain="[('id' , 'in', available_lead_ids and available_lead_ids[0][2])]"/>
+               <field name="task_id"  domain="[('id' , 'in', available_task_ids and available_task_ids[0][2])]"/>
             </field>
 
             <field name="team_id" position="attributes">
