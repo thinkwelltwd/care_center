@@ -15,6 +15,7 @@ class ProcedureProcedure(models.Model):
     child_ids = fields.One2many('procedure.procedure', 'parent_id', string='Checklist')
     sequence = fields.Integer('Sequence', default=1)
     tag_ids = fields.Many2many('project.tags', string='Tags')
+    planned_hours = fields.Float('Planned Hours', default=0.0)
     documentation = fields.Html('Documentation', compute='_compile_documentation',
                                 help='Documentation for this Checklist, or the combined '
                                      'documentation for all the Checklists of this Procedure.',
@@ -98,7 +99,7 @@ class ProcedureProcedure(models.Model):
 class ProcedureAssignment(models.Model):
     _name = "procedure.assignment"
     _rec_name = 'procedure_id'
-    _order = 'procedure_id asc, sequence asc'
+    _order = 'parent_id asc, sequence asc'
 
     status = fields.Selection([
         ('done', 'Done'),
@@ -109,7 +110,11 @@ class ProcedureAssignment(models.Model):
     ],
      'Status', required=True, copy=False, default='todo')
 
-    procedure_id = fields.Many2one('procedure.procedure', required=True)
+    # include parent_id so we can _order by parent_id in checklist tab
+    parent_id = fields.Many2one('procedure.procedure', 'Procedure',
+                                ondelete='cascade', required=False)
+    procedure_id = fields.Many2one('procedure.procedure', 'Checklist',
+                                   ondelete='cascade', required=True)
     sequence = fields.Integer()
     task_id = fields.Many2one('project.task', 'Ticket',
                               ondelete='cascade', required=False, index=True)

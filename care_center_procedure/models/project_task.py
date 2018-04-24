@@ -29,6 +29,8 @@ class ProjectTask(models.Model):
     @api.multi
     def assign_procedure(self, procedure, sequence):
         """Assign a procedure to this Task / Ticket"""
+        task_planned_hours = self.planned_hours or 0.0
+
         if sequence == 1:
             sequence = len(self.procedure_ids) + 1
 
@@ -47,20 +49,35 @@ class ProjectTask(models.Model):
                 sequence = proc.sequence
 
             self.env['procedure.assignment'].create({
+                'parent_id': proc.parent_id and proc.parent_id.id,
                 'procedure_id': proc.id,
                 'sequence': sequence,
                 'task_id': self.id,
             })
 
+            if not proc.parent_id:
+                task_planned_hours += proc.planned_hours or 0.0
+
+        self.write({'planned_hours': task_planned_hours})
+
     def _delete_related_checklists(self, assigned_procedures):
         """
         Delete child procedures when parent procedure assignment is removed
         """
+        task_planned_hours = self.planned_hours or 0.0
         deletes = []
         for proc_assignment in assigned_procedures:
             if proc_assignment[0] == 2:
                 procedure = self.env['procedure.assignment'].browse(proc_assignment[1])
                 deletes.append(procedure.procedure_id.id)
+
+                # subtract planned hours assigned by the parent procedure
+                if not procedure.procedure_id.parent_id:
+                    task_planned_hours -= procedure.procedure_id.planned_hours
+
+        if task_planned_hours < 0.0:
+            task_planned_hours = 0.0
+        self.write({'planned_hours': task_planned_hours})
 
         if deletes:
             self.env['procedure.assignment'].search([
