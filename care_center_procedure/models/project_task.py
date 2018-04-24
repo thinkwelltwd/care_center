@@ -20,11 +20,13 @@ class ProjectTask(models.Model):
 
     @api.multi
     def _procedure_count(self):
-        self.procedure_count = len(self.procedure_ids)
+        for task in self:
+            task.procedure_count = len(task.procedure_ids)
 
     @api.multi
     def _checklist_count(self):
-        self.checklist_count = len(self.checklist_ids)
+        for task in self:
+            task.checklist_count = len(task.checklist_ids)
 
     @api.multi
     def assign_procedure(self, procedure, sequence):

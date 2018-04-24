@@ -1,26 +1,36 @@
 from datetime import date, timedelta
 
 from odoo import models, fields, api, _
-
+from odoo.exceptions import ValidationError
 
 class ProjectTask(models.Model):
     _name = 'project.task'
     _inherit = ['care_center.base', 'project.task']
 
+    parent_task_id = fields.Many2one('project.task', string='Parent Task',
+                                     ondelete='cascade', required=False)
+    child_task_ids = fields.One2many('project.task', 'parent_task_id', string='Sub Tasks')
     medium_id = fields.Many2one('utm.medium', 'Medium',
                                 help="This is the method of delivery. "
                                      "Ex: Email / Phonecall / API / Website")
     description = fields.Html('Private Note')
     task_active = fields.Boolean(compute='_task_active')
+    subtask_count = fields.Integer(compute='_subtask_count')
+
+    @api.multi
+    def _subtask_count(self):
+        for task in self:
+            task.subtask_count = len(task.child_task_ids)
 
     @api.multi
     def _task_active(self):
-        if not self.active:
-            self.task_active = False
-        elif self.stage_id.fold:
-            self.task_active = False
-        else:
-            self.task_active = True
+        for task in self:
+            if not task.active:
+                task.task_active = False
+            elif task.stage_id.fold:
+                task.task_active = False
+            else:
+                task.task_active = True
 
     @api.model
     def message_new(self, msg, custom_values=None):
@@ -199,6 +209,32 @@ class ProjectTask(models.Model):
         }
 
     @api.multi
+    def confirm_subtasks_done(self):
+        for subtask in self.child_task_ids:
+            if not subtask.active or subtask.stage_id.fold:
+                continue
+
+            raise ValidationError(
+                'Please close all open Sub Tasks'
+            )
+
+    @api.model
+    def _check_stage_id(self, stage_id):
+        """Don't set stage to folded state unless all subtasks are Done"""
+        if not self.child_task_ids or not stage_id:
+            return
+        stage = self.env['project.task.type'].browse(stage_id)
+        if stage.fold:
+            self.confirm_subtasks_done()
+
+    @api.multi
+    def write(self, values):
+        """ on_change doesn't fire for stage_id clicks """
+        if values.get('stage_id'):
+            self._check_stage_id(values['stage_id'])
+        return super(ProjectTask, self).write(values)
+
+    @api.multi
     def claim_ticket(self):
         self.ensure_one()
         self.user_id = self._uid
@@ -206,6 +242,7 @@ class ProjectTask(models.Model):
     @api.multi
     def close_ticket(self):
         self.ensure_one()
+        self.confirm_subtasks_done()
         self.stage_id = self.env['project.task.type'].search([('name', '=', 'Done')])
         if self.active:
             self.toggle_active()
@@ -232,8 +269,36 @@ class ProjectTask(models.Model):
 
         for record in self:
             if record.active:
+                self.confirm_subtasks_done()
                 self.date_close = fields.Datetime.now()
             else:
                 self.date_close = None
 
         super(ProjectTask, self).toggle_active()
+
+    @api.multi
+    def open_subtasks(self):
+        self.ensure_one()
+        form = self.env.ref('care_center.project_task_required_fields', False)
+        tree = self.env.ref('care_center.care_center_task_tree', False)
+
+        parent_task_id = self.parent_task_id and self.parent_task_id.id or self.id
+        context = {
+            'default_partner_id': self.partner_id.id,
+            'default_parent_task_id': parent_task_id,
+            'default_project_id': self.project_id and self.project_id.id,
+        }
+
+        return {
+            'name': 'Subtasks',
+            'view_mode': 'tree,form',
+            'views': [(tree.id, 'tree'), (form.id, 'form')],
+            'view_id': tree.id,
+            'res_model': 'project.task',
+            'context': context,
+            'type': 'ir.actions.act_window',
+            'nodestroy': True,
+            'target': 'current',
+            'res_id': False,
+            'domain': [('parent_task_id', '=', parent_task_id)],
+        }
