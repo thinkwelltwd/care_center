@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_task_assignment_form" model="ir.ui.view">
+        <field name="name">task.assignment.form</field>
+        <field name="model">task.assignment</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Assignment Details">
+                <sheet>
+                    <group name="assignment_details" string="Assignment Details" colspan="4" col="4">
+                        <field name="name"/>
+                        <field name="assigned_by"/>
+                        <field name="assigned_to"/>
+                        <field name="team_id"/>
+                        <separator string="Description" colspan="4"/>
+                        <field name="description" nolabel="1" colspan="4"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

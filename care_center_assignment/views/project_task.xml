@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="project_task_assignment" model="ir.ui.view">
+        <field name="name">Assign Task to User or Team</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="support_team.task_team_form_view"/>
+        <field name="arch" type="xml">
+
+            <header position="inside">
+                <button string="Reassign"
+                        type="action"
+                        name="%(action_reassign_user_team_wizard)d"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('task_active', '=', False)]}"
+                        help="Reassign to another User or Team"/>
+            </header>
+
+            <field name="project_id" position="after">
+                <field name="assignment_count" invisible="1"/>
+            </field>
+
+            <!-- Change these fields only via Reassign button -->
+            <field name="user_id" position="attributes">
+               <attribute name="readonly">1</attribute>
+            </field>
+            <field name="team_id" position="attributes">
+               <attribute name="readonly">1</attribute>
+            </field>
+
+            <notebook position="inside">
+                <page string="Assignments" attrs="{'invisible': [('assignment_count', '=', 0)]}">
+                    <field name="assignment_ids">
+                      <tree string="Assignment History" editable="bottom">
+                          <field name="name"/>
+                          <field name="assigned_by"/>
+                          <field name="assigned_to"/>
+                          <field name="team_id"/>
+                        </tree>
+                    </field>
+                </page>
+            </notebook>
+
+        </field>
+    </record>
+
+</odoo>
