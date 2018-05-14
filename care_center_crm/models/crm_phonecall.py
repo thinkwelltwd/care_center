@@ -88,9 +88,9 @@ class CrmPhonecall(models.Model):
             self.team_id = self.opportunity_id.team_id.id
 
     @api.multi
-    def convert_task(self):
+    def create_task(self):
         """
-        Convert a phone call to an task
+        Create a Task from Phonecall details
         """
         Task = self.env['project.task']
         ProjectTags = self.env['project.tags']
@@ -122,12 +122,12 @@ class CrmPhonecall(models.Model):
         return task
 
     @api.multi
-    def action_button_make_task(self):
+    def action_button_create_task(self):
         """
         Convert a phonecall into an task and then redirect to the task view.
         """
         task = {}
         for call in self:
-            task = call.convert_task()
+            task = call.create_task()
             return task[call.id].redirect_task_view()
         return task

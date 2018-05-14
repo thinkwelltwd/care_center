@@ -27,4 +27,27 @@
         </field>
     </record>
 
+    <record model="ir.ui.view" id="project_task_required_fields">
+        <field name="name">Project Tickets Required Fields</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2" />
+        <field name="arch" type="xml">
+
+            <field name="date_assign" position="before">
+                <field name="convertable" invisible="1"/>
+            </field>
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_inline oe_stat_button"
+                        type="object"
+                        name="convert_to_opportunity"
+                        icon="fa-reply"
+                        widget="statinfo"
+                        attrs="{'invisible': [('convertable', '=', False)]}"
+                        string="Convert to Opportunity"/>
+            </xpath>
+
+        </field>
+    </record>
+
 </odoo>

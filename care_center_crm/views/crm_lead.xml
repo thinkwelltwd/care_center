@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<odoo>
+    <act_window id="convert_opportunity_to_task_btn_action"
+                name="Convert to Task"
+                res_model="crm.lead2task.wizard"
+                src_model="crm.lead"
+                view_mode="form"
+                target="new"/>
+
+    <record model="ir.ui.view" id="convert_opportunity_to_task_button">
+        <field name="name">Convert to Task</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
+        <field name="arch" type="xml">
+            <field name="day_open" position="before">
+                <field name="convertable" invisible="1"/>
+            </field>
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_inline oe_stat_button"
+                        type="action"
+                        name="%(convert_opportunity_to_task_btn_action)d"
+                        icon="fa-reply"
+                        widget="statinfo"
+                        attrs="{'invisible': [('convertable', '=', False)]}"
+                        context="{'default_partner_id': partner_id, 'default_lead_id': active_id}"
+                        string="Convert to Task"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

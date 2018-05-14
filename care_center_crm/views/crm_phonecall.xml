@@ -29,14 +29,16 @@
                 <field name="tag_ids" widget="many2many_tags" invisible="1"/>
                 <field name="state" invisible="1"/>
                 <field name="create_date" invisible="1"/>
+                <field name="task_id" invisible="1"/>
                 <field name="opportunity_id" invisible="1"/>
                 <button string="Schedule Other Call"
                         icon="fa-phone"
                         name="%(crm_phonecall.phonecall_to_phonecall_act)d"
                         type="action"/>
-                <button string="Convert to Task"
+                <button string="Create Task"
                         icon="fa-life-ring"
-                        name="action_button_make_task"
+                        name="action_button_create_task"
+                        attrs="{'invisible':['|', ('opportunity_id','!=',False), ('task_id', '!=', False)]}"
                         type="object"/>
                 <button string="Meeting"
                         icon="fa-calendar"
@@ -45,7 +47,7 @@
                         name="action_button_convert2opportunity"
                         states="open,pending"
                         icon="fa-hand-pointer-o"
-                        type="object" attrs="{'invisible':[('opportunity_id','!=',False)]}"/>
+                        type="object" attrs="{'invisible':['|', ('opportunity_id','!=',False), ('task_id', '!=', False)]}"/>
             </tree>
         </field>
     </record>
@@ -57,13 +59,13 @@
         <field name="inherit_id" ref="crm_phonecall.crm_case_phone_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//div[@name='button_box']" position="inside">
-                <button string="Convert to Task"
+                <button string="Create Task"
                     class="oe_inline oe_stat_button"
                     type="object"
-                    name="action_button_make_task"
+                    name="action_button_create_task"
                     states="open,pending"
                     icon="fa-life-ring"
-                    attrs="{'invisible':[('opportunity_id','!=',False)]}"/>
+                    attrs="{'invisible':['|', ('opportunity_id','!=',False), ('task_id', '!=', False)]}"/>
             </xpath>
 
             <field name="opportunity_id" position="replace">
