@@ -27,4 +27,24 @@
         action="support_team_config_action"
         groups="group_support_manager"/>
 
+    <!-- Support Teams Dashboard Action -->
+    <record id="crm_team_supportteams_dashboard" model="ir.actions.act_window">
+        <field name="name">Support Dashboard</field>
+        <field name="res_model">crm.team</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">kanban,form</field>
+        <field name="domain">[('type_team','=','support')]</field>
+        <field name="context">{}</field>
+        <field name="view_id" ref="sales_team.crm_team_salesteams_search"/>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click here to define a new support team.
+            </p><p>
+                Use support team to organize your support staff or
+                departments into separate teams. Each team will work in
+                its own list of Tasks / Tickets.
+            </p>
+        </field>
+    </record>
+
 </odoo>

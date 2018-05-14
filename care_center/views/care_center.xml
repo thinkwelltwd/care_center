@@ -7,7 +7,13 @@
               web_icon="care_center,static/description/icon.png"/>
 
 
-        <!-- Tickes / Tasks menu -->
+        <!-- Dashboard / Tickets / Tasks menu -->
+    <menuitem name="Dashboard"
+              id="menu_carecenter_dashboard"
+              parent="care_center_main_menu"
+              action="support_team.crm_team_supportteams_dashboard"
+              sequence="1"/>
+
         <menuitem name="Tickets"
                   id="menu_tickets_tasks"
                   parent="care_center_main_menu"

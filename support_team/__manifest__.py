@@ -21,7 +21,11 @@
         'views/project_project.xml',
         'views/support_team.xml',
         'views/project_task.xml',
+        'views/support_team_dashboard.xml',
      ],
+    'qweb': [
+        'static/src/xml/support_team_dashboard.xml',
+    ],
     'installable': True,
     'auto_install': False,
 }
