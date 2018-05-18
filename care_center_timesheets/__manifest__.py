@@ -12,7 +12,7 @@
     'version': '0.3',
 
     'depends': [
-        'hr_timesheet',
+        'hr_timesheet_sheet',
         'project',
         'support_team',
     ],

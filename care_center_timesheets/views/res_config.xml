@@ -13,6 +13,7 @@
                 <group string="Task &amp; Ticket Timesheets" col="4">
                     <field name="minutes_increment"/>
                     <field name="minimum_work_log"/>
+                    <field name="manage_hr_timesheet"/>
                 </group>
             </xpath>
         </field>

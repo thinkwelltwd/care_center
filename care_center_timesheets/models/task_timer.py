@@ -73,6 +73,40 @@ class TaskTimer(models.AbstractModel):
             ))
 
     @api.multi
+    def get_hr_timesheet_id(self):
+        """
+        Always return HR Timesheet if one exists for the current Employee and Time period
+
+        If no HR Timesheet exists, and manage_hr_timesheet is True, create it.
+        """
+        employee = self.env['hr.employee'].search([
+            ('user_id', '=', self.env.uid),
+        ])
+        if not employee:
+            raise UserError('%s is not linked to an Employee Record' % self.env.user.name)
+
+        manage_hr_time = self.env['ir.config_parameter'].get_param(
+            'hr_timesheet.manage_hr_timesheet',
+            default=True
+        )
+
+        today = fields.Date.context_today(self)
+        ts = self.env['hr_timesheet_sheet.sheet'].search([
+            ('employee_id', '=', employee.id),
+            ('date_from', '<=', today),
+            ('date_to', '>=', today),
+        ])
+        if ts:
+            return ts.id
+
+        if not manage_hr_time:
+            return False
+
+        return self.env['hr_timesheet_sheet.sheet'].create({
+            'employee_id': employee.id
+        }).id
+
+    @api.multi
     def timer_start(self):
 
         self._prevent_multiple_clocked_in()
@@ -88,6 +122,7 @@ class TaskTimer(models.AbstractModel):
                 'user_id': self.env.uid,
                 'project_id': self.project_id.id,
                 'factor': factor and factor[0].id,
+                'sheet_id': self.get_hr_timesheet_id(),
              })]
         })
 
