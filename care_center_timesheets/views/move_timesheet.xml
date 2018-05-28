@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="move_timesheet_or_pause" model="ir.ui.view">
+        <field name="name">Pause or Move Timesheet to This Task</field>
+        <field name="model">move_timesheet_or_pause.wizard</field>
+        <field name="arch" type="xml">
+           <form string="Move or Pause Current Timesheet"
+                 create="false" edit="false">
+                <group col="4">
+                    <field name="origin_task_id" readonly="1" />
+                    <field name="destination_task_id" readonly="1" />
+                    <field name="timesheet_id" readonly="1" />
+
+                    <field name="ts_action" />
+                </group>
+                <footer>
+                    <button string="Save" type="object" name="process_time" class="oe_highlight"/>
+                    <button string="Cancel" special="cancel" class="oe_link"/>
+                </footer>
+           </form>
+        </field>
+    </record>
+
+
+    <record id="move_timesheet_to_new_task_wizard" model="ir.ui.view">
+        <field name="name">Move Time to New Task</field>
+        <field name="model">move_timesheet_to_task.wizard</field>
+        <field name="arch" type="xml">
+           <form string="Move Timesheet" create="false" edit="false">
+                <group>
+                    <field name="origin_task_id" invisible="1" />
+                    <field name="destination_task_id" options="{'no_create': True}"/>
+                    <field name="timesheet_id" options="{'no_create': True}" domain="[('task_id', '=', origin_task_id)]"/>
+                </group>
+                <footer>
+                    <button string="Save" type="object" name="process_time" class="oe_highlight"/>
+                    <button string="Cancel" special="cancel" class="oe_link"/>
+                </footer>
+           </form>
+        </field>
+    </record>
+
+    <act_window id="move_timesheet_wizard"
+            name="Move Time to New Task"
+            res_model="move_timesheet_to_task.wizard"
+            src_model="project.task"
+            view_mode="form"
+            target="new"
+            />
+
+</odoo>

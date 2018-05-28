@@ -26,6 +26,9 @@
         'views/hr_timesheet.xml',
         'views/project_task.xml',
         'views/res_config.xml',
+
+        # Wizard Views
         'views/timesheet_timer.xml',
+        'views/move_timesheet.xml',
     ],
 }

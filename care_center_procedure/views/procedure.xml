@@ -66,7 +66,7 @@
                     </group>
                     <group string="Checklists" colspan="4" col="4" invisible="context.get('hide_checklist',False)" attrs="{'invisible': [('parent_id', '!=', False)]}">
                         <field name="child_ids" nolabel="1">
-                          <tree editable="bottom">
+                          <tree>
                               <field name="sequence"/>
                               <field name="name"/>
                             </tree>
