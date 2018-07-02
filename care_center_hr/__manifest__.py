@@ -16,9 +16,11 @@
 
     'depends': [
         'care_center',
-        'hr_timesheet',
+        'hr_timesheet_attendance',
     ],
 
     'data': [
+        'report/hr_attendance.xml',
+        'report/hr_timesheet_attendance.xml',
     ],
 }

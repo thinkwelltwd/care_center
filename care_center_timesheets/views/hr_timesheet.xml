@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <field name="unit_amount" position="before">
                 <field name="factor"/>
-                <field name="full_duration" widget="float_time"/>
+                <field name="full_duration" sum="Full Duration" widget="float_time"/>
             </field>
         </field>
     </record>
@@ -43,6 +43,45 @@
                 <filter string="Partially Invoiceable" name="invoiceable_timesheets" domain="[('factor.factor', '&lt;', 100.0), ('factor.factor', '&gt;=', 0.0)]"/>
                 <filter string="Confirm Invoiceable" name="confirm_invoiceable_timesheets" domain="[('factor.name', '=', 'Confirm')]"/>
                 <filter string="Not Invoiceable" name="not_invoiceable_timesheets" domain="[('factor.name', '=', 'No (0%)')]"/>
+                <separator/>
+                <filter name="this_week" string="This Week"
+                        domain="[
+                            '&amp;',
+                            ('date', '&gt;=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                            ('date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
+                        ]"/>
+                <filter name="last_week" string="Last Week"
+                        domain="[
+                            '&amp;',
+                            ('date', '&gt;=', (context_today() - datetime.timedelta(weeks=1)).strftime('%Y-%m-%d')),
+                            ('date', '&lt;=', (context_today() - datetime.timedelta(weeks=1) + datetime.timedelta(days=6)).strftime('%Y-%m-%d')),
+                        ]"/>
+                <separator/>
+                <filter name="month" string="This Month"
+                            domain="[
+                                '&amp;',
+                                ('date', '&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')),
+                                ('date', '&lt;=', (context_today() + relativedelta(months=1, day=1, days=-1)).strftime('%Y-%m-%d')),
+                            ]"/>
+                <filter name="last_month" string="Last Month"
+                        domain="[
+                            '&amp;',
+                            ('date', '&gt;=', (context_today() + relativedelta(months=-2, day=1)).strftime('%Y-%m-%d')),
+                            ('date', '&lt;=', (context_today() + relativedelta(months=-1, day=1, days=-1)).strftime('%Y-%m-%d')),
+                        ]"/>
+                <separator/>
+                <filter name="this_year" string="This Year"
+                        domain="[
+                            '&amp;',
+                            ('date', '&gt;=', (context_today() + relativedelta(month=1, day=1)).strftime('%Y-%m-%d')),
+                            ('date', '&lt;=', (context_today() + relativedelta(month=12, day=31)).strftime('%Y-%m-%d')),
+                        ]"/>
+                <filter name="last_year" string="Last Year"
+                        domain="[
+                            '&amp;',
+                            ('date', '&gt;=', (context_today() + relativedelta(month=1, day=1, years=-1)).strftime('%Y-%m-%d')),
+                            ('date', '&lt;=', (context_today() + relativedelta(month=12, day=31, years=-1)).strftime('%Y-%m-%d')),
+                        ]"/>
             </field>
 
         </field>
