@@ -15,6 +15,7 @@
     'version': '0.1',
 
     'depends': [
+        'note',
         'contacts',
         'crm_phonecall',
         'support_team',

@@ -201,3 +201,52 @@ class ProcedureAssignment(models.Model):
         for record in self:
             record.status = 'waiting'
             self.set_parent_procedure_status()
+
+    @api.model
+    def create(self, vals):
+        assignment = super(ProcedureAssignment, self).create(vals)
+
+        if assignment.procedure_id.planned_hours and assignment.task_id:
+            hours = assignment.task_id.planned_hours + assignment.procedure_id.planned_hours
+            assignment.task_id.write({'planned_hours': hours})
+
+        return assignment
+
+    @api.model
+    def delete_checklists(self):
+        if not self.task_id or not self.procedure_id:
+            return
+
+        self.env['procedure.assignment'].search([
+            ('task_id', '=', self.task_id.id),
+            ('procedure_id.parent_id', '=', self.procedure_id.id),
+        ]).unlink()
+
+    @api.model
+    def decrement_planned_hours(self):
+
+        task_hours = self.task_id and self.task_id.planned_hours or 0.0
+        procedure_hours = self.procedure_id.planned_hours
+
+        if not task_hours or not procedure_hours:
+            return
+
+        task_hours -= procedure_hours
+        if task_hours < 0:
+            task_hours = 0.0
+
+        self.task_id.write({'planned_hours': task_hours})
+
+    @api.multi
+    def unlink(self):
+        """
+        Remove Checklists from Task.
+        Decrement Planned Hours of the Task.
+        """
+
+        for assignment in self:
+            if not assignment.parent_id:
+                assignment.delete_checklists()
+                assignment.decrement_planned_hours()
+
+        return super(ProcedureAssignment, self).unlink()
