@@ -32,6 +32,41 @@ class ProjectTask(models.Model):
             else:
                 task.task_active = True
 
+    @api.onchange('partner_id')
+    def onchange_partner_id_warning(self):
+        if not self.partner_id:
+            return
+        warning = {}
+        title = False
+        message = False
+        partner = self.partner_id
+
+        # If partner has no warning, check its company
+        if partner.sale_warn == 'no-message' and partner.parent_id:
+            partner = partner.parent_id
+
+        if partner.sale_warn != 'no-message':
+            # Block if partner only has warning but parent company is blocked
+            if partner.sale_warn != 'block' \
+                    and partner.parent_id \
+                    and partner.parent_id.sale_warn == 'block':
+                partner = partner.parent_id
+            title = ("Warning for %s") % partner.name
+            message = partner.sale_warn_msg
+            warning = {
+                    'title': title,
+                    'message': message,
+            }
+            if partner.sale_warn == 'block':
+                self.update({
+                    'partner_id': False,
+                    'project_id': False,
+                    'sale_line_id': False,
+                })
+
+        if warning:
+            return {'warning': warning}
+
     @api.model
     def message_new(self, msg, custom_values=None):
         """Override to set message body to be in the
