@@ -3,6 +3,9 @@ from ..utils import get_factored_duration, round_timedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+import logging
+_logger = logging.getLogger(__name__)
+
 
 
 class TimesheetTimerWizard(models.TransientModel):
@@ -11,7 +14,7 @@ class TimesheetTimerWizard(models.TransientModel):
 
     name = fields.Char(string='Work Description')
     date_stop = fields.Datetime(string='Stop Time')
-    completed_timesheets = fields.Float(string='Time So Far')
+    completed_timesheets = fields.Float(string='Hours So Far')
     timesheet_id = fields.Many2one('account.analytic.line', string='Timesheet')
 
     factor = fields.Many2one(
@@ -45,7 +48,7 @@ class TimesheetTimerWizard(models.TransientModel):
         )
 
         rounded_time = round_timedelta(
-            td=timedelta(seconds=this_timesheet * 3600),
+            td=timedelta(minutes=this_timesheet),
             period=self.get_rounded_minutes(),
         )
 
@@ -57,7 +60,7 @@ class TimesheetTimerWizard(models.TransientModel):
             'timer_status': 'stopped',
             'full_duration': self.full_duration,
             'factor': self.factor.id,
-            'unit_amount': 0.0,  # set to 0.0 because invoiceability toggle sets it
+            'unit_amount': self.unit_amount,
         }
 
     @api.constrains('name')
@@ -83,8 +86,9 @@ class TimesheetTimerWizard(models.TransientModel):
         Get complete timesheet duration. full_duration is populated
         from Pause / Resume cycles, so include full_duration
         """
-        duration = (stop - start).total_seconds() / 3600
-        return self.timesheet_id.full_duration + duration
+        duration = (stop - start).total_seconds() / 60.0
+        full_duration_minutes = self.timesheet_id.full_duration * 60.0
+        return full_duration_minutes + duration
 
     def get_minimum_duration(self, duration):
         """
@@ -92,12 +96,12 @@ class TimesheetTimerWizard(models.TransientModel):
 
         :param duration: Duration of this ticket in hours
         """
-        Param = self.env['ir.config_parameter']
+        Param = self.env['ir.config_parameter'].sudo()
         work_log_min = float(Param.get_param('start_stop.minimum_work_log', default=0))
-        total_minutes = (self.completed_timesheets + duration) * 60
+        total_minutes = (self.completed_timesheets * 60) + duration
 
         if work_log_min and total_minutes < work_log_min:
-            return work_log_min / 60
+            return work_log_min
 
         return duration
 
@@ -106,9 +110,9 @@ class TimesheetTimerWizard(models.TransientModel):
         Timesheets are rounded per minimum minutes on entire Ticket / Task,
         and if that minumimum is reached, then minimum time per timesheet
         """
-        Param = self.env['ir.config_parameter']
+        Param = self.env['ir.config_parameter'].sudo()
         minutes = float(Param.get_param('start_stop.minutes_increment', default=0))
-        return timedelta(seconds=minutes * 60)
+        return timedelta(minutes=minutes)
 
     @api.multi
     def save_timesheet(self):

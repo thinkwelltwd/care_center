@@ -1,7 +1,7 @@
 # coding: utf-8
 from ..utils import get_factored_duration
 from odoo import fields, models, api, _
-
+from odoo.exceptions import ValidationError
 
 
 class AccountAnalyticLine(models.Model):
@@ -31,13 +31,36 @@ class AccountAnalyticLine(models.Model):
         default=0.0,
         help='Total and undiscounted amount of time spent on timesheet')
 
-    @api.onchange('full_duration', 'factor', 'timesheet_ready_to_invoice')
+    @api.onchange('full_duration', 'factor')
     def _compute_durations(self):
-        if not self.timesheet_ready_to_invoice:
-            self.unit_amount = 0.0
-            return
         self.unit_amount = get_factored_duration(
             hours=self.full_duration, invoice_factor=self.factor,
+        )
+
+    @api.model
+    def create(self, vals):
+        task_id = vals.get('task_id', None)
+        if task_id:
+            task = self.env['project.task'].browse(task_id)
+            if task.ready_to_invoice:
+                raise ValidationError(
+                    'Cannot add new Timesheets to Tasks that are Ready to Invoice.'
+                )
+        super(AccountAnalyticLine, self).create(vals)
+
+    @api.constrains('unit_amount')
+    def check_if_marked_ready(self):
+        """
+        If a timesheet has been marked as ready to invoice,
+        the unit_amount should never be changed again.
+        """
+        ts_type = self._context.get('ts_type', '')
+        if not self.timesheet_ready_to_invoice or ts_type == 'fulfillment':
+            return
+        raise ValidationError(
+            '"%s" timesheet duration changed!\n\n'
+            'Duration may not be changed when marked "Ready to Invoice".' %
+            self.name
         )
 
     def _get_timesheet_cost(self, values):

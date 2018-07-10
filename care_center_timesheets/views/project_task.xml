@@ -43,17 +43,6 @@
                 <button name="timer_pause" string="Pause" type="object" attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', '!=', 'running')]}" class="oe_inline oe_stat_button" icon="fa-pause"/>
                 <button name="timer_stop" string="Stop" type="object" attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', 'in', ('paused', 'stopped'))]}" class="oe_stat_button oe_inline" icon="fa-stop"/>
 
-                <button name="toggle_ready_to_invoice" type="object"
-                    class="oe_stat_button" icon="fa-file">
-                    <field name="ready_to_invoice" widget="boolean_button"
-                        options='{"terminology": {
-                                        "string_true": "Invoiceable",
-                                        "hover_true": "Not Invoiceable",
-                                        "string_false": "Not Invoiceable",
-                                        "hover_false": "Invoiceable"
-                                    }}'/>
-                </button>
-
             </xpath>
             <field name="progress" position="after">
                 <field name="is_invoiceable"/>

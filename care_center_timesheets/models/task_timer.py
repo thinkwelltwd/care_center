@@ -91,10 +91,8 @@ class TaskTimer(models.AbstractModel):
         if not employee:
             raise UserError('%s is not linked to an Employee Record' % self.env.user.name)
 
-        manage_hr_time = self.env['ir.config_parameter'].get_param(
-            'hr_timesheet.manage_hr_timesheet',
-            default=True
-        )
+        Param = self.env['ir.config_parameter'].sudo()
+        manage_hr_time = Param.get_param('hr_timesheet.manage_hr_timesheet', default=True)
 
         today = fields.Date.context_today(self)
         ts = self.env['hr_timesheet_sheet.sheet'].search([
@@ -180,10 +178,9 @@ class TaskTimer(models.AbstractModel):
     @api.multi
     def _create_timesheet(self):
         self.ensure_one()
-        factor = self.env['hr_timesheet_invoice.factor'].search([('factor', '=', 100.0)], limit=1)
-        offset = float(
-            self.env['ir.config_parameter'].get_param('start_stop.starting_time_offset', default=0)
-        )
+        Param = self.env['ir.config_parameter'].sudo()
+        factor = self.env['hr_timesheet_invoice.factor'].search([('factor', '=', 0.0)], limit=1)
+        offset = float(Param.get_param('start_stop.starting_time_offset', default=0))
 
         self.write({
             'timesheet_ids': [(0, 0, {

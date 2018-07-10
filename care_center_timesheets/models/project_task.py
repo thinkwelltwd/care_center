@@ -65,8 +65,6 @@ class ProjectTask(models.Model):
                 lambda ts: not ts.timesheet_ready_to_invoice
             )
             new_timesheets.write({'timesheet_ready_to_invoice': True})
-            for ts in new_timesheets:
-                ts._compute_durations()
 
     @api.onchange('stage_id')
     def _onchange_stage_id(self):
@@ -86,30 +84,65 @@ class ProjectTask(models.Model):
                 continue
             if not task.ready_to_invoice and not task.stage_id.is_invoiceable:
                 raise UserError(
-                    'Task cannot be set to Invoiceable in this stage.'
+                    'Task cannot be "Ready to Invoice" in this stage.'
                 )
 
     @api.multi
     def check_task_is_invoiceable(self):
         for task in self:
-            # OK to unset invoiceablility
+            # OK to unset invoiceability
             if task.ready_to_invoice:
                 continue
             if task.is_invoiceable != 'yes':
                 raise UserError(
                     '"Is Invoiceable" is set to "%s". Must be "Yes" to continue.'
-                    % self.is_invoiceable.title()
+                    % task.is_invoiceable.title()
                 )
+
+    @api.multi
+    def add_planned_expected_difference(self):
+        """
+        When there's planned_hours, check to see if effective_hours are lower.
+        If so, customer should be invoiced for planned_hours as tech was
+        efficient in performing work.
+
+        Add timesheet indicating fulfillment, so customer is invoiced
+        for the full amount planned of time.
+        """
+        for task in self:
+            if task.is_invoiceable != 'yes':
+                return
+
+            if task.remaining_hours <= 0:
+                return
+
+            task.with_context(ts_type='fulfillment').write({
+                'timesheet_ids': [(0, 0, {
+                    'name': 'Task / Contract Fulfillment',
+                    'full_duration': 0,  # keep 0 to report on staff efficiency
+                    'unit_amount': task.remaining_hours,
+                    'timesheet_ready_to_invoice': True,
+                    'timer_status': 'stopped',
+                    'factor': False,  # No factor, because we invoice at full amount
+                    'user_id': self.env.uid,
+                    'account_id': task.project_id.analytic_account_id.id,
+                    'project_id': task.project_id.id,
+                    'sheet_id': self.get_hr_timesheet_id(),
+                })]
+            })
 
     @api.multi
     def toggle_ready_to_invoice(self):
         for task in self:
             task.check_invoiceable_stage()
             task.check_task_is_invoiceable()
-            task.ready_to_invoice = not task.ready_to_invoice
+            ready_to_invoice = not task.ready_to_invoice
 
-            if task.ready_to_invoice:
+            if ready_to_invoice:
+                task.add_planned_expected_difference()
                 task.mark_timesheets_ready()
+
+            task.ready_to_invoice = ready_to_invoice
 
     @api.onchange('project_id')
     def _onchange_project_id(self):
