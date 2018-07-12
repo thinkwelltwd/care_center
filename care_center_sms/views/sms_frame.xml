@@ -1,0 +1,41 @@
+<odoo>
+
+        <!-- Hosting Service Search -->
+        <record id="view_sms_message_filter" model="ir.ui.view">
+            <field name="name">SMS Search</field>
+            <field name="model">sms.message</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search>
+                        <field name="by_partner_id"/>
+                        <field name="sms_content"/>
+                        <group expand="1" string="Filters">
+                            <filter name="outbound" string="Outbound"
+                                    domain="[('direction', '=', 'O')]"/>
+                            <filter name="inbound" string="Inbound"
+                                    domain="[('direction', '=', 'I')]"/>
+                        </group>
+                        <group expand="1" string="Group By">
+                            <filter name="group_by_status_code" string="Status"
+                                    context="{'group_by':'status_code'}"/>
+                            <filter name="group_by_partner_id" string="Partner"
+                                    context="{'group_by':'by_partner_id'}"/>
+                            <filter name="group_by_direction" string="Direction"
+                                    context="{'group_by':'direction'}"/>
+                        </group>
+                </search>
+            </field>
+        </record>
+
+      <record id="cc_sms_message_action" model="ir.actions.act_window">
+          <field name="name">SMS / MMS Messages</field>
+          <field name="res_model">sms.message</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">kanban,tree,form</field>
+          <field name="search_view_id" ref="view_sms_message_filter"/>
+          <field name="help" type="html">
+               <p class="oe_view_nocontent_create">SMS Messages</p>
+         </field>
+      </record>
+
+</odoo>
