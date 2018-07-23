@@ -20,7 +20,6 @@ class ProjectTask(models.Model):
     is_invoiceable = fields.Selection([
         ('yes', 'Yes'),
         ('no', 'No'),
-        ('contract', 'Contract'),
         ('confirm', 'Confirm'),
     ],
         oldname='invoiceable',
@@ -73,8 +72,13 @@ class ProjectTask(models.Model):
         if self.ready_to_invoice and not stage_invoiceable:
             self.toggle_ready_to_invoice()
 
-        if stage_invoiceable and self.is_invoiceable == 'yes' and not self.ready_to_invoice:
-            self.toggle_ready_to_invoice()
+        if stage_invoiceable:
+            if self.is_invoiceable == 'yes' and not self.ready_to_invoice:
+                self.toggle_ready_to_invoice()
+            if self.is_invoiceable == 'confirm':
+                raise UserError(
+                    'Please specify whether task is invoiceable or not.'
+                )
 
     @api.multi
     def check_invoiceable_stage(self):
