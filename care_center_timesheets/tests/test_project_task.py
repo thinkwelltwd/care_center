@@ -30,6 +30,11 @@ class TestTask(common.SavepointCase):
             'factor': 0.0,
         })
 
+        cls.confirm = Factor.create({
+            'name': 'Confirm',
+            'factor': 100.0,
+        })
+
         cls.stage_done = Stage.create({
             'name': 'Done',
             'is_invoiceable': True,
@@ -113,6 +118,46 @@ class TestTask(common.SavepointCase):
             hours -= (hours * ts.factor.factor / 100.0)
             self.assertEqual(ts.unit_amount, hours)
 
+    def test_change_stage_with_unconfirmed_invoiceability(self):
+        task = self.env['project.task'].create({
+            'name': 'Should We Bill for this work?',
+            'partner_id': self.partner_1.id,
+            'project_id': self.api_project.id,
+            'stage_id': self.stage_wip.id,
+            'planned_hours': 75,
+            'is_invoiceable': 'confirm',
+        })
+        with self.assertRaises(UserError):
+            task.write({'stage_id': self.stage_done.id})
+
+    def test_change_stage_with_active_timer(self):
+        self.env['account.analytic.line'].create({
+            'name': 'Work In Progress',
+            'user_id': self.user_projectuser.id,
+            'task_id': self.task.id,
+            'project_id': self.api_project.id,
+            'factor': self.no_discount.id,
+            'amount': 0,
+            'full_duration': 0,
+            'unit_amount': 0,
+            'timer_status': 'running',
+        })
+        with self.assertRaises(UserError):
+            self.task.write({'stage_id': self.stage_done.id})
+
+    def test_change_stage_with_unconfirmed_timer(self):
+        self.env['account.analytic.line'].create({
+            'name': 'Should we bill this time?',
+            'user_id': self.user_projectuser.id,
+            'task_id': self.task.id,
+            'project_id': self.api_project.id,
+            'factor': self.confirm.id,
+            'amount': 40,
+            'full_duration': 4.5,
+            'unit_amount': 4.5,
+        })
+        with self.assertRaises(UserError):
+            self.task.write({'stage_id': self.stage_done.id})
 
     def test_timesheet_check_if_marked_ready(self):
 

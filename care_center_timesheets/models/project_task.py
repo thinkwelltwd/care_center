@@ -65,6 +65,42 @@ class ProjectTask(models.Model):
             )
             new_timesheets.write({'timesheet_ready_to_invoice': True})
 
+    def invoiceability_unconfirmed(self):
+        """
+        Don't change allow switching to an invoiceable stage
+        if Invoiceability is still unconfirmed
+        """
+        if self.is_invoiceable == 'confirm':
+            raise UserError(
+                'Please specify whether task is invoiceable or not.'
+            )
+
+    def timesheet_factor_unconfirmed(self):
+        """
+        Don't change allow switching to an invoiceable stage
+        if Task has timesheets with invoiceable factor of "Confirm"
+        """
+        unconfirmed_ts = self.timesheet_ids.filtered(
+            lambda ts: ts.factor.name == 'Confirm'
+        )
+        if unconfirmed_ts:
+            raise UserError(
+                'Please finalize Invoice Factor on all Confirm timesheets.'
+            )
+
+    def timesheets_active(self):
+        """
+        Don't change allow switching to an invoiceable stage
+        if Task has timesheets that aren't Stopped
+        """
+        active_ts = self.timesheet_ids.filtered(
+            lambda ts: ts.timer_status != 'stopped'
+        )
+        if active_ts:
+            raise UserError(
+                'Please stop all Running / Paused timesheets.'
+            )
+
     @api.onchange('stage_id')
     def _onchange_stage_id(self):
         stage_invoiceable = self.stage_id.is_invoiceable
@@ -75,10 +111,9 @@ class ProjectTask(models.Model):
         if stage_invoiceable:
             if self.is_invoiceable == 'yes' and not self.ready_to_invoice:
                 self.toggle_ready_to_invoice()
-            if self.is_invoiceable == 'confirm':
-                raise UserError(
-                    'Please specify whether task is invoiceable or not.'
-                )
+            self.invoiceability_unconfirmed()
+            self.timesheet_factor_unconfirmed()
+            self.timesheets_active()
 
     @api.multi
     def check_invoiceable_stage(self):
