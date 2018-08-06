@@ -39,6 +39,9 @@ class AccountAnalyticLine(models.Model):
 
     @api.model
     def create(self, vals):
+        # When creating entries manually, set timer_status as "stopped"
+        if ('project_id' in vals or 'task_id' in vals) and not vals.get('timer_status', False):
+            vals['timer_status'] = 'stopped'
         task_id = vals.get('task_id', None)
         if task_id:
             task = self.env['project.task'].browse(task_id)
