@@ -56,6 +56,12 @@
                             ('date', '&gt;=', (context_today() - datetime.timedelta(weeks=1)).strftime('%Y-%m-%d')),
                             ('date', '&lt;=', (context_today() - datetime.timedelta(weeks=1) + datetime.timedelta(days=6)).strftime('%Y-%m-%d')),
                         ]"/>
+                <filter name="two_weeks_ago" string="Two Weeks Ago"
+                        domain="[
+                            '&amp;',
+                            ('date', '&gt;=', (context_today() - datetime.timedelta(weeks=2)).strftime('%Y-%m-%d')),
+                            ('date', '&lt;=', (context_today() - datetime.timedelta(weeks=2) + datetime.timedelta(days=6)).strftime('%Y-%m-%d')),
+                        ]"/>
                 <separator/>
                 <filter name="month" string="This Month"
                             domain="[
