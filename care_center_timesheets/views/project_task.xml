@@ -55,7 +55,7 @@
 
             <field name="timesheet_ids" position="replace">
                 <field name="timesheet_ids" colspan="4" nolabel="1" context="{'default_user_id' : uid, 'default_project_id': project_id}" groups="base.group_user">
-                    <tree string="Timesheet Activities" editable="top" colors="red:timesheet_ready_to_invoice == False;green:timesheet_ready_to_invoice == True;">
+                    <tree string="Timesheet Activities" editable="top" colors="red:invoice_status == 'notready';green:invoice_status == 'ready'">
                         <field name="date"/>
                         <field name="user_id" required="1" options="{'no_create': True}"/>
                         <field name="name"/>
@@ -63,7 +63,7 @@
                         <field name="full_duration" string="Time" widget="float_time"/>
                         <field name="unit_amount" string="Duration" widget="float_time" readonly="0"/>
                         <field name="project_id" invisible="1" required="0"/>
-                        <field name="timesheet_ready_to_invoice" string="Ready" invisible="1"/>
+                        <field name="invoice_status" string="Invoice Status" invisible="0"/>
                     </tree>
                 </field>
             </field>

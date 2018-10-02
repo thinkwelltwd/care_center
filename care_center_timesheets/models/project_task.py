@@ -34,12 +34,13 @@ class ProjectTask(models.Model):
     def write(self, vals):
         task = super(ProjectTask, self).write(vals)
 
-        # widget bar doesn't trigger onchange
-        if 'stage_id' in vals:
-            self._onchange_stage_id()
+        for record in self:
+            # widget bar doesn't trigger onchange
+            if 'stage_id' in vals:
+                record._onchange_stage_id()
 
-        if vals.get('partner_id') or vals.get('project_id'):
-            self._update_timesheets()
+            if vals.get('partner_id') or vals.get('project_id'):
+                record._update_timesheets()
 
         return task
 
@@ -61,9 +62,9 @@ class ProjectTask(models.Model):
         """
         for task in self:
             new_timesheets = task.timesheet_ids.filtered(
-                lambda ts: not ts.timesheet_ready_to_invoice
+                lambda ts: ts.invoice_status == 'notready'
             )
-            new_timesheets.write({'timesheet_ready_to_invoice': True})
+            new_timesheets.write({'invoice_status': 'ready'})
 
     def invoiceability_unconfirmed(self):
         """
@@ -160,7 +161,7 @@ class ProjectTask(models.Model):
                     'name': 'Task / Contract Fulfillment',
                     'full_duration': 0,  # keep 0 to report on staff efficiency
                     'unit_amount': task.remaining_hours,
-                    'timesheet_ready_to_invoice': True,
+                    'invoice_status': 'ready',
                     'timer_status': 'stopped',
                     'factor': False,  # No factor, because we invoice at full amount
                     'user_id': self.env.uid,

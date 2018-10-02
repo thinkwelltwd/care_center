@@ -9,7 +9,7 @@
     'website': "http://www.thinkwelldesigns.com",
 
     'category': 'Projects and Sales',
-    'version': '0.3',
+    'version': '10.0.4.0.0',
 
     'depends': [
         'hr_timesheet_sheet',
@@ -26,6 +26,7 @@
         'views/hr_timesheet.xml',
         'views/project_task.xml',
         'views/res_config.xml',
+        'views/sale.xml',
 
         # Wizard Views
         'views/timesheet_timer.xml',

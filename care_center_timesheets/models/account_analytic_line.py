@@ -7,7 +7,19 @@ from odoo.exceptions import ValidationError
 class AccountAnalyticLine(models.Model):
     _inherit = 'account.analytic.line'
 
-    timesheet_ready_to_invoice = fields.Boolean(default=False, copy=False)
+    invoice_status = fields.Selection(selection=[
+        ('notready', 'Not Ready'),
+        ('ready', 'Ready'),
+        ('invoiced', 'Invoiced'),
+        ('notinvoiceable', 'Not Invoiceable'),
+        ],
+        copy=False,
+        string='Invoice Status',
+        help="Not Ready = Timesheets won't appear in Sales Order \n"
+             "Ready = Timesheets will appear in Sales Order \n"
+             "Invoiced = No changes can be made to Duration \n"
+             "Not Invoiceable = Timesheet cannot be invoiced \n"
+    )
 
     timer_status = fields.Selection(selection=[
         ('stopped', 'Stopped'),
@@ -22,9 +34,8 @@ class AccountAnalyticLine(models.Model):
         'Factor',
         default=lambda s: s.env['hr_timesheet_invoice.factor'].search(
             [('factor', '=', 0.0)], limit=1),
-        oldname='to_invoice',
-        help="Allows setting the discount while making invoice, keep"
-        " empty if the activities should not be invoiced.")
+        help="Set the billing percentage when making invoice invoice.",
+    )
 
     full_duration = fields.Float(
         'Time',
@@ -39,9 +50,12 @@ class AccountAnalyticLine(models.Model):
 
     @api.model
     def create(self, vals):
-        # When creating entries manually, set timer_status as "stopped"
+        # When creating entries manually, *_status values
         if ('project_id' in vals or 'task_id' in vals) and not vals.get('timer_status', False):
-            vals['timer_status'] = 'stopped'
+            vals.update({
+                'timer_status': 'stopped',
+                'invoice_status': 'notready',
+            })
         task_id = vals.get('task_id', None)
         if task_id:
             task = self.env['project.task'].browse(task_id)
@@ -54,15 +68,15 @@ class AccountAnalyticLine(models.Model):
     @api.constrains('unit_amount')
     def check_if_marked_ready(self):
         """
-        If a timesheet has been marked as ready to invoice,
+        If a timesheet has been marked as "invoiced",
         the unit_amount should never be changed again.
         """
         ts_type = self._context.get('ts_type', '')
-        if not self.timesheet_ready_to_invoice or ts_type == 'fulfillment':
+        if self.invoice_status != 'invoiced' or ts_type == 'fulfillment':
             return
         raise ValidationError(
             '"%s" timesheet duration changed!\n\n'
-            'Duration may not be changed when marked "Ready to Invoice".' %
+            'Duration may not be changed after timesheet has been invoiced.' %
             self.name
         )
 

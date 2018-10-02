@@ -71,6 +71,7 @@ class TestTask(common.SavepointCase):
                     'project_id': cls.api_project.id,
                     'factor': cls.no_discount.id,
                     'timer_status': 'stopped',
+                    'invoice_status': 'notready',
                     'amount': 40,
                     'full_duration': .5,
                     'unit_amount': .5,
@@ -81,6 +82,7 @@ class TestTask(common.SavepointCase):
                     'project_id': cls.api_project.id,
                     'factor': cls.no_discount.id,
                     'timer_status': 'stopped',
+                    'invoice_status': 'notready',
                     'amount': 40,
                     'full_duration': 4.5,
                     'unit_amount': 4.5,
@@ -98,7 +100,7 @@ class TestTask(common.SavepointCase):
     def test_mark_timesheets_ready(self):
 
         for ts in self.task.timesheet_ids:
-            self.assertFalse(ts.timesheet_ready_to_invoice)
+            self.assertEqual(ts.invoice_status, 'notready')
 
         self.task.write({'stage_id': self.stage_done.id})
         self.task.mark_timesheets_ready()
@@ -106,7 +108,7 @@ class TestTask(common.SavepointCase):
         worked_hours = 0
         for ts in self.task.timesheet_ids:
             worked_hours += ts.unit_amount
-            self.assertTrue(ts.timesheet_ready_to_invoice)
+            self.assertEqual(ts.invoice_status, 'ready')
 
         self.assertEqual(worked_hours, self.task.effective_hours)
 
@@ -162,7 +164,7 @@ class TestTask(common.SavepointCase):
     def test_timesheet_check_if_marked_ready(self):
 
         for ts in self.task.timesheet_ids:
-            self.assertFalse(ts.timesheet_ready_to_invoice)
+            self.assertEqual(ts.invoice_status, 'notready')
 
         self.task.write({'stage_id': self.stage_done.id})
         self.task.mark_timesheets_ready()

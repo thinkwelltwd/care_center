@@ -12,10 +12,31 @@ so users can easily clock In / Out as they work on Tasks / Tickets.
 Also adds Project and Task reports that include all the timesheets so that customers
 can get a quick summary of the work that was done, for which they will be invoiced.
 
+
+*Note!* This module includes the fuctionality of sale_timesheet_invoice_description.
+Both cannot be installed at the same time.
+
 Usage
 =====
 
-To use this module, attached the report to an Task / Ticket email
+For initial setup:
+
+#. Go to *Sales -> Sales Orders* and create a new Sales Orders.
+#. Add line selecting a product with
+
+   - *Invoicing Policy* -> **Delivered quantities**
+
+   - *Track Service* -> **Timesheets on contract**
+
+   e.g. *Support Contract (on timesheet)*
+#. Confirm Sale
+#. Create a Task and add Timesheets with Start / Pause / Stop buttons.
+#. Finish Task and set to Invoiceable.
+#. Go to Sales Orders and select *Other Information* -> **Timesheet invoice
+   description**
+#. Create Invoice.
+
+
 Bug Tracker
 ===========
 

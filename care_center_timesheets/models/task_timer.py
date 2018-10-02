@@ -187,6 +187,7 @@ class TaskTimer(models.AbstractModel):
                 'name': 'Work In Progress',
                 'date_start': datetime.now() - timedelta(minutes=offset),
                 'timer_status': 'running',
+                'invoice_status': 'notready',
                 'account_id': self.project_id.analytic_account_id.id,
                 'user_id': self.env.uid,
                 'project_id': self.project_id.id,
