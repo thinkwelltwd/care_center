@@ -25,7 +25,7 @@ class ProcedureProcedure(models.Model):
     def create(self, vals):
         if 'parent_id' in vals and vals.get('sequence', 1) == 1:
             child_count = self.env['procedure.procedure'].search_count([
-                ('parent_id', '=', vals['parent_id'])
+                ('parent_id', '=', vals['parent_id']),
             ])
             vals['sequence'] = child_count + 1
         return super(ProcedureProcedure, self).create(vals)
@@ -46,34 +46,12 @@ class ProcedureProcedure(models.Model):
 
             docs = ['<h3>Procedure: %s</h3> %s' % (procedure.name, procedure.description)]
             checklists = self.env['procedure.procedure'].search([
-                ('parent_id', '=', procedure.id)
+                ('parent_id', '=', procedure.id),
             ])
             for checklist in checklists:
                 docs.append('<h3>%s</h3> %s' % (checklist.name, checklist.description))
 
             procedure.documentation = ''.join(docs)
-
-    @api.multi
-    def show_documentation(self):
-        """
-        Display modal form containing all documentation content
-        from this procedure and all child procedures
-        """
-        form = self.env.ref('care_center_procedure.view_procedure_documentation_form')
-
-        return {
-            'name': '%s Documentation' % self.name,
-            'view_type': 'form',
-            'view_mode': 'form',
-            'res_model': 'procedure.procedure',
-            'view_id': False,
-            'type': 'ir.actions.act_window',
-            'target': 'current',
-            'res_id': self.id,
-            'views': [
-                (form.id, 'form'),
-            ],
-        }
 
     @api.multi
     def add_checklist(self):
@@ -123,7 +101,11 @@ class ProcedureAssignment(models.Model):
     recolor = fields.Boolean(compute='_compute_recolor')
 
     _sql_constraints = [
-        ('procedure_task_uniq', 'unique(procedure_id, task_id)', 'A procedure may only be assigned once!'),
+        (
+            'procedure_task_uniq',
+            'unique(procedure_id, task_id)',
+            'A procedure may only be assigned once!'
+        ),
     ]
 
     @api.multi
@@ -157,50 +139,31 @@ class ProcedureAssignment(models.Model):
     @api.multi
     def set_parent_procedure_status(self):
 
-        if not self.procedure_id.parent_id:
+        procedure = self.procedure_id.parent_id
+        if not procedure:
             return
 
-        procedure = self.procedure_id.parent_id
-        unfinished_checklist = self.env['procedure.assignment'].search_count([
+        unfinished_checklist = self.search_count([
             ('procedure_id.parent_id', '=', procedure.id),
             ('task_id', '=', self.task_id.id),
-            ('status', 'in', ['todo', 'waiting'])
+            ('status', 'in', ['todo', 'waiting']),
         ])
 
-        procedure_assignment = self.env['procedure.assignment'].search([
+        procedure_assignment = self.search([
             ('task_id', '=', self.task_id.id),
             ('procedure_id', '=', procedure.id),
         ])
 
-        if unfinished_checklist:
-            if procedure_assignment.status != 'working':
-                procedure_assignment.write({'status': 'working'})
-        else:
-            procedure_assignment.write({'status': 'done'})
+        procedure_assignment.write({'status': 'working' if unfinished_checklist else 'done'})
 
     @api.multi
-    def change_status_done(self):
+    def change_status(self):
+        status = self.env.context.get('status')
+        if not status:
+            return
         for record in self:
-            record.status = 'done'
-            self.set_parent_procedure_status()
-
-    @api.multi
-    def change_status_todo(self):
-        for record in self:
-            record.status = 'todo'
-            self.set_parent_procedure_status()
-
-    @api.multi
-    def change_status_cancelled(self):
-        for record in self:
-            record.status = 'cancelled'
-            self.set_parent_procedure_status()
-
-    @api.multi
-    def change_status_waiting(self):
-        for record in self:
-            record.status = 'waiting'
-            self.set_parent_procedure_status()
+            record.status = status
+            record.set_parent_procedure_status()
 
     @api.model
     def create(self, vals):
@@ -217,7 +180,7 @@ class ProcedureAssignment(models.Model):
         if not self.task_id or not self.procedure_id:
             return
 
-        self.env['procedure.assignment'].search([
+        self.search([
             ('task_id', '=', self.task_id.id),
             ('procedure_id.parent_id', '=', self.procedure_id.id),
         ]).unlink()

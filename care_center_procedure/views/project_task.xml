@@ -43,9 +43,9 @@
                           <field name="procedure_id" string="Name"/>
                           <field name="recolor" invisible="1"/>
                           <field name="status"/>
-                          <button name="change_status_done" string="Change status to DONE" type="object" icon="fa-check" attrs="{'invisible': ['|', ('status', 'in',['done', 'cancelled'])]}"/>
-                          <button name="change_status_todo" string="Change status to TODO" type="object" icon="fa-caret-square-o-right" attrs="{'invisible': [ '|',('status', '=', 'todo')]}"/>
-                          <button name="change_status_cancelled" type="object" string="Change status to CANCELLED" icon="fa-ban" attrs="{'invisible': [ '|',('status', '=', 'cancelled')]}"/>
+                          <button name="change_status" string="Mark DONE" context="{'status': 'done'}" type="object" icon="fa-check" attrs="{'invisible': ['|', ('status', 'in',['done', 'cancelled'])]}"/>
+                          <button name="change_status" string="Mark TODO" context="{'status': 'todo'}" type="object" icon="fa-caret-square-o-right" attrs="{'invisible': [ '|',('status', '=', 'todo')]}"/>
+                          <button name="change_status" type="object" string="Mark CANCELLED" context="{'status': 'cancelled'}" icon="fa-ban" attrs="{'invisible': [ '|',('status', '=', 'cancelled')]}"/>
                           <field name="write_date" readonly="True"/>
                         </tree>
                     </field>
