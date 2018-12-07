@@ -185,7 +185,9 @@ class ProjectTask(models.Model):
 
         if self.env.context.get('project_tag', None):
             if not self.tag_ids:
-                self.tag_ids = self.env['project.tags'].search([('name', '=', self.env.context['project_tag'])])
+                self.tag_ids = self.env['project.tags'].search([
+                    ('name', '=', self.env.context['project_tag']),
+                ])
 
     # @api.constrains('project_id')
     # def check_relationships(self):

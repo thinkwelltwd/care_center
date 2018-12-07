@@ -14,5 +14,6 @@ class ProjectTask(models.Model):
 
     @api.onchange('project_id')
     def _set_team_from_project(self):
-        if self.project_id.team_id:
+        project_team = self.project_id.team_id
+        if self.project_id.team_id and project_team != self.team_id:
             self.team_id = self.project_id.team_id.id
