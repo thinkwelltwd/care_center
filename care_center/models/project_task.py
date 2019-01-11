@@ -257,12 +257,15 @@ class ProjectTask(models.Model):
 
     @api.model
     def _check_stage_id(self, stage_id):
-        """Don't set stage to folded state unless all subtasks are Done"""
-        if not self.child_task_ids or not stage_id:
-            return
+        """
+        Don't set stage to folded state unless all subtasks are Done.
+        Archive task when stage is folded.
+        """
         stage = self.env['project.task.type'].browse(stage_id)
-        if stage.fold:
-            self.confirm_subtasks_done()
+        if stage and stage.fold:
+            if self.child_task_ids:
+                self.confirm_subtasks_done()
+            self.toggle_active()
 
     @api.multi
     def write(self, values):
