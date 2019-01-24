@@ -25,6 +25,12 @@ class ReassignTaskWizard(models.TransientModel):
                               ondelete='set null',
                               help='New Team responsible for performing this Task')
     reassign_subtasks = fields.Boolean('Reassign Subtasks', default=True)
+    email_template_id = fields.Many2one('mail.template',
+                                        string='Email Template',
+                                        required=False,
+                                        domain=[('model_id.name', '=', 'Task')],
+                                        help="When template is specified, an email will be sent "
+                                             "to all followers of the task being re-assigned.")
 
     @api.constrains('assigned_to', 'team_id')
     def verify_assignment_changed(self):
@@ -90,6 +96,17 @@ class ReassignTaskWizard(models.TransientModel):
             description=self.description,
         )
 
+    def notify_partner_email(self):
+        """
+        When a ticket is assigned to a user, it may be useful to notify
+        all followers of the ticket via an email message. More specific
+        than Auto Responders.
+        """
+        if not self.email_template_id:
+            return
+
+        self.email_template_id.send_mail(self.task_id.id)
+
     @api.multi
     def reassign_user_team(self):
 
@@ -126,5 +143,7 @@ class ReassignTaskWizard(models.TransientModel):
             content_subtype='html',
             partner_ids=self.get_partner_ids(),
         )
+
+        self.notify_partner_email()
 
         return True

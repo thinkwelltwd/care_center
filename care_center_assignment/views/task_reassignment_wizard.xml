@@ -17,6 +17,7 @@
                     <newline />
                     <field name="name"/>
                     <field name="reassign_subtasks"/>
+                    <field name="email_template_id"/>
                     <field name="task_id" invisible="1"/>
                 </group>
                 <group>
