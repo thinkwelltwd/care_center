@@ -154,16 +154,29 @@ class ProcedureAssignment(models.Model):
             ('procedure_id', '=', procedure.id),
         ])
 
-        procedure_assignment.write({'status': 'working' if unfinished_checklist else 'done'})
+        if unfinished_checklist:
+            if procedure_assignment.status != 'working':
+                procedure_assignment.write({'status': 'working'})
+        else:
+            procedure_assignment.write({'status': 'done'})
 
     @api.multi
-    def change_status(self):
-        status = self.env.context.get('status')
-        if not status:
-            return
+    def change_status_done(self):
         for record in self:
-            record.status = status
-            record.set_parent_procedure_status()
+            record.status = 'done'
+            self.set_parent_procedure_status()
+
+    @api.multi
+    def change_status_todo(self):
+        for record in self:
+            record.status = 'todo'
+            self.set_parent_procedure_status()
+
+    @api.multi
+    def change_status_cancelled(self):
+        for record in self:
+            record.status = 'cancelled'
+            self.set_parent_procedure_status()
 
     @api.model
     def create(self, vals):
