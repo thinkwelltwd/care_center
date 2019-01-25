@@ -36,7 +36,7 @@
     </record>
 
     <record id="action_reassign_user_team_wizard" model="ir.actions.act_window">
-        <field name="name">Reassign User or Teamn</field>
+        <field name="name">Reassign User or Team</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">reassign_task.wizard</field>
         <field name="view_type">form</field>
