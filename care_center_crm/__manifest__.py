@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     'name': "care_center_crm",
 
@@ -18,7 +17,7 @@
     'website': "http://www.thinkwelldesigns.com",
 
     'category': 'Sales',
-    'version': '0.4',
+    'version': '11.0.1.0.0',
 
     'depends': [
         'care_center',

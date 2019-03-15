@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from odoo import api, models, fields
 from odoo.exceptions import UserError
 
@@ -195,7 +194,7 @@ class ProjectTask(models.Model):
 
         sale_order = self.env['sale.order'].search([
             ('state', 'not in', ('done', 'cancel')),
-            ('related_project_id', '=', self.project_id.analytic_account_id.id),
+            ('analytic_account_id', '=', self.project_id.analytic_account_id.id),
         ], limit=1, order='confirmation_date')
 
         so_lines = sale_order.order_line

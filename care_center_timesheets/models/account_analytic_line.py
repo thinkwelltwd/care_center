@@ -1,4 +1,3 @@
-# coding: utf-8
 from ..utils import get_factored_duration
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError

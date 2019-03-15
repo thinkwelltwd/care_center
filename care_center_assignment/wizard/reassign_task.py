@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -62,8 +61,8 @@ class ReassignTaskWizard(models.TransientModel):
 
     def assignment(self):
         if self.team_id:
-            return u'the %s Team' % self.team_id.name
-        return u'you'
+            return 'the %s Team' % self.team_id.name
+        return 'you'
 
     def get_partner_ids(self):
         if self.assigned_to:
@@ -76,14 +75,14 @@ class ReassignTaskWizard(models.TransientModel):
 
     def get_subject(self):
         if self.assigned_to:
-            return u'%s has assigned a Task to you' % self.env.user.name
-        return u'{by} has assigned a Task to the {team} Team'.format(
+            return '%s has assigned a Task to you' % self.env.user.name
+        return '{by} has assigned a Task to the {team} Team'.format(
             by=self.env.user.name,
             team=self.team_id.name,
         )
 
     def get_body(self,):
-        return u"""
+        return """
         <p>{by} has assigned the <b>{task}</b> Task to {assignment} </p>
         <p><b>Summary: </b>{summary}</p>
         <p><b>Description: </b></p>

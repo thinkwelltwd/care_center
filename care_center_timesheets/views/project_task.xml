@@ -19,7 +19,7 @@
         <field name="inherit_id" ref="project.view_task_search_form" />
         <field name="arch" type="xml">
 
-            <xpath expr="//filter[@name='draft']" position="after">
+            <xpath expr="//filter[@name='unassigned']" position="after">
                 <separator/>
                 <filter string="Work In Progress" name="work_in_progress" domain="[('timesheet_ids.timer_status', 'in', ('running', 'paused'))]"/>
                 <filter string="My Timers" name="agent_timers_running" domain="[('timesheet_ids.user_id', '=', uid), ('timesheet_ids.timer_status', 'in', ('running', 'paused'))]"/>

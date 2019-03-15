@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     'name': "Care Center Procedures",
 
@@ -10,7 +9,7 @@
     'website': "http://www.thinkwelldesigns.com",
 
     "category": "Project Management",
-    'version': '0.2',
+    'version': '11.0.1.0.0',
 
     'depends': [
         'care_center',

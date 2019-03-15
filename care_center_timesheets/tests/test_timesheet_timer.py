@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 from odoo.fields import Datetime
 from odoo.tests import common

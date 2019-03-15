@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     'name': "care_center_contacts",
 
@@ -12,7 +11,7 @@
     'website': "http://www.thinkwelldesigns.com",
 
     'category': 'Tools',
-    'version': '0.1',
+    'version': '11.0.1.0.0',
 
     'depends': [
         'note',

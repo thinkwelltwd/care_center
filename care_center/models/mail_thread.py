@@ -57,7 +57,7 @@ class MailThread(models.AbstractModel):
 
         if not thread_id and model == 'project.task':
             if not isinstance(msg, Message):
-                if isinstance(msg, unicode):
+                if isinstance(msg, str):
                     # Warning: message_from_string doesn't always work correctly on unicode,
                     # we must use utf-8 strings here :-(
                     msg = message.encode('utf-8')

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 
 def uninstall_hook(cr, registry):

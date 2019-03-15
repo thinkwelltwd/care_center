@@ -10,9 +10,10 @@
     'website': "http://www.thinkwelldesigns.com",
 
     'category': 'Support',
-    'version': '0.3',
+    'version': '11.0.1.0.0',
 
     'depends': [
+        'base_automation',
         'utm',
         'note',
         'calendar',
@@ -25,10 +26,9 @@
         # 'security/ir.model.access.csv',
         'data/utm.xml',
         'views/fetchmail_server.xml',
-        'views/res_config.xml',
-        'views/project.xml',
+        # 'views/project.xml',
         'views/project_task.xml',
-        'views/base_action_rule.xml',
+        'views/base_automation.xml',
         'views/care_center.xml',
         'views/merge_tasks_wizard.xml',
     ],

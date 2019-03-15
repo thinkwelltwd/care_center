@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 # © 2017 Dave Burkholder <dave@thinkwelldesigns.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 {
     'name': 'Support Teams',
-    'version': '1.1',
+    'version': '11.0.1.0.0',
     'category': 'Support',
     'summary': 'Manage Support Teams on Tickets & Tasks',
     'author': "Thinkwell Designs",

@@ -73,12 +73,12 @@
               sequence="100"
               groups="support_team.group_support_manager"/>
 
-        <menuitem name="Settings"
-                  id="menu_care_center_settings"
-                  parent="menu_support_config"
-                  sequence="1"
-                  action="action_care_center_config"
-                  groups="support_team.group_support_manager"/>
+        <!--<menuitem name="Settings"-->
+                  <!--id="menu_care_center_settings"-->
+                  <!--parent="menu_support_config"-->
+                  <!--sequence="1"-->
+                  <!--action="action_care_center_config"-->
+                  <!--groups="support_team.group_support_manager"/>-->
 
         <menuitem name="Support Teams"
                   id="menu_support_teams"
@@ -158,7 +158,7 @@
                       id="menu_care_center_ticket_rules"
                       parent="menu_care_center_ticket_processing"
                       sequence="10"
-                      action="base_action_rule_ticket"
+                      action="base_automation_ticket"
                       groups="support_team.group_support_manager"/>
 
             <menuitem name="Ticket Actions"

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 {
     "name": "Project Task Priority",
     "summary": "Adds all priority levels found in project_issue_priority",

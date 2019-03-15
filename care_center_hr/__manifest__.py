@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     'name': "care_center_hr",
 
@@ -12,7 +11,7 @@
     'website': "http://www.thinkwelldesigns.com",
 
     'category': 'Human Resources',
-    'version': '0.1',
+    'version': '11.0.1.0.0',
 
     'depends': [
         'care_center',

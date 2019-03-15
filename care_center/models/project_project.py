@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from odoo import api, models, fields
 
 
@@ -21,7 +20,7 @@ class ProjectProject(models.Model):
 
 
 class ProjectConfiguration(models.TransientModel):
-    _inherit = 'project.config.settings'
+    _inherit = 'res.config.settings'
 
     alias_name_prefix = fields.Boolean(
         string='Alias Name Prefix',

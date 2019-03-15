@@ -37,7 +37,7 @@
         <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_search"/>
         <field name="arch" type="xml">
 
-            <field name="department_id" position="after">
+            <xpath expr="//filter[@name='month']" position="after">
                 <separator/>
                 <filter string="Work In Progress" name="work_in_progress" domain="[('timer_status', '=', ('running', 'paused'))]"/>
                 <separator/>
@@ -90,7 +90,7 @@
                             ('date', '&gt;=', (context_today() + relativedelta(month=1, day=1, years=-1)).strftime('%Y-%m-%d')),
                             ('date', '&lt;=', (context_today() + relativedelta(month=12, day=31, years=-1)).strftime('%Y-%m-%d')),
                         ]"/>
-            </field>
+            </xpath>
 
             <xpath expr="//group" position="inside">
                 <filter string="Invoice Status" context="{'group_by':'invoice_status'}"/>

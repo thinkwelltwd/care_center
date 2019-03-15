@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import logging
@@ -76,8 +75,8 @@ class MergeTasks(models.TransientModel):
                 descriptions.append(name.description)
 
         self.dst_task_id.write({
-            'name': ', '.join([unicode(name) for name in names]),
-            'description': ', '.join([unicode(desc) for desc in descriptions]),
+            'name': ', '.join([str(name) for name in names]),
+            'description': ', '.join([str(desc) for desc in descriptions]),
         })
 
     def transfer_messages(self):

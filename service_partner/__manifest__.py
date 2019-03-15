@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     'name': "service_partner",
 
@@ -13,7 +12,7 @@
     'website': "http://www.thinkwelldesigns.com",
 
     'category': 'Support',
-    'version': '0.1',
+    'version': '11.0.1.0.0',
 
     'depends': [
         'base',

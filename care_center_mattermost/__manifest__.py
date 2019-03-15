@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     'name': "Care Center Mattermost",
 
@@ -11,7 +10,7 @@
     'website': "http://www.thinkwelldesigns.com",
 
     'category': 'Projects and Sales',
-    'version': '0.1',
+    'version': '11.0.1.0.0',
 
     'depends': [
         'base',

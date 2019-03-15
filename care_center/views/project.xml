@@ -2,8 +2,8 @@
 <odoo>
 
     <record id="view_config_settings_form_alias_name_sheet" model="ir.ui.view">
-        <field name="name">project.config.settings.form.alias_name_prefix</field>
-        <field name="model">project.config.settings</field>
+        <field name="name">res.config.settings.form.alias_name_prefix</field>
+        <field name="model">res.config.settings</field>
         <field name="inherit_id" ref="project.view_config_settings"/>
         <field name="arch" type="xml">
 

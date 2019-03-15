@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     'name': "Care Center Time Sheets",
 
@@ -9,10 +8,10 @@
     'website': "http://www.thinkwelldesigns.com",
 
     'category': 'Projects and Sales',
-    'version': '10.0.4.0.0',
+    'version': '11.0.1.0.0',
 
     'depends': [
-        'hr_timesheet_sheet',
+        'sale_timesheet',
         'project',
         'support_team',
     ],

@@ -25,14 +25,14 @@
     </record>
 
 
-    <record id="base_action_rule_ticket" model="ir.actions.act_window">
+    <record id="base_automation_ticket" model="ir.actions.act_window">
         <field name="name">Ticket Rules</field>
-        <field name="res_model">base.action.rule</field>
+        <field name="res_model">base.automation</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('model_id','=', 'Task')]</field>
         <field name="context" eval="{'default_model_id': ref('project.model_project_task')}"/>
-        <field name="view_id" ref="base_action_rule.view_base_action_rule_tree"/>
+        <field name="view_id" ref="base_automation.view_base_automation_tree"/>
         <field name="help" type="html">
           <p class="oe_view_nocontent_create">
             Apply Rules to Tickets.
