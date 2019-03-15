@@ -30,6 +30,7 @@
         'views/project_task.xml',
         'views/base_action_rule.xml',
         'views/care_center.xml',
+        'views/merge_tasks_wizard.xml',
     ],
     'installable': True,
     'auto_install': False,
