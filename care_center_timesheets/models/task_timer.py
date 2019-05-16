@@ -260,3 +260,21 @@ class TaskTimer(models.AbstractModel):
             'view_mode': 'form',
             'target': 'new'
         }
+    
+    @api.multi
+    def api_timer_stop(self, summary):
+        """
+        Close timesheet without wizard
+        """
+        self.ensure_one()
+        wip_timesheet = self._get_timesheet(status='running')
+        Timer = self.env['timesheet_timer.wizard']
+
+        new = Timer.create({
+            'name': summary,
+            'timesheet_id': wip_timesheet.id,
+            'completed_timesheets': sum([ts.full_duration for ts in self.timesheet_ids]),
+            'date_stop': str(datetime.utcnow())
+        })
+
+        new.save_timesheet()
