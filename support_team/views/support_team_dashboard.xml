@@ -44,7 +44,7 @@
                 <data>
 
                     <xpath expr="//div[contains(@class, 'o_kanban_primary_left')]" position="inside">
-                        <button class="btn btn-primary" name="%(action_view_task)d" type="action">Tasks</button>
+                        <button string="Tasks" class="btn btn-primary" name="%(action_view_task)d" type="action">Tasks</button>
                     </xpath>
 
                     <xpath expr="//div[contains(@class, 'o_kanban_manage_new')]" position="inside">

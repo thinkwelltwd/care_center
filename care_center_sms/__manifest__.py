@@ -12,7 +12,7 @@
     'website': "http://www.thinkwelldesigns.com",
 
     'category': 'Tools',
-    'version': '11.0.1.0.0',
+    'version': '12.0.1.0.0',
 
     'depends': [
         'sms_frame',

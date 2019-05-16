@@ -93,7 +93,7 @@
             </xpath>
 
             <xpath expr="//group" position="inside">
-                <filter string="Invoice Status" context="{'group_by':'invoice_status'}"/>
+                <filter name="invoice_status" string="Invoice Status" context="{'group_by':'invoice_status'}"/>
             </xpath>
 
         </field>

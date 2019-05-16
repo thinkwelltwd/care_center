@@ -40,8 +40,8 @@ class TimesheetTimerWizard(models.TransientModel):
         Display calculated data to the user, and return a dict
         of data to save the timesheet.
         """
-        start = fields.Datetime.from_string(self.timesheet_id.date_start)
-        stop = fields.Datetime.from_string(self.date_stop) or datetime.now()
+        start = fields.Datetime.to_datetime(self.timesheet_id.date_start)
+        stop = fields.Datetime.to_datetime(self.date_stop) or datetime.now()
 
         this_timesheet = self.get_minimum_duration(
             duration=self.get_timesheet_duration(start, stop)
@@ -74,8 +74,8 @@ class TimesheetTimerWizard(models.TransientModel):
     def _check_date_stop(self):
         # Only test if user provides a value in the form
         if self.date_stop:
-            start = fields.Datetime.from_string(self.timesheet_id.date_start)
-            stop = fields.Datetime.from_string(self.date_stop)
+            start = fields.Datetime.to_datetime(self.timesheet_id.date_start)
+            stop = fields.Datetime.to_datetime(self.date_stop)
             if stop < start:
                 raise ValidationError(_(
                     'Stop time must be later than Start time'

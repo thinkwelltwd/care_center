@@ -81,19 +81,19 @@
 
                 <field name="user_timer_status" invisible="1"/>
 
-                <button name="timer_start" type="object" attrs="{'invisible': ['|', ('active', '=', False), ('user_timer_status', 'in', ('running', 'paused'))]}" class="btn btn-primary btn-sm">
+                <button string="Start Timer" name="timer_start" type="object" attrs="{'invisible': ['|', ('active', '=', False), ('user_timer_status', 'in', ('running', 'paused'))]}" class="btn btn-primary btn-sm">
                         <span class="fa fa-play"/> Start
                 </button>
 
-                <button name="timer_resume" type="object" attrs="{'invisible': ['|', ('active', '=', False), ('user_timer_status', '!=', 'paused')]}" class="btn btn-success btn-sm">
+                <button string="Resume Timer" name="timer_resume" type="object" attrs="{'invisible': ['|', ('active', '=', False), ('user_timer_status', '!=', 'paused')]}" class="btn btn-success btn-sm">
                         <span class="fa fa-play-circle"/> Resume
                 </button>
 
-                <button name="timer_pause" type="object" attrs="{'invisible': ['|', ('active', '=', False), ('user_timer_status', '!=', 'running')]}" class="btn btn-warning btn-sm">
+                <button string="Pause Timer" name="timer_pause" type="object" attrs="{'invisible': ['|', ('active', '=', False), ('user_timer_status', '!=', 'running')]}" class="btn btn-warning btn-sm">
                         <span class="fa fa-pause"/> Pause
                 </button>
 
-                <button name="timer_stop" type="object" attrs="{'invisible': ['|', ('active', '=', False), ('user_timer_status', 'in', ('paused', 'stopped'))]}" class="btn btn-danger btn-sm">
+                <button string="Stop Timer" name="timer_stop" type="object" attrs="{'invisible': ['|', ('active', '=', False), ('user_timer_status', 'in', ('paused', 'stopped'))]}" class="btn btn-danger btn-sm">
                         <span class="fa fa-stop"/> Stop
                 </button>
 

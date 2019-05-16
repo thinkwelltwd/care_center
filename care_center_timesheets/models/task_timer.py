@@ -207,7 +207,7 @@ class TaskTimer(models.AbstractModel):
         current session plus any prior sessions
         """
         end = datetime.now()
-        start = fields.Datetime.from_string(timesheet.date_start)
+        start = fields.Datetime.to_datetime(timesheet.date_start)
         duration = (end - start).total_seconds() / 3600.0
         return timesheet.full_duration + duration
 
@@ -260,7 +260,7 @@ class TaskTimer(models.AbstractModel):
             'view_mode': 'form',
             'target': 'new'
         }
-    
+
     @api.multi
     def api_timer_stop(self, summary):
         """

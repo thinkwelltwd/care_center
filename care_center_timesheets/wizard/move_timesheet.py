@@ -99,7 +99,7 @@ class MoveTimeheet(models.TransientModel):
         reset date_start on original timesheet
         """
         end = datetime.now()
-        start = fields.Datetime.from_string(self.timesheet_id.date_start)
+        start = fields.Datetime.to_datetime(self.timesheet_id.date_start)
         session_duration = (end - start).total_seconds()
 
         self.timesheet_id.write({
