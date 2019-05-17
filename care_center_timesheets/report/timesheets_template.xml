@@ -12,7 +12,8 @@
                         <th style="width: 15%; vertical-align:middle;text-align:center;border:1px solid">Date</th>
                         <th style="width: 55%; vertical-align:middle;text-align:center;border:1px solid">Description</th>
                         <th style="width: 20%; vertical-align:middle;text-align:center;border:1px solid">Agent</th>
-                        <th style="width: 10%; vertical-align:middle;text-align:center;border:1px solid">Time</th>
+                        <th style="width: 10%; vertical-align:middle;text-align:center;border:1px solid">Total Hours</th>
+                        <th style="width: 10%; vertical-align:middle;text-align:center;border:1px solid">Billable Hours</th>
                     </tr>
                 </thead>
               <tbody>
@@ -20,7 +21,8 @@
                         <td style="vertical-align:middle;text-align:center;border:1px solid"><span t-esc="t.date"/></td>
                         <td style="vertical-align:middle;text-align:left;border:1px solid; padding-left: 10px;"><span t-esc="t.display_name"/></td>
                         <td style="vertical-align:middle;text-align:left;border:1px solid; padding-left: 10px;"><span t-esc="t.user_id.display_name"/></td>
-                        <td style="vertical-align:middle;text-align:right;border:1px solid; padding-right: 10px;"><span t-esc="t.full_duration"/></td>
+                        <td style="vertical-align:middle;text-align:right;border:1px solid; padding-right: 10px;"><span t-esc="t.full_duration_rounded"/></td>
+                        <td style="vertical-align:middle;text-align:right;border:1px solid; padding-right: 10px;"><span t-esc="t.billable_time"/></td>
                     </tr>
               </tbody>
         </table>
