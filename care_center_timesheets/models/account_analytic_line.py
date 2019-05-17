@@ -42,6 +42,22 @@ class AccountAnalyticLine(models.Model):
         default=0.0,
         help='Total and undiscounted amount of time spent on timesheet')
 
+    full_duration_rounded = fields.Float(compute='_round_full_duration')
+    billable_time = fields.Float(compute='_get_billable_time')
+
+    @api.one
+    @api.depends('full_duration')
+    def _round_full_duration(self):
+        self.full_duration_rounded = round(self.full_duration, 2)
+
+    @api.one
+    @api.depends('full_duration_rounded')
+    def _get_billable_time(self):
+        factored_duration = get_factored_duration(
+            hours=self.full_duration_rounded, invoice_factor=self.factor,
+        )
+        self.billable_time = round(factored_duration, 2)
+
     @api.onchange('full_duration', 'factor')
     def _compute_durations(self):
         self.unit_amount = get_factored_duration(
