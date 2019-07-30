@@ -6,22 +6,6 @@
         <field name="inherit_id" ref="hr_timesheet_attendance.view_hr_timesheet_attendance_report_search"/>
         <field name="arch" type="xml">
 
-            <xpath expr="//search/filter[@name='week']" position="replace">
-                <filter name="week" string="This Week"
-                        domain="[
-                            '&amp;',
-                            ('date', '&gt;=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
-                            ('date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
-                        ]"/>
-                <filter name="last_week" string="Last Week"
-                        domain="[
-                            '&amp;',
-                            ('date', '&gt;=', (context_today() - datetime.timedelta(weeks=1)).strftime('%Y-%m-%d')),
-                            ('date', '&lt;=', (context_today() - datetime.timedelta(weeks=1) + datetime.timedelta(days=6)).strftime('%Y-%m-%d')),
-                        ]"/>
-                <separator/>
-            </xpath>
-
             <xpath expr="//search/filter[@name='month']" position="after">
                 <filter name="last_month" string="Last Month"
                         domain="[
