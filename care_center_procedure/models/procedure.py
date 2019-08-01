@@ -4,6 +4,7 @@ from odoo.exceptions import ValidationError
 
 class ProcedureProcedure(models.Model):
     _name = 'procedure.procedure'
+    _description = 'Care Center Procedure'
     _order = 'sequence asc'
 
     active = fields.Boolean(default=True)
@@ -75,6 +76,7 @@ class ProcedureProcedure(models.Model):
 
 class ProcedureAssignment(models.Model):
     _name = "procedure.assignment"
+    _description = 'Care Center Procedure Assignment'
     _rec_name = 'procedure_id'
     _order = 'parent_id asc, sequence asc'
 

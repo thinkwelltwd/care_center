@@ -9,6 +9,7 @@ class CrmLeadToTaskWizard(models.TransientModel):
     """
 
     _name = "crm.lead2task.wizard"
+    _description = 'Care Center CRM Lead To Task Wizard'
     _inherit = 'crm.partner.binding'
 
     lead_id = fields.Many2one('crm.lead', string='Lead')

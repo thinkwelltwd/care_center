@@ -3,6 +3,7 @@ from odoo import api, models, fields
 
 class ProjectTask(models.Model):
     _name = 'project.task'
+    _description = 'Care Center Assignment Project Task'
     _inherit = ['care_center.base', 'project.task']
 
     assignment_ids = fields.One2many('task.assignment', 'task_id',
