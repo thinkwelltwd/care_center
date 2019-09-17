@@ -72,8 +72,10 @@ class SaleConfiguration(models.TransientModel):
     _inherit = 'res.config.settings'
 
     default_timesheet_invoice_description = fields.Selection(
-        '_get_timesheet_invoice_description',
-        "Timesheet Invoice Description")
+        selection='_get_timesheet_invoice_description',
+        string="Timesheet Invoice Description",
+        default_model='sale.order'
+    )
 
     @api.model
     def _get_timesheet_invoice_description(self):
