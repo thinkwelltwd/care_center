@@ -71,16 +71,16 @@
             </field>
 
             <field name="project_id" position="before">
-                <field name="partner_id" options="{'no_create': True}" required="True"/>
+                <field name="partner_id" options="{'no_quick_create': True}" required="True"/>
             </field>
 
             <field name="project_id" position="after">
-                <field name="parent_task_id" options="{'no_create': True}" domain="[('project_id', '=', project_id)]"/>
+                <field name="parent_task_id" options="{'no_quick_create': True}" domain="[('project_id', '=', project_id)]"/>
             </field>
 
             <field name="project_id" position="attributes">
                <attribute name="required">True</attribute>
-               <attribute name="no_create">True</attribute>
+               <attribute name="no_quick_create">True</attribute>
             </field>
 
             <xpath expr="//div[@name='button_box']" position="inside">
