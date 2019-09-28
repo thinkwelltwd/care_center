@@ -13,6 +13,7 @@ class ProjectTaskType(models.Model):
 class ProjectTask(models.Model):
 
     _name = 'project.task'
+    _description = 'Care Center Timesheets Project Task'
     _inherit = ['task.timer', 'project.task']
 
     ready_to_invoice = fields.Boolean(default=False, copy=False)

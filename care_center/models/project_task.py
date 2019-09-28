@@ -5,6 +5,7 @@ from odoo.exceptions import ValidationError
 
 class ProjectTask(models.Model):
     _name = 'project.task'
+    _description = 'Care Center Project Task'
     _inherit = ['care_center.base', 'project.task']
 
     parent_task_id = fields.Many2one('project.task', string='Parent Task',

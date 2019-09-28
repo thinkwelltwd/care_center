@@ -3,6 +3,7 @@ from odoo import models, fields
 
 class TaskAssignment(models.Model):
     _name = 'task.assignment'
+    _description = 'Care Center Task Assignment'
 
     name = fields.Char('Summary', required=True,
                        help='Short explanation for reassigning the Task.')

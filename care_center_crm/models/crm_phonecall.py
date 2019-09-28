@@ -3,6 +3,7 @@ from odoo import api, fields, models
 
 class CrmPhonecall(models.Model):
     _name = 'crm.phonecall'
+    _description = 'Care Center CRM Phone Call'
     _inherit = ['care_center.base', 'crm.phonecall']
 
     def _available_task_lead_ids(self):

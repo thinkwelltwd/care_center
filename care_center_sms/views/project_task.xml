@@ -7,13 +7,8 @@
             <field name="condition">True</field>
             <field name="state">code</field>
             <field name="code">action = record.sms_action()</field>
-        </record>
-
-        <record id="sms_lead_more_menu_client_action" model="ir.values">
-            <field name="key2" eval="'client_action_multi'" />
-            <field name="model" eval="'project.task'"/>
-            <field name="name">SMS Task Partner</field>
-            <field name="value" eval="'ir.actions.server,%d'%sms_task_more_menu_server_action"/>
+            <field name="binding_model_id" ref="project.model_project_task"/>
+            <field name="binding_type">report</field>
         </record>
 
 </odoo>

@@ -7,6 +7,7 @@ class CareCenterBase(models.AbstractModel):
     useful in multiple other project models.
     """
     _name = 'care_center.base'
+    _description = 'Care Center Base'
 
     @api.multi
     def get_partner_ids(self, field=None):
