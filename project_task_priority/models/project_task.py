@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class ProjectTask(models.Model):
@@ -13,3 +13,12 @@ class ProjectTask(models.Model):
             ("5", "Disaster"),
         ]
     )
+
+    @api.multi
+    def toggle_active(self):
+        """Reset priority when archiving task"""
+        super(ProjectTask, self).toggle_active()
+
+        for record in self:
+            if record.active:
+                self.priority = '0'
