@@ -23,6 +23,7 @@ class ReassignTaskWizard(models.TransientModel):
                                   index=True, ondelete='set null')
     team_id = fields.Many2one('crm.team', string='Team', index=True,
                               ondelete='set null',
+                              domain=[('type_team', '!=', 'sale')],
                               help='New Team responsible for performing this Task')
     reassign_subtasks = fields.Boolean('Reassign Subtasks', default=True)
     email_template_id = fields.Many2one('mail.template',
@@ -45,6 +46,21 @@ class ReassignTaskWizard(models.TransientModel):
                 raise ValidationError(
                     'The Task is already assigned to the %s Team' % self.team_id.name
                 )
+
+    @api.onchange('assigned_to', 'team_id')
+    def prefill_description(self):
+        if not self.name and not self.task_id.assignment_count:
+            self.name = 'Initial Assignment'
+
+    @api.onchange('team_id')
+    def set_assigned_domain(self):
+        domain = []
+        if self.team_id:
+            domain.append(('id', 'in', self.team_id.member_ids.mapped('id')))
+
+        return {
+            'domain': {'assigned_to': domain}
+        }
 
     @api.onchange('reassign_to')
     def reset_assignment(self):
@@ -124,7 +140,8 @@ class ReassignTaskWizard(models.TransientModel):
             stats['user_id'] = self.assigned_to.id
         if self.team_id:
             stats['team_id'] = self.team_id.id
-            stats['user_id'] = self.team_id.user_id and self.team_id.user_id.id
+            if not self.assigned_to:
+                stats['user_id'] = self.team_id.user_id and self.team_id.user_id.id
 
         if self.reassign_subtasks:
             for subtask in self.task_id.child_task_ids:
