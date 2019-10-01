@@ -9,3 +9,11 @@ class SupportTeam(models.Model):
         ('project', 'Project'),
         ('support', 'Support')],
      string="Type", default="support")
+
+    member_ids = fields.Many2many(
+        'res.users',
+        'team_member_user_rel',
+        'team_id',
+        'user_id',
+        string='Team Members',
+    )

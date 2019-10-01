@@ -17,4 +17,5 @@ class TaskAssignment(models.Model):
                                   index=True, ondelete='set null')
     team_id = fields.Many2one('crm.team', string='Team', index=True,
                               ondelete='set null',
+                              domain=[('type_team', '!=', 'sales')],
                               help='New Team responsible for performing this Task')
