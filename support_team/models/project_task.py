@@ -8,7 +8,8 @@ class ProjectTask(models.Model):
         comodel_name='crm.team',
         string='Team',
         index=True,
-        help='Team responsible for performing this Task'
+        help='Team responsible for performing this Task',
+        domain=[('type_team', '!=', 'sales')],
     )
 
     @api.onchange('project_id')

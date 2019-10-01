@@ -9,11 +9,12 @@
                 <group col="4" colspan="4">
                     <field name="reassign_to" widget="radio"/>
                     <newline />
-                    <field name="assigned_to" options="{'no_create': True}"
-                           attrs="{'invisible': [('reassign_to','!=', 'user')], 'required': [('reassign_to','=', 'user')]}"/>
-                    <newline />
                     <field name="team_id" options="{'no_create': True}"
+                           context="{'default_type_team':'support'}"
                            attrs="{'invisible': [('reassign_to','!=', 'team')], 'required': [('reassign_to','=', 'team')]}"/>
+                    <newline />
+                    <field name="assigned_to" options="{'no_create': True}"
+                           attrs="{'required': [('reassign_to','=', 'user')]}"/>
                     <newline />
                     <field name="name"/>
                     <field name="reassign_subtasks"/>
