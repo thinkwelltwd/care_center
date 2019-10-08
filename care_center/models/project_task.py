@@ -275,11 +275,6 @@ class ProjectTask(models.Model):
         return super(ProjectTask, self).write(values)
 
     @api.multi
-    def claim_ticket(self):
-        self.ensure_one()
-        self.user_id = self._uid
-
-    @api.multi
     def close_ticket(self):
         self.ensure_one()
         self.confirm_subtasks_done()

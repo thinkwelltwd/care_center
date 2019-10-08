@@ -95,8 +95,6 @@
                 <field name="task_active" invisible="1"/>
                 <button name="reopen_ticket" string="Reopen Ticket" type="object" class="oe_highlight"
                     attrs="{'invisible': [('task_active', '=', True)]}"/>
-                <button name="claim_ticket" string="Claim" type="object" class="oe_highlight"
-                    attrs="{'invisible': [('user_id', '!=', False)]}"/>
                 <button name="email_customer" string="Email Customer" type="object"/>
                 <button name="close_ticket" string="Reply and Close" type="object" class="oe_highlight"
                     attrs="{'invisible': [('task_active', '=', False)]}"/>
