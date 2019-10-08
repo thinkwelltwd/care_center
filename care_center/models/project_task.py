@@ -18,6 +18,19 @@ class ProjectTask(models.Model):
     task_active = fields.Boolean(compute='_task_active')
     subtask_count = fields.Integer(compute='_subtask_count')
 
+    @api.model_create_multi
+    def create(self, vals_list):
+
+        # Reset user_id if task is created via email or API.
+        # In those cases, such tasks should be unassigned.
+        for values in vals_list:
+            if 'medium_id' in values:
+                medium = self.env['utm.medium'].browse(values['medium_id']).mapped('name')
+                if medium[0] in ('Email', 'API'):
+                    values['user_id'] = False
+
+        return super(ProjectTask, self).create(vals_list)
+
     @api.multi
     def _subtask_count(self):
         for task in self:
