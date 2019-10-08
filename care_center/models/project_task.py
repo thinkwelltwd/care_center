@@ -3,6 +3,7 @@ from datetime import date, timedelta
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
+
 class ProjectTask(models.Model):
     _name = 'project.task'
     _inherit = ['care_center.base', 'project.task']
@@ -16,6 +17,18 @@ class ProjectTask(models.Model):
     description = fields.Html('Private Note')
     task_active = fields.Boolean(compute='_task_active')
     subtask_count = fields.Integer(compute='_subtask_count')
+
+    @api.model
+    def create(self, values):
+
+        # Reset user_id if task is created via email or API.
+        # In those cases, such tasks should be unassigned.
+        if 'medium_id' in values:
+            medium = self.env['utm.medium'].browse(values['medium_id']).mapped('name')
+            if medium[0] in ('Email', 'API'):
+                values['user_id'] = False
+
+        return super(ProjectTask, self).create(values)
 
     @api.multi
     def _subtask_count(self):
