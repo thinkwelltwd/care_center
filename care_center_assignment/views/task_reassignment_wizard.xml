@@ -15,6 +15,7 @@
                     <newline />
                     <field name="assigned_to" options="{'no_create': True}"
                            attrs="{'required': [('reassign_to','=', 'user')]}"/>
+                    <field name="send_notifications"/>
                     <newline />
                     <field name="name"/>
                     <field name="reassign_subtasks"/>

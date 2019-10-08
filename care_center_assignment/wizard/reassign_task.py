@@ -20,6 +20,8 @@ class ReassignTaskWizard(models.TransientModel):
      'Reassign To', required=True, default='user')
     assigned_to = fields.Many2one('res.users', string='Assigned To',
                                   index=True, ondelete='set null')
+    send_notifications = fields.Boolean('Notify Users', default=False,
+                                        help='Send notification emails to all team members.')
     team_id = fields.Many2one('crm.team', string='Team', index=True,
                               ondelete='set null',
                               domain=[('type_team', '!=', 'sale')],
@@ -139,8 +141,6 @@ class ReassignTaskWizard(models.TransientModel):
             stats['user_id'] = self.assigned_to.id
         if self.team_id:
             stats['team_id'] = self.team_id.id
-            if not self.assigned_to:
-                stats['user_id'] = self.team_id.user_id and self.team_id.user_id.id
 
         if self.reassign_subtasks:
             for subtask in self.task_id.child_task_ids:
@@ -149,18 +149,20 @@ class ReassignTaskWizard(models.TransientModel):
         stats['assignment_ids'] = [(4, assignment.id, None)]
         self.task_id.with_context({'tracking_disable': True}).write(stats)
 
-        self.task_id.message_post(
-            body=self.get_body(),
-            subject=self.get_subject(),
-            message_type='email',
-            subtype=None,
-            parent_id=False,
-            attachments=None,
-            content_subtype='html',
-            partner_ids=self.get_partner_ids(),
-        )
+        if self.send_notifications:
+            self.task_id.message_post(
+                body=self.get_body(),
+                subject=self.get_subject(),
+                message_type='email',
+                subtype=None,
+                parent_id=False,
+                attachments=None,
+                content_subtype='html',
+                partner_ids=self.get_partner_ids(),
+            )
 
         self.notify_partner_email()
-        self.task_id.message_subscribe_users([self.assigned_to.id, ])
+        if self.assigned_to:
+            self.task_id.message_subscribe_users([self.assigned_to.id, ])
 
         return True
