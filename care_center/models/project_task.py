@@ -25,8 +25,10 @@ class ProjectTask(models.Model):
         # In those cases, such tasks should be unassigned.
         for values in vals_list:
             if 'medium_id' in values:
-                medium = self.env['utm.medium'].browse(values['medium_id']).mapped('name')
-                if medium[0] in ('Email', 'API'):
+                medium = self.env['utm.medium'].search([
+                    ('id', '=', values['medium_id'])
+                ]).mapped('name')
+                if medium and medium[0] in ('Email', 'API'):
                     values['user_id'] = False
 
         return super(ProjectTask, self).create(vals_list)
