@@ -136,9 +136,9 @@ class ReassignTaskWizard(models.TransientModel):
             'task_id': self.task_id.id,
         })
 
-        stats = {}
-        if self.assigned_to:
-            stats['user_id'] = self.assigned_to.id
+        stats = {
+            'user_id': self.assigned_to and self.assigned_to.id,
+        }
         if self.team_id:
             stats['team_id'] = self.team_id.id
 
