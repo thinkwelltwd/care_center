@@ -14,6 +14,7 @@
         'sale_timesheet',
         'project',
         'support_team',
+        'web',
     ],
 
     'data': [

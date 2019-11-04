@@ -78,7 +78,7 @@ class AccountAnalyticLine(models.Model):
                 raise ValidationError(
                     'Cannot add new Timesheets to Tasks that are Ready to Invoice.'
                 )
-        super(AccountAnalyticLine, self).create(vals)
+        return super(AccountAnalyticLine, self).create(vals)
 
     @api.constrains('unit_amount')
     def check_if_marked_ready(self):

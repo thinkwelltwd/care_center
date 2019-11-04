@@ -21,7 +21,6 @@ class MailComposer(models.TransientModel):
             return default_partner_domain
 
         if template.mail_server_id.server_type == 'mattermost':
-            self.notify_followers = False
             self.partner_ids = False
 
         return {

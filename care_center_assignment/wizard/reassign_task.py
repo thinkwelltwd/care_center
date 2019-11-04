@@ -163,6 +163,6 @@ class ReassignTaskWizard(models.TransientModel):
 
         self.notify_partner_email()
         if self.assigned_to:
-            self.task_id.message_subscribe_users([self.assigned_to.id, ])
+            self.task_id.message_subscribe([self.assigned_to.partner_id.id, ])
 
         return True
