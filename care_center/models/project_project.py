@@ -8,7 +8,7 @@ class ProjectProject(models.Model):
     def create(self, vals):
         project = super(ProjectProject, self).create(vals)
 
-        Param = self.env['ir.config_parameter']
+        Param = self.env['ir.config_parameter'].sudo()
         email_prefix = Param.get_param('mail.catchall.alias', '').lower()
         name_prefix = Param.get_param('care_center.alias_name_prefix', '')
 

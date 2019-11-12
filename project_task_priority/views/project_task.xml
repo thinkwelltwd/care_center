@@ -12,7 +12,10 @@
             </field>
 
             <xpath expr="//tree" position="attributes">
-                <attribute name="colors">gray:priority == '0'; blue:priority == '2'; purple:priority == '3'; fuchsia:priority == '4'; red:priority == '5'</attribute>
+                <attribute name="decoration-primary">priority == '2'</attribute>
+                <attribute name="decoration-info">priority == '3'</attribute>
+                <attribute name="decoration-warning">priority == '4'</attribute>
+                <attribute name="decoration-danger">priority == '5'</attribute>
             </xpath>
 
         </field>

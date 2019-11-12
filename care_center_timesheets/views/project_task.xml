@@ -55,7 +55,7 @@
 
             <field name="timesheet_ids" position="replace">
                 <field name="timesheet_ids" colspan="4" nolabel="1" context="{'default_user_id' : uid, 'default_project_id': project_id}" groups="base.group_user">
-                    <tree string="Timesheet Activities" editable="top" colors="red:invoice_status == 'notready';green:invoice_status == 'ready'">
+                    <tree string="Timesheet Activities" editable="top" decoration-danger="invoice_status == 'notready'" decoration-success="invoice_status == 'ready'">
                         <field name="date"/>
                         <field name="user_id" required="1" options="{'no_create': True}"/>
                         <field name="name"/>
