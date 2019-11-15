@@ -1,28 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Modified a bit from sale_timesheet_invoice_description -->
-    <record id="view_sales_config_inherit_timesheet_invoice_description" model="ir.ui.view">
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.care_center</field>
         <field name="model">res.config.settings</field>
-        <field name="inherit_id" ref="hr_timesheet.res_config_settings_view_form"/>
+        <field name="priority" eval="50"/>
+        <field name="inherit_id" ref="care_center.res_config_settings_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//div[@name='msg_module_sale_timesheet']" position="after">
-                <div class="content-group" name="sale_timesheet_invoice_description">
-                    <div class="mt16">
-                        <label for="default_timesheet_invoice_description"/>
-                        <div class="text-muted">
-                            Default timesheet details on invoice lines
-                        </div>
-                        <div class="text-muted">
-                            <field name="default_timesheet_invoice_description"/>
+            <xpath expr="//div[@id='care_center_config']" position="inside">
+
+                <h2>Time Sheet Invoice Lines</h2>
+                <div class="row mt16 o_settings_container">
+
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <label for="default_timesheet_invoice_description"/>
+                            <div class="text-muted">
+                                Default timesheet details on invoice lines
+                            </div>
+                            <div class="content-group">
+                                <div class="row mt16 ml4">
+                                    <field name="default_timesheet_invoice_description"/>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
                 </div>
-                <group string="Task &amp; Ticket Timesheets">
-                    <field name="starting_time_offset"/>
-                    <field name="minutes_increment"/>
-                    <field name="minimum_work_log"/>
-                </group>
+
+                <h2>Time Sheet Rounding</h2>
+                <div class="row mt16 o_settings_container">
+
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <label for="starting_time_offset"/>
+                            <div class="text-muted">
+                                Start new timers by specified number of minutes
+                            </div>
+                            <div class="content-group">
+                                <div class="row mt16 ml4">
+                                    <field name="starting_time_offset"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <label for="minutes_increment"/>
+                            <div class="text-muted">
+                                Minute Rounding Increment
+                            </div>
+                            <div class="content-group">
+                                <div class="row mt16 ml4">
+                                    <field name="minutes_increment"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <label for="minimum_work_log"/>
+                            <div class="text-muted">
+                                Minimum Work Log
+                            </div>
+                            <div class="content-group">
+                                <div class="row mt16 ml4">
+                                    <field name="minimum_work_log"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
             </xpath>
         </field>
     </record>

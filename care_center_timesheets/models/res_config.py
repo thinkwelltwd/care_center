@@ -1,100 +1,32 @@
 from odoo import api, fields, models
 
 
-class TimesheetConfiguration(models.TransientModel):
+class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
     starting_time_offset = fields.Float(
         string='Starting Offset in Minutes',
-        help='Offset Timesheet starting time by specified number of minutes'
+        help='Offset Timesheet starting time by specified number of minutes',
+        config_parameter='start_stop.starting_time_offset',
     )
 
     minutes_increment = fields.Float(
         string='Minutes Increment',
         help='Start & Stop time minute rounding increment (rounding up)',
+        config_parameter='start_stop.minutes_increment',
     )
     minimum_work_log = fields.Float(
-        string='Mininum Work Duration',
-        help='Minumum duration of all timesheets (in minutes)',
+        string='Minimum Work Duration',
+        help='Minimum duration of all timesheets (in minutes)',
+        config_parameter='start_stop.minimum_work_log',
     )
-
-    @api.multi
-    def set_starting_time_offset(self):
-        self.env['ir.config_parameter'].set_param(
-            'start_stop.starting_time_offset', self.starting_time_offset,
-            groups=['base.group_system'],
-        )
-
-    @api.multi
-    def set_minutes_increment(self):
-        self.env['ir.config_parameter'].set_param(
-            'start_stop.minutes_increment', self.minutes_increment,
-            groups=['base.group_system'],
-        )
-
-    @api.multi
-    def set_minimum_work_log(self):
-        self.env['ir.config_parameter'].set_param(
-            'start_stop.minimum_work_log', self.minimum_work_log,
-            groups=['base.group_system'],
-        )
-
-    @api.model
-    def get_default_values(self, fields):
-        Param = self.env['ir.config_parameter']
-        starting_time_offset = Param.get_param('start_stop.starting_time_offset', default=0.0)
-        increment = Param.get_param('start_stop.minutes_increment', default=0.0)
-        min_work = Param.get_param('start_stop.minimum_work_log', default=0.0)
-        return {
-            'starting_time_offset': float(starting_time_offset),
-            'minutes_increment': float(increment),
-            'minimum_work_log': float(min_work),
-        }
-
-    @api.model
-    def default_get(self, fields):
-        res = super(TimesheetConfiguration, self).default_get(fields)
-        Param = self.env['ir.config_parameter']
-        starting_time_offset = Param.get_param('start_stop.starting_time_offset', default=0.0)
-        increment = Param.get_param('start_stop.minutes_increment', default=0.0)
-        min_work = Param.get_param('start_stop.minimum_work_log', default=0.0)
-        res.update({
-            'starting_time_offset': float(starting_time_offset),
-            'minutes_increment': float(increment),
-            'minimum_work_log': float(min_work),
-        })
-        return res
-
-
-
-# Copied from sale_timesheet_invoice_description
-class SaleConfiguration(models.TransientModel):
-    _inherit = 'res.config.settings'
-
     default_timesheet_invoice_description = fields.Selection(
         selection='_get_timesheet_invoice_description',
         string="Timesheet Invoice Description",
-        default_model='sale.order'
+        default_model='sale.order',
+        config_parameter='care_center.timesheet_invoice_description',
     )
 
     @api.model
     def _get_timesheet_invoice_description(self):
         return self.env['sale.order']._get_timesheet_invoice_description()
-
-    @api.model
-    def get_default_sale_config(self, fields):
-        default_timesheet_inv_desc = self.env['ir.values'].get_default(
-            'sale.order', 'timesheet_invoice_description') or '111'
-        return {
-            'default_timesheet_invoice_description':
-                default_timesheet_inv_desc,
-        }
-
-    @api.multi
-    def set_sale_defaults(self):
-        self.ensure_one()
-        self.env['ir.values'].sudo().set_default(
-            'sale.order', 'timesheet_invoice_description',
-            self.default_timesheet_invoice_description)
-        res = super(SaleConfiguration, self).set_sale_defaults()
-        return res
