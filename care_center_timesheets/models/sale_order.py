@@ -26,7 +26,7 @@ class SaleOrderLine(models.Model):
     def _prepare_invoice_line_details(self, line, desc_rule):
         details = []
         if desc_rule[0] == '1':
-            details.append(line.date)
+            details.append(fields.Date.to_string(line.date))
         if desc_rule[1] == '1':
             details.append(
                 "%s %s" % (line.unit_amount, line.product_uom_id.name))
@@ -52,7 +52,8 @@ class SaleOrderLine(models.Model):
             return res
         note = []
 
-        for line in self.get_timesheet_lines():
+        timesheets = self.get_timesheet_lines()
+        for line in timesheets:
             details = self._prepare_invoice_line_details(line, desc_rule)
             note.append(' - '.join([str(x) or '' for x in details]))
 
@@ -62,6 +63,8 @@ class SaleOrderLine(models.Model):
                 'test_timesheet_description')):
             res['name'] += "\n" + (
                 "\n".join([str(x) or '' for x in note]))
+
+        timesheets.write({'invoice_status': 'invoiced'})
 
         return res
 
@@ -89,12 +92,3 @@ class SaleOrderLine(models.Model):
             ]
 
         return super(SaleOrderLine, self)._compute_analytic(domain=domain)
-
-    @api.multi
-    def action_invoice_create(self, grouped=False, final=False):
-        invoices = self.action_invoice_create(grouped=grouped, final=final)
-
-        for order in self:
-            order.get_timesheet_lines().write({'invoice_status': 'invoiced'})
-
-        return invoices

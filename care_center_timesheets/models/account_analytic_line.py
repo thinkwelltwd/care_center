@@ -1,6 +1,19 @@
 from ..utils import get_factored_duration
 from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
+
+# Fields that cannot be changed after
+# timesheet line is invoiced.
+LOCK_TS_FIELDS = {
+    'factor',
+    'full_duration',
+    'invoice_status',
+    'partner_id',
+    'project_id',
+    'task_id',
+    'unit_amount',
+    'exclude_from_sale_order',
+}
 
 
 class AccountAnalyticLine(models.Model):
@@ -80,20 +93,19 @@ class AccountAnalyticLine(models.Model):
                 )
         return super(AccountAnalyticLine, self).create(vals)
 
-    @api.constrains('unit_amount')
-    def check_if_marked_ready(self):
-        """
-        If a timesheet has been marked as "invoiced",
-        the unit_amount should never be changed again.
-        """
-        ts_type = self._context.get('ts_type', '')
-        if self.invoice_status != 'invoiced' or ts_type == 'fulfillment':
-            return
-        raise ValidationError(
-            '"%s" timesheet duration changed!\n\n'
-            'Duration may not be changed after timesheet has been invoiced.' %
-            self.name
-        )
+    @api.multi
+    def write(self, values):
+
+        for record in self:
+            if record.invoice_status == 'invoiced':
+                locked_fields = LOCK_TS_FIELDS.intersection(values)
+                if locked_fields:
+                    fields = ', '.join(locked_fields)
+                    raise UserError(
+                        f'Field(s) "{fields}"" cannot be changed after timesheet is invoiced!'
+                    )
+
+        return super(AccountAnalyticLine, self).write(values)
 
     def _get_timesheet_cost(self, values):
         """
