@@ -44,6 +44,10 @@ class FeatureDisabled(HTTPError):
 
 
 __all__ = (
-    'InvalidOrMissingParameters', 'NoAccessTokenProvided', 'NotEnoughPermissions',
-    'ResourceNotFound', 'ContentTooLarge', 'FeatureDisabled',
+    'InvalidOrMissingParameters',
+    'NoAccessTokenProvided',
+    'NotEnoughPermissions',
+    'ResourceNotFound',
+    'ContentTooLarge',
+    'FeatureDisabled',
 )

@@ -31,7 +31,6 @@ class TestTaskProcedureAssignment(common.TransactionCase):
             'planned_hours': 2,
         })
 
-
         self.parent = Procedure.create({
             'name': 'Configure Network',
             'description': 'Configure the new network.',

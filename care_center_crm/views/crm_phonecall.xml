@@ -31,6 +31,9 @@
                 <field name="create_date" invisible="1"/>
                 <field name="task_id" invisible="1"/>
                 <field name="opportunity_id" invisible="1"/>
+                <field name="campaign_id" groups="base.group_no_one"/>
+                <field name="source_id" groups="base.group_no_one"/>
+                <field name="medium_id" groups="base.group_no_one"/>
                 <button string="Schedule Other Call"
                         icon="fa-phone"
                         name="%(crm_phonecall.phonecall_to_phonecall_act)d"

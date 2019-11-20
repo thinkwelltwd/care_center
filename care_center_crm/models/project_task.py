@@ -33,9 +33,9 @@ class ProjectTask(models.Model):
     @api.multi
     def _phonecall_count(self):
         for task in self:
-            task.phonecall_count = self.env['crm.phonecall'].search_count(
-                [('task_id', '=', task.id)],
-            )
+            task.phonecall_count = self.env['crm.phonecall'].search_count([
+                ('task_id', '=', task.id),
+            ])
 
     def get_tag_ids(self):
         """
@@ -56,17 +56,20 @@ class ProjectTask(models.Model):
         name = self.team_id.name
         if name.lower().endswith('support'):
             name = name[:7].strip()
-        team = self.env['crm.team'].search([
-            '|',
-            ('name', '=', name),
-            ('name', '=', '%s Sales' % name),
-        ], limit=1)
+        team = self.env['crm.team'].search(
+            [
+                '|',
+                ('name', '=', name),
+                ('name', '=', '%s Sales' % name),
+            ],
+            limit=1,
+        )
         return team and team.id
 
     def move_phonecalls(self, opportunity_id):
-        task_calls = self.env['crm.phonecall'].search([(
-            'task_id', '=', self.id,
-        )])
+        task_calls = self.env['crm.phonecall'].search([
+            ('task_id', '=', self.id),
+        ])
         task_calls.write({
             'task_id': False,
             'opportunity_id': opportunity_id,
@@ -108,7 +111,7 @@ class ProjectTask(models.Model):
             'phone': self.partner_id.phone,
             'email_from': self.partner_id.email,
             'medium_id': self.medium_id and self.medium_id.id,
-            'tag_ids': [(6, 0, self.get_tag_ids())]
+            'tag_ids': [(6, 0, self.get_tag_ids())],
         })
         opportunity._onchange_partner_id()
         self.move_phonecalls(opportunity_id=opportunity.id)

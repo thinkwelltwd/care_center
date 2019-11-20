@@ -10,7 +10,7 @@ from .exceptions import (
     NoAccessTokenProvided,
     NotEnoughPermissions,
     ContentTooLarge,
-    FeatureDisabled
+    FeatureDisabled,
 )
 
 urllib3.disable_warnings()
@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 
 
 class Client:
+
     def __init__(self, url, port, token):
         if port == 443:
             uport = ''
@@ -101,14 +102,14 @@ class Client:
             request = requests.delete
 
         response = request(
-                self.url + endpoint,
-                headers=self.auth_header(),
-                verify=self._verify,
-                json=options,
-                params=params,
-                data=json.dumps(data),
-                files=files
-            )
+            self.url + endpoint,
+            headers=self.auth_header(),
+            verify=self._verify,
+            json=options,
+            params=params,
+            data=json.dumps(data),
+            files=files,
+        )
         try:
             response.raise_for_status()
         except requests.HTTPError as e:
@@ -133,13 +134,32 @@ class Client:
         return self.make_request('get', endpoint, options=options, params=params).json()
 
     def post(self, endpoint, options=None, params=None, data=None, files=None):
-        return self.make_request('post', endpoint, options=options, params=params, data=data, files=files).json()
+        return self.make_request(
+            'post',
+            endpoint,
+            options=options,
+            params=params,
+            data=data,
+            files=files,
+        ).json()
 
     def put(self, endpoint, options=None, params=None, data=None):
-        return self.make_request('put', endpoint, options=options, params=params, data=data).json()
+        return self.make_request(
+            'put',
+            endpoint,
+            options=options,
+            params=params,
+            data=data,
+        ).json()
 
     def delete(self, endpoint, options=None, params=None, data=None):
-        return self.make_request('delete', endpoint, options=options, params=params, data=data).json()
+        return self.make_request(
+            'delete',
+            endpoint,
+            options=options,
+            params=params,
+            data=data,
+        ).json()
 
     # -------------------------------------------------------------------------------------
     # Wrapper / helper methods

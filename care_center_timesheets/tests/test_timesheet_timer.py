@@ -18,12 +18,13 @@ class TestTimesheetTimer(common.SavepointCase):
 
         user_group_employee = cls.env.ref('base.group_user')
         user_group_project_user = cls.env.ref('project.group_project_user')
+        groups = [user_group_employee.id, user_group_project_user.id]
 
         cls.user_projectuser = User.create({
             'name': 'Armande ProjectUser',
             'login': 'Armande',
             'email': 'armande.projectuser@example.com',
-            'groups_id': [(6, 0, [user_group_employee.id, user_group_project_user.id])]
+            'groups_id': [(6, 0, groups)]
         })
 
         cls.no_discount = Factor.create({
@@ -39,7 +40,8 @@ class TestTimesheetTimer(common.SavepointCase):
         cls.partner_1 = cls.env['res.partner'].create({
             'name': 'Bill Smith',
             'email': 'bill@smith.com',
-            'notify_email': 'always'})
+            'notify_email': 'always',
+        })
 
         cls.api_project = Project.create({
             'name': 'Timed Project',
@@ -74,7 +76,8 @@ class TestTimesheetTimer(common.SavepointCase):
 
         minimum_minutes = 60.0
         Param.set_param(
-            'start_stop.minimum_work_log', minimum_minutes,
+            'start_stop.minimum_work_log',
+            minimum_minutes,
             groups=['base.group_system'],
         )
 
@@ -91,7 +94,8 @@ class TestTimesheetTimer(common.SavepointCase):
 
         minimum_minutes = 15.0
         Param.set_param(
-            'start_stop.minimum_work_log', minimum_minutes,
+            'start_stop.minimum_work_log',
+            minimum_minutes,
             groups=['base.group_system'],
         )
 

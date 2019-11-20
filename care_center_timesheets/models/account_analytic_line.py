@@ -1,6 +1,6 @@
 from ..utils import get_factored_duration
-from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError, UserError
+from odoo import fields, models, api
+from odoo.exceptions import UserError
 
 # Fields that cannot be changed after
 # timesheet line is invoiced.
@@ -19,40 +19,45 @@ LOCK_TS_FIELDS = {
 class AccountAnalyticLine(models.Model):
     _inherit = 'account.analytic.line'
 
-    invoice_status = fields.Selection(selection=[
-        ('notready', 'Not Ready'),
-        ('ready', 'Ready'),
-        ('invoiced', 'Invoiced'),
-        ('notinvoiceable', 'Not Invoiceable'),
+    invoice_status = fields.Selection(
+        selection=[
+            ('notready', 'Not Ready'),
+            ('ready', 'Ready'),
+            ('invoiced', 'Invoiced'),
         ],
         copy=False,
         string='Invoice Status',
         help="Not Ready = Timesheets won't appear in Sales Order \n"
-             "Ready = Timesheets will appear in Sales Order \n"
-             "Invoiced = No changes can be made to Duration \n"
-             "Not Invoiceable = Timesheet cannot be invoiced \n"
+        "Ready = Timesheets will appear in Sales Order \n"
+        "Invoiced = No changes can be made to Duration \n"
+        "Not Invoiceable = Timesheet cannot be invoiced \n",
     )
 
-    timer_status = fields.Selection(selection=[
-        ('stopped', 'Stopped'),
-        ('paused', 'Paused'),
-        ('running', 'Running'),
+    timer_status = fields.Selection(
+        selection=[
+            ('stopped', 'Stopped'),
+            ('paused', 'Paused'),
+            ('running', 'Running'),
         ],
-        string='Timer Status')
+        string='Timer Status',
+    )
 
     date_start = fields.Datetime('Started')
     factor = fields.Many2one(
         'hr_timesheet_invoice.factor',
         'Factor',
         default=lambda s: s.env['hr_timesheet_invoice.factor'].search(
-            [('factor', '=', 0.0)], limit=1),
+            [('factor', '=', 0.0)],
+            limit=1,
+        ),
         help="Set the billing percentage when making invoice invoice.",
     )
 
     full_duration = fields.Float(
-        'Time',
+        string='Time',
         default=0.0,
-        help='Total and undiscounted amount of time spent on timesheet')
+        help='Total and undiscounted amount of time spent on timesheet',
+    )
 
     full_duration_rounded = fields.Float(compute='_round_full_duration')
     billable_time = fields.Float(compute='_get_billable_time')
@@ -66,14 +71,22 @@ class AccountAnalyticLine(models.Model):
     @api.depends('full_duration_rounded')
     def _get_billable_time(self):
         factored_duration = get_factored_duration(
-            hours=self.full_duration_rounded, invoice_factor=self.factor,
+            hours=self.full_duration_rounded,
+            invoice_factor=self.factor,
         )
         self.billable_time = round(factored_duration, 2)
+
+    @api.onchange('factor')
+    def _set_factor(self):
+        if self.factor and float(self.factor.factor) == 100.0:
+            self.exclude_from_sale_order = True
+            self._onchange_exclude_from_sale_order()
 
     @api.onchange('full_duration', 'factor')
     def _compute_durations(self):
         self.unit_amount = get_factored_duration(
-            hours=self.full_duration, invoice_factor=self.factor,
+            hours=self.full_duration,
+            invoice_factor=self.factor,
         )
 
     @api.model
@@ -84,25 +97,18 @@ class AccountAnalyticLine(models.Model):
                 'timer_status': 'stopped',
                 'invoice_status': 'notready',
             })
-        task_id = vals.get('task_id', None)
-        if task_id:
-            task = self.env['project.task'].browse(task_id)
-            if task.ready_to_invoice:
-                raise ValidationError(
-                    'Cannot add new Timesheets to Tasks that are Ready to Invoice.'
-                )
         return super(AccountAnalyticLine, self).create(vals)
 
     @api.multi
     def write(self, values):
 
-        for record in self:
-            if record.invoice_status == 'invoiced':
-                locked_fields = LOCK_TS_FIELDS.intersection(values)
-                if locked_fields:
-                    fields = ', '.join(locked_fields)
+        locked_fields = LOCK_TS_FIELDS.intersection(values)
+        if locked_fields:
+            lfields = ', '.join(locked_fields)
+            for record in self:
+                if record.invoice_status == 'invoiced':
                     raise UserError(
-                        f'Field(s) "{fields}"" cannot be changed after timesheet is invoiced!'
+                        f'Field(s) "{lfields}"" cannot be changed after timesheet is invoiced!'
                     )
 
         return super(AccountAnalyticLine, self).write(values)

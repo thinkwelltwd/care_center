@@ -54,12 +54,13 @@ class MergeTasks(models.TransientModel):
             if not related_tasks(task, self.dst_task_id):
                 tp = task.partner_id.name if task.partner_id else 'N/A'
                 dst_tp = self.dst_task_id.partner_id.name if self.dst_task_id.partner_id else 'N/A'
-                raise UserError(_(
-                    'Cannot merge tasks! Tasks with timesheets cannot change partners.\n\n'
-                    'Task "%s" has timesheets and partner "%s" is not related to destination '
-                    'task partner "%s".' %
-                    (task.name, tp, dst_tp)
-                ))
+                raise UserError(
+                    _(
+                        'Cannot merge tasks! Tasks with timesheets cannot change partners.\n\n'
+                        'Task "%s" has timesheets and partner "%s" is not related to destination '
+                        'task partner "%s".' % (task.name, tp, dst_tp)
+                    )
+                )
 
     def merge_name_description(self):
 

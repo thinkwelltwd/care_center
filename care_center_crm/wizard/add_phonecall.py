@@ -20,9 +20,7 @@ class SetTaskOnPhoneCallWizard(models.TransientModel):
         ]
         if self.task_id:
             partner_ids = self.get_partner_ids(field=self.task_id.partner_id)
-            domain.append(
-                ('partner_id', 'in', partner_ids),
-            )
+            domain.append(('partner_id', 'in', partner_ids))
 
         return {
             'domain': {
@@ -59,9 +57,7 @@ class SetLeadOnPhoneCallWizard(models.TransientModel):
         ]
         if self.lead_id:
             partner_ids = self.get_partner_ids(field=self.lead_id.partner_id)
-            domain.append(
-                ('partner_id', 'in', partner_ids),
-            )
+            domain.append(('partner_id', 'in', partner_ids))
 
         return {
             'domain': {

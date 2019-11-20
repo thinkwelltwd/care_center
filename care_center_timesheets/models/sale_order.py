@@ -6,7 +6,8 @@ class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     timesheet_invoice_description = fields.Selection(
-        '_get_timesheet_invoice_description', default='000')
+        '_get_timesheet_invoice_description', default='000'
+    )
 
     @api.model
     def _get_timesheet_invoice_description(self):
@@ -28,13 +29,16 @@ class SaleOrderLine(models.Model):
         if desc_rule[0] == '1':
             details.append(fields.Date.to_string(line.date))
         if desc_rule[1] == '1':
-            details.append(
-                "%s %s" % (line.unit_amount, line.product_uom_id.name))
+            details.append("%s %s" % (round(line.unit_amount, 3), line.product_uom_id.name))
         if desc_rule[2] == '1':
             details.append(line.name)
         return details
 
     def get_timesheet_lines(self):
+        """
+        Return all timesheet lines that reflect work being done even if not invoiceable
+        so that the customer can see all the work performed on the ticket.
+        """
         domain = [
             ('so_line', '=', self.id),
             ('invoice_status', '=', 'ready'),
@@ -59,10 +63,9 @@ class SaleOrderLine(models.Model):
 
         # This is for not breaking possible tests that expects to create the
         # invoices lines the standard way
-        if note and (not config['test_enable'] or self.env.context.get(
-                'test_timesheet_description')):
-            res['name'] += "\n" + (
-                "\n".join([str(x) or '' for x in note]))
+        if note and \
+                (not config['test_enable'] or self.env.context.get('test_timesheet_description')):
+            res['name'] += "\n" + ("\n".join([str(x) or '' for x in note]))
 
         timesheets.write({'invoice_status': 'invoiced'})
 
@@ -78,17 +81,10 @@ class SaleOrderLine(models.Model):
         The Sale Order should not be in 'to invoice' state until the
         Task has been finished.
         """
-
-        ready_to_invoice = ('invoice_status', 'in', ('ready', 'invoiced'))
-
         if not domain and self.ids:
             domain = [
                 ('so_line', 'in', self.ids),
-                ready_to_invoice,
-                '|',
-                ('amount', '<=', 0.0),
-                ('project_id', '!=', False),
-                ready_to_invoice,
+                ('invoice_status', '=', 'ready'),
             ]
 
         return super(SaleOrderLine, self)._compute_analytic(domain=domain)

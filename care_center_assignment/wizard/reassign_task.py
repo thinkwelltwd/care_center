@@ -6,41 +6,52 @@ class ReassignTaskWizard(models.TransientModel):
     _name = 'reassign_task.wizard'
     _description = 'Reassign Task to User or Team'
 
-
     task_id = fields.Many2one('project.task', string='Task')
-    name = fields.Char('Summary', required=True,
-                       help='Short explanation for reassigning the Task.')
-    description = fields.Html('Description', required=False,
-                              help='Extended explanation for reassigning the Task.')
-    reassign_to = fields.Selection([
-        ('user', 'User'),
-        ('team', 'Team'),
-        ('myself', 'Myself')
-    ],
-     'Reassign To', required=True, default='user')
-    assigned_to = fields.Many2one('res.users', string='Assigned To',
-                                  index=True, ondelete='set null')
-    send_notifications = fields.Boolean('Notify Users', default=False,
-                                        help='Send notification emails to all team members.')
-    team_id = fields.Many2one('crm.team', string='Team', index=True,
-                              ondelete='set null',
-                              domain=[('type_team', '!=', 'sale')],
-                              help='New Team responsible for performing this Task')
-    reassign_subtasks = fields.Boolean('Reassign Subtasks', default=True)
-    email_template_id = fields.Many2one('mail.template',
-                                        string='Email Template',
-                                        required=False,
-                                        domain=[('model_id.name', '=', 'Task')],
-                                        help="When template is specified, an email will be sent "
-                                             "to all followers of the task being re-assigned.")
+    name = fields.Char('Summary', required=True, help='Short explanation for reassigning the Task.')
+    description = fields.Html(
+        'Description', required=False, help='Extended explanation for reassigning the Task.'
+    )
+    reassign_to = fields.Selection([('user', 'User'), ('team', 'Team'), ('myself', 'Myself')],
+                                   'Reassign To',
+                                   required=True,
+                                   default='user')
+    assigned_to = fields.Many2one(
+        'res.users',
+        string='Assigned To',
+        index=True,
+        ondelete='set null',
+    )
+    send_notifications = fields.Boolean(
+        'Notify Users',
+        default=False,
+        help='Send notification emails to all team members.',
+    )
+    team_id = fields.Many2one(
+        'crm.team',
+        string='Team',
+        index=True,
+        ondelete='set null',
+        domain=[('type_team', '!=', 'sale')],
+        help='New Team responsible for performing this Task',
+    )
+    reassign_subtasks = fields.Boolean(
+        'Reassign Subtasks',
+        default=True,
+    )
+    email_template_id = fields.Many2one(
+        'mail.template',
+        string='Email Template',
+        required=False,
+        domain=[('model_id.name', '=', 'Task')],
+        help="When template is specified, an email will be sent "
+        "to all followers of the task being re-assigned.",
+    )
 
     @api.constrains('assigned_to', 'team_id')
     def verify_assignment_changed(self):
         if self.assigned_to:
             if self.assigned_to.id == self.task_id.user_id.id:
-                raise ValidationError(
-                    'The Task is already assigned to %s' % self.assigned_to.name
-                )
+                raise ValidationError('The Task is already assigned to %s' % self.assigned_to.name)
 
         if self.team_id:
             if self.team_id == self.task_id.team_id:
@@ -60,7 +71,9 @@ class ReassignTaskWizard(models.TransientModel):
             domain.append(('id', 'in', self.team_id.member_ids.mapped('id')))
 
         return {
-            'domain': {'assigned_to': domain}
+            'domain': {
+                'assigned_to': domain,
+            },
         }
 
     @api.onchange('reassign_to')
@@ -128,12 +141,18 @@ class ReassignTaskWizard(models.TransientModel):
     def reassign_user_team(self):
 
         assignment = self.env['task.assignment'].create({
-            'name': self.name,
-            'description': self.description,
-            'assigned_by': self.env.uid,
-            'assigned_to': self.assigned_to and self.assigned_to.id,
-            'team_id': self.team_id and self.team_id.id,
-            'task_id': self.task_id.id,
+            'name':
+            self.name,
+            'description':
+            self.description,
+            'assigned_by':
+            self.env.uid,
+            'assigned_to':
+            self.assigned_to and self.assigned_to.id,
+            'team_id':
+            self.team_id and self.team_id.id,
+            'task_id':
+            self.task_id.id,
         })
 
         stats = {
@@ -163,6 +182,6 @@ class ReassignTaskWizard(models.TransientModel):
 
         self.notify_partner_email()
         if self.assigned_to:
-            self.task_id.message_subscribe([self.assigned_to.partner_id.id, ])
+            self.task_id.message_subscribe([self.assigned_to.partner_id.id])
 
         return True

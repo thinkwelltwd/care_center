@@ -16,12 +16,13 @@ class TestTask(common.SavepointCase):
 
         user_group_employee = cls.env.ref('base.group_user')
         user_group_project_user = cls.env.ref('project.group_project_user')
+        groups = [user_group_employee.id, user_group_project_user.id]
 
         cls.user_projectuser = User.create({
             'name': 'Armande ProjectUser',
             'login': 'Armande',
             'email': 'armande.projectuser@example.com',
-            'groups_id': [(6, 0, [user_group_employee.id, user_group_project_user.id])]
+            'groups_id': [(6, 0, groups)],
         })
 
         cls.no_discount = Factor.create({
@@ -47,7 +48,8 @@ class TestTask(common.SavepointCase):
         cls.partner_1 = cls.env['res.partner'].create({
             'name': 'Bill Smith',
             'email': 'bill@smith.com',
-            'notify_email': 'always'})
+            'notify_email': 'always',
+        })
 
         cls.api_project = Project.create({
             'name': 'Timed Project',
@@ -64,28 +66,32 @@ class TestTask(common.SavepointCase):
 
         cls.task.write({
             'timesheet_ids': [
-                (0, 0, {
-                    'name': 'Worked on this briefly',
-                    'user_id': cls.user_projectuser.id,
-                    'project_id': cls.api_project.id,
-                    'factor': cls.no_discount.id,
-                    'timer_status': 'stopped',
-                    'invoice_status': 'notready',
-                    'amount': 40,
-                    'full_duration': .5,
-                    'unit_amount': .5,
-                }),
-                (0, 0, {
-                    'name': 'Go down deep; stay down long',
-                    'user_id': cls.user_projectuser.id,
-                    'project_id': cls.api_project.id,
-                    'factor': cls.no_discount.id,
-                    'timer_status': 'stopped',
-                    'invoice_status': 'notready',
-                    'amount': 40,
-                    'full_duration': 4.5,
-                    'unit_amount': 4.5,
-                }),
+                (
+                    0, 0, {
+                        'name': 'Worked on this briefly',
+                        'user_id': cls.user_projectuser.id,
+                        'project_id': cls.api_project.id,
+                        'factor': cls.no_discount.id,
+                        'timer_status': 'stopped',
+                        'invoice_status': 'notready',
+                        'amount': 40,
+                        'full_duration': .5,
+                        'unit_amount': .5,
+                    }
+                ),
+                (
+                    0, 0, {
+                        'name': 'Go down deep; stay down long',
+                        'user_id': cls.user_projectuser.id,
+                        'project_id': cls.api_project.id,
+                        'factor': cls.no_discount.id,
+                        'timer_status': 'stopped',
+                        'invoice_status': 'notready',
+                        'amount': 40,
+                        'full_duration': 4.5,
+                        'unit_amount': 4.5,
+                    }
+                ),
             ]
         })
 
@@ -126,7 +132,6 @@ class TestTask(common.SavepointCase):
             'project_id': self.api_project.id,
             'stage_id': self.stage_wip.id,
             'planned_hours': 75,
-            'is_invoiceable': 'confirm',
         })
         with self.assertRaises(UserError):
             task.write({'stage_id': self.stage_done.id})
@@ -186,10 +191,13 @@ class TestTask(common.SavepointCase):
         ts_count = len(self.task.timesheet_ids)
         self.task.timer_start()
         self.assertEqual(len(self.task.timesheet_ids), ts_count + 1)
-        timesheet = self.env['account.analytic.line'].search([
-            ('task_id', '=', self.task.id),
-            ('timer_status', '=', 'running'),
-        ], limit=1)
+        timesheet = self.env['account.analytic.line'].search(
+            [
+                ('task_id', '=', self.task.id),
+                ('timer_status', '=', 'running'),
+            ],
+            limit=1,
+        )
 
         with self.assertRaises(UserError):
             self.task.timer_start()
@@ -213,12 +221,6 @@ class TestTask(common.SavepointCase):
         ts_total_time = sum(ts.unit_amount for ts in self.task.timesheet_ids)
         self.assertGreater(self.task.planned_hours, ts_total_time)
 
-        # when task is not invoiceable, no timesheets should be created
-        self.task.write({'is_invoiceable': 'no'})
-        self.task.add_planned_expected_difference()
-        self.assertEqual(ts_count, len(self.task.timesheet_ids))
-
-        self.task.write({'is_invoiceable': 'yes'})
         self.task.add_planned_expected_difference()
         self.assertEqual(ts_count + 1, len(self.task.timesheet_ids))
 

@@ -6,13 +6,19 @@ class ProjectTask(models.Model):
     _description = 'Care Center Assignment Project Task'
     _inherit = ['care_center.base', 'project.task']
 
-    assignment_ids = fields.One2many('task.assignment', 'task_id',
-                                     string='Assignment History',
-                                     ondelete='cascade', required=False)
+    assignment_ids = fields.One2many(
+        'task.assignment',
+        'task_id',
+        string='Assignment History',
+        ondelete='cascade',
+        required=False,
+    )
 
     assignment_count = fields.Integer(compute='_assignment_count')
-    assignment_message = fields.Char(compute='_assignment_message',
-                                     help='Assignment description to include in email templates.')
+    assignment_message = fields.Char(
+        compute='_assignment_message',
+        help='Assignment description to include in email templates.',
+    )
 
     @api.multi
     def _assignment_count(self):

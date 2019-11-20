@@ -9,7 +9,8 @@ class TestTask(common.TransactionCase):
         self.partner_1 = self.env['res.partner'].create({
             'name': 'Bill Smith',
             'email': 'bill@smith.com',
-            'notify_email': 'always'})
+            'notify_email': 'always',
+        })
 
         self.api_project = self.env['project.project'].create({
             'name': 'Wrong Project',

@@ -9,12 +9,14 @@ class TestProject(common.TransactionCase):
         prefix = 'support'
 
         Param.set_param(
-            'mail.catchall.alias', prefix,
+            'mail.catchall.alias',
+            prefix,
             groups=['base.group_system'],
         )
 
         Param.set_param(
-            'care_center.alias_name_prefix', True,
+            'care_center.alias_name_prefix',
+            True,
             groups=['base.group_system'],
         )
 

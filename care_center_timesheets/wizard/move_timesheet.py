@@ -10,9 +10,11 @@ class MoveTimeheetOrPause(models.TransientModel):
     origin_task_id = fields.Many2one('project.task', string='Current Task')
     destination_task_id = fields.Many2one('project.task', string='New Task')
     timesheet_id = fields.Many2one('account.analytic.line', string='Current Timesheet')
-    ts_action = fields.Selection([
-        ('pause', 'Pause Current Timesheet'),
-        ('move', 'Move Current Timesheet to New Task')],
+    ts_action = fields.Selection(
+        selection=[
+            ('pause', 'Pause Current Timesheet'),
+            ('move', 'Move Current Timesheet to New Task'),
+        ],
         required=True,
         string='Action',
     )
@@ -125,6 +127,7 @@ class MoveTimeheet(models.TransientModel):
         timesheet = self.timesheet_id
         aa = task.project_id.analytic_account_id
 
+        # yapf: disable
         self.env['account.analytic.line'].create({
             'name':  'Work In Progress',
             'task_id': task.id,
@@ -140,5 +143,6 @@ class MoveTimeheet(models.TransientModel):
             'company_id': task.company_id.id,
             'so_line': task.sale_line_id and task.sale_line_id.id,
         })
+        # yapf: enable
 
         self.reset_original_timesheet_start()

@@ -9,5 +9,5 @@ class ResConfigSettings(models.TransientModel):
         default=True,
         config_parameter='care_center.alias_name_prefix',
         help='Prepend catchall email alias as prefix to project alias name. \n'
-             'i.e. support+project-name',
+        'i.e. support+project-name',
     )

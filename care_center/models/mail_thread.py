@@ -44,9 +44,15 @@ class MailThread(models.AbstractModel):
             return None
 
     @api.model
-    def message_process(self, model, message, custom_values=None,
-                        save_original=False, strip_attachments=False,
-                        thread_id=None):
+    def message_process(
+            self,
+            model,
+            message,
+            custom_values=None,
+            save_original=False,
+            strip_attachments=False,
+            thread_id=None,
+    ):
         """
         Some email clients strip out the Message-ID header :-(
 
@@ -68,7 +74,10 @@ class MailThread(models.AbstractModel):
                 _logger.info('Found %s thread_id %s for %s' % (model, thread_id, msg['subject']))
 
         return super(MailThread, self).message_process(
-            model=model, message=message, custom_values=custom_values,
-            save_original=save_original, strip_attachments=strip_attachments,
+            model=model,
+            message=message,
+            custom_values=custom_values,
+            save_original=save_original,
+            strip_attachments=strip_attachments,
             thread_id=thread_id,
         )

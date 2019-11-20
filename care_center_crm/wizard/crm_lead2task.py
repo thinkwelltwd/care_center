@@ -26,7 +26,9 @@ class CrmLeadToTaskWizard(models.TransientModel):
             domain.insert(0, '|')
 
         return {
-            'domain': {'project_id': domain}
+            'domain': {
+                'project_id': domain,
+            },
         }
 
     def get_tag_ids(self, lead):
@@ -48,17 +50,20 @@ class CrmLeadToTaskWizard(models.TransientModel):
         name = lead.team_id.name
         if name.lower().endswith('sales'):
             name = name[:7].strip()
-        team = self.env['crm.team'].search([
-            '|',
-            ('name', '=', name),
-            ('name', '=', '%s Support' % name),
-        ], limit=1)
+        team = self.env['crm.team'].search(
+            [
+                '|',
+                ('name', '=', name),
+                ('name', '=', '%s Support' % name),
+            ],
+            limit=1,
+        )
         return team and team.id
 
     def move_phonecalls(self, task_id):
-        task_calls = self.env['crm.phonecall'].search([(
-            'opportunity_id', '=', self.id,
-        )])
+        task_calls = self.env['crm.phonecall'].search([
+            ('opportunity_id', '=', self.id),
+        ])
         task_calls.write({
             'opportunity_id': False,
             'task_id': task_id,

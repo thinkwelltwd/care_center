@@ -11,12 +11,14 @@ def get_form_window_action(self):
     is the one the user most likely expects
     """
 
-    return self.env['ir.actions.act_window'].search([
-        ('res_model', '=', self.get_access_action()['res_model']),
-        ('view_mode', 'ilike', 'form'),
-        ('search_view_id', '!=', False),
-    ], order="id DESC")
-
+    return self.env['ir.actions.act_window'].search(
+        [
+            ('res_model', '=', self.get_access_action()['res_model']),
+            ('view_mode', 'ilike', 'form'),
+            ('search_view_id', '!=', False),
+        ],
+        order="id DESC",
+    )
 
 
 @api.model

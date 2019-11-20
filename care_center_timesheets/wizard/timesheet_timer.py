@@ -7,7 +7,6 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-
 class TimesheetTimerWizard(models.TransientModel):
     _name = 'timesheet_timer.wizard'
     _description = 'Timesheet Timer'
@@ -15,24 +14,32 @@ class TimesheetTimerWizard(models.TransientModel):
     name = fields.Char(string='Work Description')
     date_stop = fields.Datetime(string='Stop Time')
     completed_timesheets = fields.Float(string='Hours So Far')
-    timesheet_id = fields.Many2one('account.analytic.line', string='Timesheet')
+    timesheet_id = fields.Many2one(
+        'account.analytic.line',
+        string='Timesheet',
+    )
 
     factor = fields.Many2one(
         'hr_timesheet_invoice.factor',
         'Factor',
         default=lambda s: s.env['hr_timesheet_invoice.factor'].search(
-            [('factor', '=', 0.0)], limit=1),
+            [('factor', '=', 0.0)],
+            limit=1,
+        ),
         required=True,
         help="Allows setting the discount while making invoice."
-        " Set to 'No' if the time should not be invoiced.")
+        " Set to 'No' if the time should not be invoiced."
+    )
     full_duration = fields.Float(
         'Time',
         default=0.0,
-        help='Total and undiscounted amount of time spent on timesheet')
+        help='Total and undiscounted amount of time spent on timesheet',
+    )
     unit_amount = fields.Float(
         'Duration',
         default=0.0,
-        help='Invoiceable amount of time spent on timesheet')
+        help='Invoiceable amount of time spent on timesheet',
+    )
 
     @api.onchange('name', 'date_stop', 'factor')
     def timesheet_stats(self):
@@ -66,9 +73,7 @@ class TimesheetTimerWizard(models.TransientModel):
     @api.constrains('name')
     def _check_name(self):
         if not self.name:
-            raise ValidationError(_(
-                'Please enter work description before closing Timesheet.'
-            ))
+            raise ValidationError(_('Please enter work description before closing Timesheet.'))
 
     @api.constrains('date_stop')
     def _check_date_stop(self):
@@ -77,9 +82,7 @@ class TimesheetTimerWizard(models.TransientModel):
             start = fields.Datetime.to_datetime(self.timesheet_id.date_start)
             stop = fields.Datetime.to_datetime(self.date_stop)
             if stop < start:
-                raise ValidationError(_(
-                    'Stop time must be later than Start time'
-                ))
+                raise ValidationError(_('Stop time must be later than Start time'))
 
     def get_timesheet_duration(self, start, stop):
         """

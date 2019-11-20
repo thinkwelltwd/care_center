@@ -3,17 +3,29 @@ from datetime import date, timedelta
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
+
 class ProjectTask(models.Model):
     _name = 'project.task'
     _description = 'Care Center Project Task'
     _inherit = ['care_center.base', 'project.task']
 
-    parent_task_id = fields.Many2one('project.task', string='Parent Task',
-                                     ondelete='cascade', required=False)
-    child_task_ids = fields.One2many('project.task', 'parent_task_id', string='Sub Tasks')
-    medium_id = fields.Many2one('utm.medium', 'Medium',
-                                help="This is the method of delivery. "
-                                     "Ex: Email / Phonecall / API / Website")
+    parent_task_id = fields.Many2one(
+        'project.task',
+        string='Parent Task',
+        ondelete='cascade',
+        required=False,
+    )
+    child_task_ids = fields.One2many(
+        'project.task',
+        'parent_task_id',
+        string='Sub Tasks',
+    )
+    medium_id = fields.Many2one(
+        'utm.medium',
+        'Medium',
+        help="This is the method of delivery. "
+        "Ex: Email / Phonecall / API / Website",
+    )
     description = fields.Html('Private Note')
     task_active = fields.Boolean(compute='_task_active')
     subtask_count = fields.Integer(compute='_subtask_count')
@@ -26,7 +38,7 @@ class ProjectTask(models.Model):
         for values in vals_list:
             if 'medium_id' in values:
                 medium = self.env['utm.medium'].search([
-                    ('id', '=', values['medium_id'])
+                    ('id', '=', values['medium_id']),
                 ]).mapped('name')
                 if medium and medium[0] in ('Email', 'API'):
                     values['user_id'] = False
@@ -70,8 +82,8 @@ class ProjectTask(models.Model):
             title = ("Warning for %s") % partner.name
             message = partner.sale_warn_msg
             warning = {
-                    'title': title,
-                    'message': message,
+                'title': title,
+                'message': message,
             }
             if partner.sale_warn == 'block':
                 self.update({
@@ -118,11 +130,12 @@ class ProjectTask(models.Model):
         Tag = self.env['project.tags']
         Project = self.env['project.project']
         project = msg.get('project', None) and Project.search([('name', '=', msg['project'])])
+        tag_ids = Tag.search([('name', 'in', msg.get('tags', []))]).mapped('id')
 
         data = {
             'project_id': project and project.id,
             'medium_id': self.env.ref('care_center.utm_medium_api').id,
-            'tag_ids': [(6, False, [tag.id for tag in Tag.search([('name', 'in', msg.get('tags', []))])])],
+            'tag_ids': [(6, False, tag_ids)],
         }
 
         if 'partner_id' not in msg and project and project.partner_id:
@@ -147,6 +160,13 @@ class ProjectTask(models.Model):
         kanban_view = self.env.ref('project.view_task_kanban')
         calendar_view = self.env.ref('project.view_task_calendar')
         graph_view = self.env.ref('project.view_project_task_graph')
+        views = [
+            (form_view.id, 'form'),
+            (tree_view.id, 'tree'),
+            (kanban_view.id, 'kanban'),
+            (calendar_view.id, 'calendar'),
+            (graph_view.id, 'graph'),
+        ]
 
         return {
             'name': _('Ticket'),
@@ -155,13 +175,7 @@ class ProjectTask(models.Model):
             'res_model': 'project.task',
             'res_id': self.id,
             'view_id': False,
-            'views': [
-                (form_view.id, 'form'),
-                (tree_view.id, 'tree'),
-                (kanban_view.id, 'kanban'),
-                (calendar_view.id, 'calendar'),
-                (graph_view.id, 'graph')
-            ],
+            'views': views,
             'type': 'ir.actions.act_window',
         }
 
@@ -231,8 +245,12 @@ class ProjectTask(models.Model):
         """ Override to get the reply_to of the parent project. """
         tasks = self.browse(res_ids)
         project_ids = set(tasks.mapped('project_id').ids)
-        aliases = self.env['project.project'].message_get_reply_to(list(project_ids), default=default)
-        return dict((task.id, aliases.get(task.project_id and task.project_id.id or 0, False)) for task in tasks)
+        aliases = self.env['project.project'].message_get_reply_to(
+            list(project_ids),
+            default=default,
+        )
+        return dict((task.id, aliases.get(task.project_id and task.project_id.id or 0, False))
+                    for task in tasks)
 
     def email_the_customer(self):
         """
@@ -267,9 +285,7 @@ class ProjectTask(models.Model):
             if not subtask.active or subtask.stage_id.fold:
                 continue
 
-            raise ValidationError(
-                'Please close all open Sub Tasks'
-            )
+            raise ValidationError('Please close all open Sub Tasks')
 
     @api.model
     def _check_stage_id(self, stage_id):

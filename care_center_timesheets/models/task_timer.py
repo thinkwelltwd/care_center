@@ -15,6 +15,44 @@ class TaskTimer(models.AbstractModel):
     )
 
     @api.multi
+    def get_hr_timesheet_id(self):
+        """
+        Always return HR Timesheet if one exists for the current Employee and Time period
+
+        If no HR Timesheet exists, and manage_hr_timesheet is True, create it.
+        """
+        self.ensure_one()
+        employee = self.env['hr.employee'].search([
+            ('user_id', '=', self.env.uid),
+        ])
+        if not employee:
+            raise UserError('%s is not linked to an Employee Record' % self.env.user.name)
+
+        Param = self.env['ir.config_parameter'].sudo()
+        manage_hr_time = Param.get_param('hr_timesheet.manage_hr_timesheet', default=True)
+
+        today = fields.Date.context_today(self)
+        ts = self.env['hr_timesheet.sheet'].search(
+            [
+                ('employee_id', '=', employee.id),
+                ('date_start', '<=', today),
+                ('date_end', '>=', today),
+                ('company_id', '=', self.company_id.id),
+            ],
+            limit=1,
+        )
+        if ts:
+            return ts.id
+
+        if not manage_hr_time:
+            return False
+
+        return self.env['hr_timesheet.sheet'].with_context(company_id=self.company_id.id).create({
+            'employee_id': employee.id,
+            'company_id': self.company_id.id,
+        }).id
+
+    @api.multi
     def _update_timesheets(self):
         """
         If the Project or Partner changes,
@@ -116,19 +154,20 @@ class TaskTimer(models.AbstractModel):
 
         # Handle repeated calling (via API)
         if self.timesheet_status_exists(status='running'):
-            raise UserError(_(
-                'You already have an active timesheet on %s' % self.name
-            ))
+            raise UserError(_('You already have an active timesheet on %s' % self.name))
 
         if self.timesheet_status_exists(status='paused'):
             self.timer_resume()
             return
 
-        active_ts = self.env['account.analytic.line'].search([
-            ('timer_status', '=', 'running'),
-            ('task_id', '!=', self.id),
-            ('user_id', '=', self.env.uid),
-        ], limit=1)
+        active_ts = self.env['account.analytic.line'].search(
+            [
+                ('timer_status', '=', 'running'),
+                ('task_id', '!=', self.id),
+                ('user_id', '=', self.env.uid),
+            ],
+            limit=1,
+        )
 
         if active_ts:
             # Only offer to switch time if user is on the webclient rather than API
@@ -149,16 +188,19 @@ class TaskTimer(models.AbstractModel):
         offset = float(Param.get_param('start_stop.starting_time_offset', default=0))
 
         self.write({
-            'timesheet_ids': [(0, 0, {
-                'name': 'Work In Progress',
-                'date_start': datetime.now() - timedelta(minutes=offset),
-                'timer_status': 'running',
-                'invoice_status': 'notready',
-                'account_id': self.project_id.analytic_account_id.id,
-                'user_id': self.env.uid,
-                'project_id': self.project_id.id,
-                'factor': factor and factor[0].id,
-             })]
+            'timesheet_ids': [(
+                0, 0, {
+                    'name': 'Work In Progress',
+                    'date_start': datetime.now() - timedelta(minutes=offset),
+                    'timer_status': 'running',
+                    'invoice_status': 'notready',
+                    'account_id': self.project_id.analytic_account_id.id,
+                    'user_id': self.env.uid,
+                    'project_id': self.project_id.id,
+                    'factor': factor and factor[0].id,
+                    'sheet_id': self.get_hr_timesheet_id(),
+                }
+            )]
         })
 
     @api.multi
@@ -181,9 +223,7 @@ class TaskTimer(models.AbstractModel):
     def _get_timesheet(self, status):
         """Get currently running timesheet to Pause / Stop timer"""
         if not self.project_id:
-            raise UserError(_(
-                'Please specify a project before closing Timesheet.'
-            ))
+            raise UserError(_('Please specify a project before closing Timesheet.'))
 
         timesheet = self.timesheet_ids.search([
             ('timer_status', '=', status),
@@ -191,14 +231,14 @@ class TaskTimer(models.AbstractModel):
             ('user_id', '=', self.env.uid),
         ])
         if not timesheet:
-            raise UserError(_(
-                'You have no "%s" timesheet!' % status
-            ))
+            raise UserError(_('You have no "%s" timesheet!' % status))
         if len(timesheet) > 1:
-            raise UserError(_(
-                'Multiple %s timesheets found for this Ticket/Task. '
-                'Resolve any %s "Work In Progress" timesheet(s) manually.' % (status, status)
-            ))
+            raise UserError(
+                _(
+                    'Multiple %s timesheets found for this Ticket/Task. '
+                    'Resolve any %s "Work In Progress" timesheet(s) manually.' % (status, status)
+                )
+            )
         return timesheet
 
     def _get_current_total_time(self, timesheet):
@@ -243,9 +283,10 @@ class TaskTimer(models.AbstractModel):
 
         wizard_form = self.env.ref('care_center_timesheets.timesheet_timer_wizard', False)
         Timer = self.env['timesheet_timer.wizard']
+        completed_timesheets = sum([ts.full_duration for ts in self.timesheet_ids])
 
         new = Timer.create({
-            'completed_timesheets': sum([ts.full_duration for ts in self.timesheet_ids]),
+            'completed_timesheets': completed_timesheets,
             'timesheet_id': timesheet.id,
             'factor': timesheet.factor.id,
         })
@@ -258,7 +299,7 @@ class TaskTimer(models.AbstractModel):
             'view_id': wizard_form.id,
             'view_type': 'form',
             'view_mode': 'form',
-            'target': 'new'
+            'target': 'new',
         }
 
     @api.multi
@@ -269,12 +310,13 @@ class TaskTimer(models.AbstractModel):
         self.ensure_one()
         wip_timesheet = self._get_timesheet(status='running')
         Timer = self.env['timesheet_timer.wizard']
+        completed_timesheets = sum([ts.full_duration for ts in self.timesheet_ids])
 
         new = Timer.create({
             'name': summary,
             'timesheet_id': wip_timesheet.id,
-            'completed_timesheets': sum([ts.full_duration for ts in self.timesheet_ids]),
-            'date_stop': str(datetime.utcnow())
+            'completed_timesheets': completed_timesheets,
+            'date_stop': str(datetime.utcnow()),
         })
 
         new.save_timesheet()

@@ -11,7 +11,7 @@
     'version': '12.0.1.0.0',
 
     'depends': [
-        'sale_timesheet',
+        'sale_timesheet_line_exclude',
         'project',
         'support_team',
         'web',

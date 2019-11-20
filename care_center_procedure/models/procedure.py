@@ -10,16 +10,37 @@ class ProcedureProcedure(models.Model):
     active = fields.Boolean(default=True)
     name = fields.Char(required=True)
     description = fields.Html(string='Description')
-    parent_id = fields.Many2one('procedure.procedure', string='Procedure', ondelete='cascade',
-                                domain=[('parent_id', '=', False)],)
-    child_ids = fields.One2many('procedure.procedure', 'parent_id', string='Checklist')
-    sequence = fields.Integer('Sequence', default=1)
-    tag_ids = fields.Many2many('project.tags', string='Tags')
-    planned_hours = fields.Float('Planned Hours', default=0.0)
-    documentation = fields.Html('Documentation', compute='_compile_documentation',
-                                help='Documentation for this Checklist, or the combined '
-                                     'documentation for all the Checklists of this Procedure.',
-                                )
+    parent_id = fields.Many2one(
+        'procedure.procedure',
+        string='Procedure',
+        ondelete='cascade',
+        domain=[
+            ('parent_id', '=', False),
+        ],
+    )
+    child_ids = fields.One2many(
+        'procedure.procedure',
+        'parent_id',
+        string='Checklist',
+    )
+    sequence = fields.Integer(
+        'Sequence',
+        default=1,
+    )
+    tag_ids = fields.Many2many(
+        'project.tags',
+        string='Tags',
+    )
+    planned_hours = fields.Float(
+        'Planned Hours',
+        default=0.0,
+    )
+    documentation = fields.Html(
+        'Documentation',
+        compute='_compile_documentation',
+        help='Documentation for this Checklist, or the combined '
+        'documentation for all the Checklists of this Procedure.',
+    )
 
     @api.model
     def create(self, vals):
@@ -67,7 +88,11 @@ class ProcedureProcedure(models.Model):
             'view_id': False,
             'type': 'ir.actions.act_window',
             'target': 'new',
-            'context': {'parent_id': self.id, 'default_parent_id': self.id, 'hide_checklist': True},
+            'context': {
+                'parent_id': self.id,
+                'default_parent_id': self.id,
+                'hide_checklist': True,
+            },
             'views': [
                 (form.id, 'form'),
             ],
@@ -80,32 +105,59 @@ class ProcedureAssignment(models.Model):
     _rec_name = 'procedure_id'
     _order = 'parent_id asc, sequence asc'
 
-    status = fields.Selection([
-        ('done', 'Done'),
-        ('todo', 'To Do'),
-        ('waiting', 'Waiting'),
-        ('working', 'In Progress'),
-        ('cancelled', 'Cancelled'),
-    ],
-     'Status', required=True, copy=False, default='todo')
+    status = fields.Selection(
+        selection=[
+            ('done', 'Done'),
+            ('todo', 'To Do'),
+            ('waiting', 'Waiting'),
+            ('working', 'In Progress'),
+            ('cancelled', 'Cancelled'),
+        ],
+        string='Status',
+        required=True,
+        copy=False,
+        default='todo',
+    )
 
     # include parent_id so we can _order by parent_id in checklist tab
-    parent_id = fields.Many2one('procedure.procedure', 'Procedure',
-                                ondelete='cascade', required=False)
-    procedure_id = fields.Many2one('procedure.procedure', 'Checklist',
-                                   ondelete='cascade', required=True)
+    parent_id = fields.Many2one(
+        'procedure.procedure',
+        'Procedure',
+        ondelete='cascade',
+        required=False,
+    )
+    procedure_id = fields.Many2one(
+        'procedure.procedure',
+        'Checklist',
+        ondelete='cascade',
+        required=True,
+    )
     sequence = fields.Integer()
-    task_id = fields.Many2one('project.task', 'Ticket',
-                              ondelete='cascade', required=False, index=True)
-    description = fields.Html('Description', related='procedure_id.description')
-    documentation = fields.Html('Documentation', related='procedure_id.documentation')
-    recolor = fields.Boolean(compute='_compute_recolor')
+    task_id = fields.Many2one(
+        'project.task',
+        'Ticket',
+        ondelete='cascade',
+        required=False,
+        index=True,
+    )
+    description = fields.Html(
+        'Description',
+        related='procedure_id.description',
+    )
+    documentation = fields.Html(
+        'Documentation',
+        related='procedure_id.documentation',
+    )
+    recolor = fields.Boolean(
+        string='Recolor',
+        compute='_compute_recolor',
+    )
 
     _sql_constraints = [
         (
             'procedure_task_uniq',
             'unique(procedure_id, task_id)',
-            'A procedure may only be assigned once!'
+            'A procedure may only be assigned once!',
         ),
     ]
 

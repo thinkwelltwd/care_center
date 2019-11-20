@@ -24,8 +24,6 @@
                 <filter string="Work In Progress" name="work_in_progress" domain="[('timesheet_ids.timer_status', 'in', ('running', 'paused'))]"/>
                 <filter string="My Timers" name="agent_timers_running" domain="[('timesheet_ids.user_id', '=', uid), ('timesheet_ids.timer_status', 'in', ('running', 'paused'))]"/>
                 <separator/>
-                <filter string="Confirm Invoicing" name="confirm_invoiceability" domain="['&amp;', ('is_invoiceable', '=', 'confirm'), ('stage_id.name', '=', 'Done')]"/>
-                <separator/>
             </xpath>
 
         </field>
@@ -42,11 +40,10 @@
                 <button name="timer_resume" string="Resume" type="object" attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', '!=', 'paused')]}" class="oe_inline oe_stat_button" icon="fa-play-circle"/>
                 <button name="timer_pause" string="Pause" type="object" attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', '!=', 'running')]}" class="oe_inline oe_stat_button" icon="fa-pause"/>
                 <button name="timer_stop" string="Stop" type="object" attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', 'in', ('paused', 'stopped'))]}" class="oe_stat_button oe_inline" icon="fa-stop"/>
+                <button name="close_task" string="Close" type="object" attrs="{'invisible': ('active', '=', False)}" class="oe_stat_button oe_inline" icon="fa-stop"/>
 
             </xpath>
-            <field name="progress" position="after">
-                <field name="is_invoiceable"/>
-            </field>
+
             <field name="project_id" position="replace">
                 <field name="project_id" options="{'no_create': True}" required="1"/>
                 <field name="task_active" invisible="1"/>

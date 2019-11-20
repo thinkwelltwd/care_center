@@ -8,11 +8,14 @@ from odoo.exceptions import UserError
 class IrMailServer(models.Model):
     _inherit = 'ir.mail_server'
 
-    server_type = fields.Selection([
-        ('email', 'Email'),
-        ('mattermost', 'Mattermost')
+    server_type = fields.Selection(
+        selection=[
+            ('email', 'Email'),
+            ('mattermost', 'Mattermost'),
         ],
-        string='Server Type', required=True, default='email',
+        string='Server Type',
+        required=True,
+        default='email',
     )
 
     def get_scheme(self):
@@ -25,7 +28,8 @@ class IrMailServer(models.Model):
         try:
             home_page = requests.get(
                 '%s://%s:%s' % (self.get_scheme(), self.smtp_host, self.smtp_port),
-                timeout=.5, verify=False
+                timeout=.5,
+                verify=False,
             )
         except requests.exceptions.ConnectTimeout:
             raise UserError('Unable to connect to %s' % self.smtp_host)
@@ -40,7 +44,6 @@ class IrMailServer(models.Model):
         if self.server_type == 'mattermost':
             self.test_mattermost_conection()
         return super(IrMailServer, self).test_smtp_connection()
-
 
     def send_msg(self, sender, recipient, message):
         """
@@ -59,4 +62,3 @@ class IrMailServer(models.Model):
             recipient=recipient,
             message=message,
         )
-

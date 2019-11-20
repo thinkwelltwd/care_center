@@ -5,15 +5,23 @@ from odoo.exceptions import ValidationError
 class ProjectTask(models.Model):
     _inherit = 'project.task'
 
-    procedure_ids = fields.One2many('procedure.assignment', 'task_id',
-                                    string='Procedures',
-                                    domain=[('procedure_id.parent_id', '=', False)],
-                                    )
+    procedure_ids = fields.One2many(
+        'procedure.assignment',
+        'task_id',
+        string='Procedures',
+        domain=[
+            ('procedure_id.parent_id', '=', False),
+        ],
+    )
 
-    checklist_ids = fields.One2many('procedure.assignment', 'task_id',
-                                    string='Checklist',
-                                    domain=[('procedure_id.parent_id', '!=', False)],
-                                    )
+    checklist_ids = fields.One2many(
+        'procedure.assignment',
+        'task_id',
+        string='Checklist',
+        domain=[
+            ('procedure_id.parent_id', '!=', False),
+        ],
+    )
     procedure_count = fields.Integer(compute='_procedure_count')
     checklist_count = fields.Integer(compute='_checklist_count')
 
@@ -58,12 +66,10 @@ class ProjectTask(models.Model):
     def confirm_checklists_done(self):
         open_checklists = self.env['procedure.assignment'].search_count([
             ('task_id', '=', self.id),
-            ('status', 'in', ['todo', 'waiting', 'working'])
+            ('status', 'in', ['todo', 'waiting', 'working']),
         ])
         if open_checklists:
-            raise ValidationError(
-                'Please close all open Checklists'
-            )
+            raise ValidationError('Please close all open Checklists')
 
     @api.multi
     def close_ticket(self):
