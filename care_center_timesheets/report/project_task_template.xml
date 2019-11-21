@@ -9,8 +9,9 @@
 
                       <br /><br />
                       <div class="row">
-
                           <h3 style="text-align: center;">Task Summary</h3>
+                      </div>
+                      <div class="row">
                           <table style="border:1px solid;width:100%;">
                                 <thead>
                                     <tr style="height:35px;border:1px solid">
@@ -23,7 +24,7 @@
                               <tbody>
                                   <tr style="width:100%;height:30px;border:1px solid">
                                         <td style="vertical-align:middle;text-align:center;border:1px solid"><span t-esc="o.code"/></td>
-                                        <td style="vertical-align:middle;text-align:center;border:1px solid"><span t-esc="o.create_date"/></td>
+                                        <td style="vertical-align:middle;text-align:center;border:1px solid"><span t-esc="o.create_date.strftime('%m/%d/%Y')"/></td>
                                         <th style="vertical-align:middle;text-align:center;border:1px solid"><span t-esc="o.partner_id.display_name"/></th>
                                         <th style="vertical-align:middle;text-align:center;border:1px solid"><span t-esc="o.user_id.display_name"/></th>
                                     </tr>

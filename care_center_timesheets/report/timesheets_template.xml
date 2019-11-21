@@ -4,8 +4,9 @@
 <template id="timesheets_template">
 
     <div class="row">
-
         <h4 t-if="o.timesheet_ids" style="text-align: center;">Timesheet Logs</h4>
+    </div>
+    <div class="row">
             <table t-if="o.timesheet_ids" style="border:1px solid;width:100%;">
                 <thead>
                     <tr style="height:35px;border:1px solid">
