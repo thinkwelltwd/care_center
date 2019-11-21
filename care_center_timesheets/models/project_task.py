@@ -71,7 +71,7 @@ class ProjectTask(models.Model):
         self.timesheet_factor_unconfirmed()
         self.set_done_stage()
         self.add_planned_expected_difference()
-        self.mark_timesheets_ready()
+        self.sudo().mark_timesheets_ready()
         if self.active:
             self.toggle_active()
 

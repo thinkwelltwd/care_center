@@ -32,7 +32,8 @@ class TaskTimer(models.AbstractModel):
         manage_hr_time = Param.get_param('hr_timesheet.manage_hr_timesheet', default=True)
 
         today = fields.Date.context_today(self)
-        ts = self.env['hr_timesheet.sheet'].search(
+        TimesheetSheet = self.env['hr_timesheet.sheet'].with_context(company_id=self.company_id.id)
+        ts = TimesheetSheet.sudo().search(
             [
                 ('employee_id', '=', employee.id),
                 ('date_start', '<=', today),
@@ -47,7 +48,7 @@ class TaskTimer(models.AbstractModel):
         if not manage_hr_time:
             return False
 
-        return self.env['hr_timesheet.sheet'].with_context(company_id=self.company_id.id).create({
+        return TimesheetSheet.create({
             'employee_id': employee.id,
             'company_id': self.company_id.id,
         }).id
@@ -183,11 +184,18 @@ class TaskTimer(models.AbstractModel):
     @api.multi
     def _create_timesheet(self):
         self.ensure_one()
+
+        if not self.project_id.active or not self.project_id.analytic_account_id.active:
+            raise UserError(
+                'The Project or Account on this task is inactive. '
+                'Reactivate the Project before logging new timesheets.'
+            )
+
         Param = self.env['ir.config_parameter'].sudo()
         factor = self.env['hr_timesheet_invoice.factor'].search([('factor', '=', 0.0)], limit=1)
         offset = float(Param.get_param('start_stop.starting_time_offset', default=0))
 
-        self.write({
+        self.with_context(company_id=self.company_id.id).write({
             'timesheet_ids': [(
                 0, 0, {
                     'name': 'Work In Progress',
@@ -199,6 +207,7 @@ class TaskTimer(models.AbstractModel):
                     'project_id': self.project_id.id,
                     'factor': factor and factor[0].id,
                     'sheet_id': self.get_hr_timesheet_id(),
+                    'company_id': self.company_id.id,
                 }
             )]
         })
