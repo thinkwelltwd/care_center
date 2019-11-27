@@ -6,15 +6,30 @@ class ReassignTaskWizard(models.TransientModel):
     _name = 'reassign_task.wizard'
     _description = 'Reassign Task to User or Team'
 
-    task_id = fields.Many2one('project.task', string='Task')
-    name = fields.Char('Summary', required=True, help='Short explanation for reassigning the Task.')
-    description = fields.Html(
-        'Description', required=False, help='Extended explanation for reassigning the Task.'
+    task_id = fields.Many2one(
+        'project.task',
+        string='Task',
     )
-    reassign_to = fields.Selection([('user', 'User'), ('team', 'Team'), ('myself', 'Myself')],
-                                   'Reassign To',
-                                   required=True,
-                                   default='user')
+    name = fields.Char(
+        string='Summary',
+        required=True,
+        help='Short explanation for reassigning the Task.',
+    )
+    description = fields.Html(
+        'Description',
+        required=False,
+        help='Extended explanation for reassigning the Task.',
+    )
+    reassign_to = fields.Selection(
+        selection=[
+            ('user', 'User'),
+            ('team', 'Team'),
+            ('myself', 'Myself'),
+        ],
+        string='Reassign To',
+        required=True,
+        default='user',
+    )
     assigned_to = fields.Many2one(
         'res.users',
         string='Assigned To',
@@ -140,19 +155,15 @@ class ReassignTaskWizard(models.TransientModel):
     @api.multi
     def reassign_user_team(self):
 
+        team_id = self.team_id and self.team_id.id
+        assigned_to = self.assigned_to and self.assigned_to.id
         assignment = self.env['task.assignment'].create({
-            'name':
-            self.name,
-            'description':
-            self.description,
-            'assigned_by':
-            self.env.uid,
-            'assigned_to':
-            self.assigned_to and self.assigned_to.id,
-            'team_id':
-            self.team_id and self.team_id.id,
-            'task_id':
-            self.task_id.id,
+            'name': self.name,
+            'description': self.description,
+            'assigned_by': self.env.uid,
+            'assigned_to': assigned_to,
+            'team_id': team_id,
+            'task_id': self.task_id.id,
         })
 
         stats = {
