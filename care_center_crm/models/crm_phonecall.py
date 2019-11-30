@@ -23,6 +23,9 @@ class CrmPhonecall(models.Model):
         comodel_name='project.task',
         string='Task',
     )
+
+    # Compute these properties so they can serve as domains in xml views
+    # active even on Edit mode when partner_id field hasn't been changed
     available_task_ids = fields.Many2many('project.task', compute='_available_task_lead_ids')
     available_lead_ids = fields.Many2many('crm.lead', compute='_available_task_lead_ids')
 
@@ -64,7 +67,7 @@ class CrmPhonecall(models.Model):
         }
 
     @api.onchange('task_id')
-    def _set_task_team(self):
+    def _set_details_from_task(self):
         """
         Set Team if possible. Search by name, to handle
         CRM & Support Teams which have different FKs
@@ -78,6 +81,13 @@ class CrmPhonecall(models.Model):
         # Tasks with blank partners shouldn't erase self.partner_id!
         if self.task_id.partner_id and self.task_id.partner_id != self.partner_id:
             self.partner_id = self.task_id.partner_id.id
+
+        if self.task_id.project_id:
+            self.project_id = self.task_id.project_id.id
+
+        if not self.tag_ids and self.task_id.tag_ids:
+            tag_names = self.task_id.tag_ids.mapped('name')
+            self.tag_ids = self.env['crm.lead.tag'].search([('name', 'in', tag_names)])
 
     @api.onchange('opportunity_id')
     def _set_opportunity_team(self):
