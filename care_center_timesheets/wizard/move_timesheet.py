@@ -81,12 +81,14 @@ class MoveTimeheet(models.TransientModel):
         """
         self.ensure_one()
         task = self.destination_task_id
+        company_id = task.company_id.id
         aa = task.project_id.analytic_account_id
 
-        self.timesheet_id.write({
+        self.timesheet_id.with_context(company_id=company_id).write({
             # have to include date in vals, for cost calculation in project_timesheet_currency
             'date': self.timesheet_id.date,
             'task_id': task.id,
+            'company_id': company_id,
             'project_id': task.project_id.id,
             'partner_id': task.partner_id.id,
             'account_id': aa and aa.id,
@@ -124,11 +126,13 @@ class MoveTimeheet(models.TransientModel):
             return self.move_timesheet()
 
         task = self.destination_task_id
+        company_id = task.company_id.id
         timesheet = self.timesheet_id
         aa = task.project_id.analytic_account_id
 
         # yapf: disable
-        self.env['account.analytic.line'].create({
+        AccountAnalyticLine = self.env['account.analytic.line'].with_context(company_id=company_id)
+        AccountAnalyticLine.create({
             'name':  'Work In Progress',
             'task_id': task.id,
             'project_id': task.project_id.id,
@@ -138,7 +142,7 @@ class MoveTimeheet(models.TransientModel):
             'date': timesheet.date,
             'date_start': timesheet.date_start,
             'factor': timesheet.factor and timesheet.factor.id,
-            'sheet_id': timesheet.sheet_id and timesheet.sheet_id.id,
+            'sheet_id': task.get_hr_timesheet_id(),
             'user_id': timesheet.user_id.id,
             'company_id': task.company_id.id,
             'so_line': task.sale_line_id and task.sale_line_id.id,

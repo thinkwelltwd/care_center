@@ -125,6 +125,7 @@ class TimesheetTimerWizard(models.TransientModel):
         """
 
         # re-call stats because we didn't persist the wizard
-        self.timesheet_id.write(self.timesheet_stats())
+        company_id = self.timesheet_id.company_id.id
+        self.sudo().with_context(company_id=company_id).timesheet_id.write(self.timesheet_stats())
 
         return True

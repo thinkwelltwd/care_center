@@ -24,7 +24,7 @@ class TaskTimer(models.AbstractModel):
         self.ensure_one()
         employee = self.env['hr.employee'].search([
             ('user_id', '=', self.env.uid),
-        ])
+        ], limit=1)
         if not employee:
             raise UserError('%s is not linked to an Employee Record' % self.env.user.name)
 
@@ -32,8 +32,8 @@ class TaskTimer(models.AbstractModel):
         manage_hr_time = Param.get_param('hr_timesheet.manage_hr_timesheet', default=True)
 
         today = fields.Date.context_today(self)
-        TimesheetSheet = self.env['hr_timesheet.sheet'].with_context(company_id=self.company_id.id)
-        ts = TimesheetSheet.sudo().search(
+        TimesheetSheet = self.env['hr_timesheet.sheet'].sudo()
+        ts = TimesheetSheet.search(
             [
                 ('employee_id', '=', employee.id),
                 ('date_start', '<=', today),
@@ -48,7 +48,7 @@ class TaskTimer(models.AbstractModel):
         if not manage_hr_time:
             return False
 
-        return TimesheetSheet.create({
+        return TimesheetSheet.with_context(company_id=self.company_id.id).create({
             'employee_id': employee.id,
             'company_id': self.company_id.id,
         }).id
@@ -62,6 +62,7 @@ class TaskTimer(models.AbstractModel):
         for task in self:
             aa = task.project_id.analytic_account_id
             team = task.project_id.team_id
+            company_id = task.company_id.id
 
             data = {
                 'project_id': task.project_id.id,
@@ -69,29 +70,33 @@ class TaskTimer(models.AbstractModel):
                 'analytic_account_id': aa and aa.id,
                 'team_id': team and team.id,
                 'so_line': None,
+                'company_id': company_id,
+                'sheet_id': self.get_hr_timesheet_id(),
             }
 
             # add date field so _get_timesheet_cost method
             # in project_timesheet_currency app doesn't crash
             for ts in task.timesheet_ids:
                 data['date'] = ts.date
-                ts.write(data)
+                ts.with_context(company_id=company_id).write(data)
 
     @api.one
     def _user_timer_status(self):
-        clocked_in_count = self.env['account.analytic.line'].search_count([
+        user_id = self.env.uid
+        AccountAnalyticLine = self.env['account.analytic.line'].sudo()
+        clocked_in_count = AccountAnalyticLine.search_count([
             ('timer_status', '=', 'running'),
             ('task_id', '=', self.id),
-            ('user_id', '=', self.env.uid),
+            ('user_id', '=', user_id),
         ])
         if clocked_in_count > 0:
             self.user_timer_status = 'running'
             return
 
-        paused_count = self.env['account.analytic.line'].search_count([
+        paused_count = AccountAnalyticLine.search_count([
             ('timer_status', '=', 'paused'),
             ('task_id', '=', self.id),
-            ('user_id', '=', self.env.uid),
+            ('user_id', '=', user_id),
         ])
         if paused_count > 0:
             self.user_timer_status = 'paused'
@@ -105,9 +110,11 @@ class TaskTimer(models.AbstractModel):
         Only one timesheet may be active at once per user, so Pause
         other active timers when Starting / Resuming timesheet
         """
-        user_clocked_in_task_ids = self.env['account.analytic.line'].search([
+        user_id = self.env.uid
+        AccountAnalyticLine = self.env['account.analytic.line'].sudo()
+        user_clocked_in_task_ids = AccountAnalyticLine.search([
             ('timer_status', '=', 'running'),
-            ('user_id', '=', self.env.uid),
+            ('user_id', '=', user_id),
         ]).mapped('task_id.id')
 
         for task in self.env['project.task'].search([
@@ -161,11 +168,13 @@ class TaskTimer(models.AbstractModel):
             self.timer_resume()
             return
 
-        active_ts = self.env['account.analytic.line'].search(
+        user_id = self.env.uid
+        AccountAnalyticLine = self.env['account.analytic.line'].sudo()
+        active_ts = AccountAnalyticLine.search(
             [
                 ('timer_status', '=', 'running'),
                 ('task_id', '!=', self.id),
-                ('user_id', '=', self.env.uid),
+                ('user_id', '=', user_id),
             ],
             limit=1,
         )
@@ -218,15 +227,18 @@ class TaskTimer(models.AbstractModel):
         Check for active timesheets before closing / deactivation
         """
         for record in self:
-            if record.timesheet_ids.filtered(lambda ts: ts.timer_status in ('running', 'paused')):
+            if record.sudo().timesheet_ids.filtered(
+                    lambda ts: ts.timer_status in ('running', 'paused')
+            ):
                 raise UserError('Please close all Running / Paused Timesheets first!')
 
     def timesheet_status_exists(self, status):
         """Timesheets of specified status exist"""
-        return self.timesheet_ids.search_count([
+        user_id = self.env.uid
+        return self.sudo().timesheet_ids.search_count([
             ('timer_status', '=', status),
             ('task_id', '=', self.id),
-            ('user_id', '=', self.env.uid),
+            ('user_id', '=', user_id),
         ]) > 0
 
     def _get_timesheet(self, status):
@@ -234,10 +246,11 @@ class TaskTimer(models.AbstractModel):
         if not self.project_id:
             raise UserError(_('Please specify a project before closing Timesheet.'))
 
-        timesheet = self.timesheet_ids.search([
+        user_id = self.env.uid
+        timesheet = self.sudo().timesheet_ids.search([
             ('timer_status', '=', status),
             ('task_id', '=', self.id),
-            ('user_id', '=', self.env.uid),
+            ('user_id', '=', user_id),
         ])
         if not timesheet:
             raise UserError(_('You have no "%s" timesheet!' % status))
@@ -265,7 +278,7 @@ class TaskTimer(models.AbstractModel):
         self.ensure_one()
         timesheet = self._get_timesheet(status='running')
         current_total_time = self._get_current_total_time(timesheet)
-        timesheet.write({
+        timesheet.with_context(company_id=self.company_id.id).write({
             'timer_status': 'paused',
             'full_duration': current_total_time,
         })
@@ -276,7 +289,7 @@ class TaskTimer(models.AbstractModel):
         self.ensure_one()
         self._pause_active_timers()
         timesheet = self._get_timesheet(status='paused')
-        timesheet.write({
+        timesheet.with_context(company_id=self.company_id.id).write({
             'timer_status': 'running',
             'date_start': fields.Datetime.now(),
         })
