@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--  Copy from default action to demote kanban view priority -->
+    <record id="project_task_action_from_partner" model="ir.actions.act_window">
+        <field name="name">Tasks</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="search_view_id" ref="project.view_task_search_form"/>
+    </record>
+
+    <!--  Override view to keep Tasks button visible all the time -->
+    <record id="project.view_task_partner_info_form" model="ir.ui.view">
+        <field name="name">res.partner.task.buttons</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="priority" eval="7"/>
+        <field name="groups_id" eval="[(4, ref('project.group_project_user'))]"/>
+        <field name="arch" type="xml">
+            <button name="toggle_active" position="before">
+                <button class="oe_stat_button" type="action" name="%(project_task_action_from_partner)d"
+                    context="{'search_default_partner_id': active_id, 'default_partner_id': active_id}"
+                    icon="fa-tasks">
+                    <field  string="Tasks" name="task_count" widget="statinfo"/>
+                </button>
+            </button>
+        </field>
+   </record>
+
+</odoo>
