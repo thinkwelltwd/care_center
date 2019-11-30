@@ -11,16 +11,13 @@ class CrmPhonecall(models.Model):
         Enable dynamic domain filters when Editing
         records where the on_change doesn't fire
         """
-        self.available_task_ids = self.env['project.task'].search([
+        domain = [
             '|',
             ('partner_id', '=', False),
             ('partner_id', 'in', self.get_partner_ids()),
-        ])
-        self.available_lead_ids = self.env['crm.lead'].search([
-            '|',
-            ('partner_id', '=', False),
-            ('partner_id', 'in', self.get_partner_ids()),
-        ])
+        ]
+        self.available_task_ids = self.env['project.task'].search(domain)
+        self.available_lead_ids = self.env['crm.lead'].search(domain)
 
     task_id = fields.Many2one(
         comodel_name='project.task',

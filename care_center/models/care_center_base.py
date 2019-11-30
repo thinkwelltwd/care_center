@@ -19,11 +19,8 @@ class CareCenterBase(models.AbstractModel):
         """
         if field is None:
             field = self.partner_id
-        if field.parent_id:
-            parent = field.parent_id
-        else:
-            parent = field
 
+        parent = field.commercial_partner_id
         partner_ids = parent.child_ids.mapped('id')
         partner_ids.append(parent.id)
 
