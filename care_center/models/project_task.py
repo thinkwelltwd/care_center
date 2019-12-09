@@ -106,7 +106,13 @@ class ProjectTask(models.Model):
         if not msg.get('description', None):
             custom_values['description'] = msg.get('body', None)
         msg['body'] = None
-        return super(ProjectTask, self).message_new(msg, custom_values=custom_values)
+        task = super(ProjectTask, self).message_new(msg, custom_values=custom_values)
+
+        # Task company_id should match Partner's company_id!
+        if task.partner_id and task.partner_id != task.company_id:
+            task.write({'company_id': task.partner_id.company_id.id})
+
+        return task
 
     @api.multi
     def message_update(self, msg, update_vals=None):
