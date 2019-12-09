@@ -1,0 +1,17 @@
+<odoo>
+
+    <record id="view_contact_info_ids" model="ir.ui.view">
+        <field name="name">Show Extra Contact Info</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="Extra Contact Info">
+                    <field name="contact_info_ids"
+                        context="{'default_partner_id': active_id}"/>
+                </page>
+            </notebook>
+        </field>
+    </record>
+
+</odoo>

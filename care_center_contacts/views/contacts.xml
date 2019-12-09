@@ -44,8 +44,9 @@
             <!-- Search phone in name, and move email to separate field-->
             <field name="name" position="replace">
                <field name="name" string="Name/Phone"
-                      filter_domain="['|','|','|',('name','ilike',self),('ref','=',self),('phone','ilike', self), ('mobile','ilike', self)]"/>
-                <field name="email" filter_domain="[('email','ilike', self)]"/>
+                      filter_domain="['|','|','|', '&amp;',('name','ilike',self),('ref','=',self),('phone','ilike', self), ('mobile','ilike', self), ('contact_info_ids.type', '!=', 'email'), ('contact_info_ids.name', 'ilike', self)]"/>
+                <field name="email"
+                       filter_domain="['|', '&amp;', ('email', 'ilike', self), ('contact_info_ids.type', '=', 'email'), ('contact_info_ids.name', 'ilike', self)]"/>
                 <field name="city" string="City/Zip" filter_domain="['|', ('city','ilike', self), ('zip','ilike', self)]"/>
             </field>
         </field>
