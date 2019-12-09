@@ -21,6 +21,9 @@
     ],
 
     'data': [
+        'security/ir.model.access.csv',
         'views/contacts.xml',
+        'views/res_partner.xml',
+        'views/extra_contactinfo.xml',
     ],
 }
