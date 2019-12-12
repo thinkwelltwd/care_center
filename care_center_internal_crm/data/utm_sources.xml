@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo noupdate="1">
+
+    <record model="utm.source" id="internal_company_calls">
+        <field name="name">Internal Calls</field>
+    </record>
+
+</odoo>

@@ -17,6 +17,23 @@ class ProjectTask(models.Model):
         string="Phonecalls",
     )
     convertable = fields.Boolean(compute='_can_be_converted')
+    active_phonecall_id = fields.Many2one(
+        'crm.phonecall',
+        string='Active Phonecall',
+        compute='_user_active_call',
+    )
+
+    @api.multi
+    def _user_active_call(self):
+        for task in self:
+            active_timesheets = task.timesheet_ids.filtered(
+                lambda ts: ts.phonecall_id
+                           and ts.phonecall_id.state == 'open'
+                           and ts.user_id.id == self.env.uid
+                           and ts.timer_status == 'running'
+            )
+            if active_timesheets:
+                task.active_phonecall_id = active_timesheets.phonecall_id.id
 
     @api.multi
     def _can_be_converted(self):
@@ -130,3 +147,41 @@ class ProjectTask(models.Model):
             'target': 'current',
             'res_id': opportunity.id,
         }
+
+    @api.multi
+    def action_view_phonecalls(self):
+        """
+        Display Phonecalls associated with this task.
+        If only one is found, display the record directly.
+
+        Otherwise, display tree view.
+        """
+        self.ensure_one()
+
+        call_id = self.phonecall_ids
+        if self.active_phonecall_id:
+            call_id = self.active_phonecall_id
+
+        view = {
+            'name': 'Task Logged Calls',
+            'res_model': 'crm.phonecall',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form,tree,calendar',
+            'context': {
+                'default_task_id': self.id,
+                'search_default_task_id': self.id,
+                'default_partner_id': self.partner_id.id,
+            },
+        }
+
+        if len(call_id) == 1:
+            view.update({
+                'res_id': call_id.id,
+            })
+        else:
+
+            view.update({
+                'view_mode': 'tree,form,calendar',
+            })
+
+        return view

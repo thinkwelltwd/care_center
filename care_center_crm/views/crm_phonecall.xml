@@ -14,14 +14,44 @@
         </field>
     </record>
 
+    <record id="crm_case_phone_tree_view" model="ir.ui.view">
+        <field name="name">CRM - Phone Calls with analytic account tree</field>
+        <field name="model">crm.phonecall</field>
+        <field name="inherit_id" ref="crm_phonecall.crm_case_phone_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="date" position="after">
+                <field name="duration" widget="float_time" />
+            </field>
+            <field name="opportunity_id" position="after">
+                <button name="button_end_call"
+                        string="Stop"
+                        type="object"
+                        icon="fa-stop-circle"
+                        attrs="{'invisible': [('duration', '>', 0)]}"/>
+            </field>
+            <field name="name" position="after">
+                <field name="project_id"
+                    options="{'no_open': True, 'no_create': True}"/>
+            </field>
+            <field name="date" position="attributes">
+                <attribute name="attrs">{'required': [('project_id', '!=', False)]}</attribute>
+            </field>
+            <field name="user_id" position="attributes">
+                <attribute name="attrs">{'required': [('project_id', '!=', False)]}</attribute>
+            </field>
+        </field>
+    </record>
+
     <!-- Replacing this form from crm_phonecall, to remove editable="top". Also adding "Convert to Task button-->
     <record model="ir.ui.view" id="crm_phonecall.crm_case_inbound_phone_tree_view">
         <field name="name">CRM - Logged Phone Calls Tree</field>
         <field name="model">crm.phonecall</field>
         <field name="arch" type="xml">
             <tree string="Phone Calls">  <!--removed editable="top"-->
-                <field name="date"/>
-                <field name="name"/>
+                <field name="date" attrs="{'required': [('project_id', '!=', False)]}"/>
+                <field name="duration" widget="float_time" />
+                <field name="name" attrs="{'required': [('project_id', '!=', False)]}"/>
+                <field name="project_id" options="{'no_open': True, 'no_create': True}"/>
                 <field name="partner_id"/>
                 <field name="partner_phone" invisible="1"/>
                 <field name="partner_mobile" invisible="1"/>
@@ -34,6 +64,11 @@
                 <field name="campaign_id" groups="base.group_no_one"/>
                 <field name="source_id" groups="base.group_no_one"/>
                 <field name="medium_id" groups="base.group_no_one"/>
+                <button name="button_end_call"
+                        string="Stop"
+                        type="object"
+                        icon="fa-stop-circle"
+                        attrs="{'invisible': [('duration', '>', 0)]}"/>
                 <button string="Schedule Other Call"
                         icon="fa-phone"
                         name="%(crm_phonecall.phonecall_to_phonecall_act)d"
@@ -84,6 +119,18 @@
 
             <field name="partner_id" position="attributes">
                <attribute name="required">True</attribute>
+            </field>
+
+            <field name="opportunity_id" position="after">
+                <field name="project_id"
+                    options="{'no_open': True, 'no_create': True}"/>
+            </field>
+            <field name="description" position="after">
+                <notebook>
+                    <page string="Timesheet">
+                        <field name="timesheet_ids"/>
+                    </page>
+                </notebook>
             </field>
 
         </field>

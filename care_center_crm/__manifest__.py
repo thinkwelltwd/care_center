@@ -10,6 +10,7 @@
         * Convert Opportunities to Tasks.
         * Create Tasks from Phonecalls.
         * Link Tasks to existing Phonecalls.
+        * Add Timesheets to Phonecalls.
     
     """,
 
@@ -18,7 +19,7 @@
 
     'category': 'Sales',
     'version': '12.0.1.0.0',
-
+    'conflicts': ['crm_phonecall_timesheet'],
     'depends': [
         'care_center',
         'crm_phonecall',

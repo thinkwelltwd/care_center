@@ -1,4 +1,5 @@
-from ..utils import get_factored_duration
+from datetime import timedelta
+from ..utils import get_factored_duration, round_timedelta
 from odoo import fields, models, api
 from odoo.exceptions import UserError
 
@@ -112,6 +113,49 @@ class AccountAnalyticLine(models.Model):
                     )
 
         return super(AccountAnalyticLine, self).write(values)
+
+    @api.model
+    def save_as_last_running(self):
+        """
+        Save current active timesheet as last running timesheet
+        in preparation to switching to another task timesheet.
+        """
+        if self.id != self.user_id.previous_running_timesheet.id:
+            self.user_id.write({'previous_running_timesheet': self.id})
+
+    @api.model
+    def clear_if_previously_running_timesheet(self):
+        """
+        Clear user's record of the previous running timesheet
+        if this timesheet was the previous active one.
+        """
+        if self.id == self.user_id.previous_running_timesheet.id:
+            self.user_id.write({'previous_running_timesheet': False})
+
+    def get_timesheet_duration(self, stop=None):
+        """
+        Get complete timesheet duration. full_duration is populated
+        from Pause / Resume cycles, so include full_duration
+        """
+        start = fields.Datetime.to_datetime(self.date_start)
+        stop = stop or fields.Datetime.now()
+        current_duration = (stop - start).total_seconds() / 60.0
+        full_duration_minutes = self.full_duration * 60.0
+        all_duration = full_duration_minutes + current_duration
+
+        return round_timedelta(
+            td=timedelta(minutes=all_duration),
+            period=self.get_rounded_minutes(),
+        ).total_seconds() / 3600.0
+
+    def get_rounded_minutes(self):
+        """
+        Timesheets are rounded per minimum minutes on entire Ticket / Task,
+        and if that minimum is reached, then minimum time per timesheet
+        """
+        Param = self.env['ir.config_parameter'].sudo()
+        minutes = float(Param.get_param('start_stop.minutes_increment', default=0))
+        return timedelta(minutes=minutes)
 
     def _get_timesheet_cost(self, values):
         """

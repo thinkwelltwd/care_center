@@ -14,6 +14,18 @@ class ProjectTask(models.Model):
     _description = 'Care Center Timesheets Project Task'
     _inherit = ['task.timer', 'project.task']
 
+    has_active_timesheets = fields.Boolean(
+        string='Active Timesheets',
+        compute='_has_active_timesheets',
+    )
+
+    @api.multi
+    def _has_active_timesheets(self):
+        for task in self:
+            task.has_active_timesheets = task.timesheet_ids.filtered(
+                lambda ts: ts.timer_status != 'stopped'
+            )
+
     @api.multi
     def write(self, vals):
         task = super(ProjectTask, self).write(vals)
@@ -57,8 +69,7 @@ class ProjectTask(models.Model):
         Don't change allow switching to an invoiceable stage
         if Task has timesheets that aren't Stopped
         """
-        active_ts = self.timesheet_ids.filtered(lambda ts: ts.timer_status != 'stopped')
-        if active_ts:
+        if self.has_active_timesheets:
             raise UserError('Please stop all Running / Paused timesheets.')
 
     @api.multi

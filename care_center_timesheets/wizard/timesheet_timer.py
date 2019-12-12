@@ -1,5 +1,4 @@
-from datetime import datetime, timedelta
-from ..utils import get_factored_duration, round_timedelta
+from ..utils import get_factored_duration
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
@@ -47,19 +46,8 @@ class TimesheetTimerWizard(models.TransientModel):
         Display calculated data to the user, and return a dict
         of data to save the timesheet.
         """
-        start = fields.Datetime.to_datetime(self.timesheet_id.date_start)
-        stop = fields.Datetime.to_datetime(self.date_stop) or datetime.now()
-
-        this_timesheet = self.get_minimum_duration(
-            duration=self.get_timesheet_duration(start, stop)
-        )
-
-        rounded_time = round_timedelta(
-            td=timedelta(minutes=this_timesheet),
-            period=self.get_rounded_minutes(),
-        )
-
-        self.full_duration = rounded_time.total_seconds() / 3600.0
+        stop = fields.Datetime.to_datetime(self.date_stop) or fields.Datetime.now()
+        self.full_duration = self.timesheet_id.get_timesheet_duration(stop=stop)
         self.unit_amount = get_factored_duration(self.full_duration, self.factor)
 
         return {
@@ -84,21 +72,17 @@ class TimesheetTimerWizard(models.TransientModel):
             if stop < start:
                 raise ValidationError(_('Stop time must be later than Start time'))
 
-    def get_timesheet_duration(self, start, stop):
-        """
-        Get complete timesheet duration. full_duration is populated
-        from Pause / Resume cycles, so include full_duration
-        """
-        duration = (stop - start).total_seconds() / 60.0
-        full_duration_minutes = self.timesheet_id.full_duration * 60.0
-        return full_duration_minutes + duration
-
     def get_minimum_duration(self, duration):
         """
-        Projects / Tasks can have a minimum total turation
+        Projects / Tasks can have a minimum total duration
 
         :param duration: Duration of this ticket in hours
         """
+        # Sometimes a ticket really shouldn't have a minimum
+        # duration especially on internal communications
+        if self.env.context.get('calculate_minimum_duration', False):
+            return duration
+
         Param = self.env['ir.config_parameter'].sudo()
         work_log_min = float(Param.get_param('start_stop.minimum_work_log', default=0))
         total_minutes = (self.completed_timesheets * 60) + duration
@@ -107,15 +91,6 @@ class TimesheetTimerWizard(models.TransientModel):
             return work_log_min
 
         return duration
-
-    def get_rounded_minutes(self):
-        """
-        Timesheets are rounded per minimum minutes on entire Ticket / Task,
-        and if that minumimum is reached, then minimum time per timesheet
-        """
-        Param = self.env['ir.config_parameter'].sudo()
-        minutes = float(Param.get_param('start_stop.minutes_increment', default=0))
-        return timedelta(minutes=minutes)
 
     @api.multi
     def save_timesheet(self):
@@ -128,4 +103,4 @@ class TimesheetTimerWizard(models.TransientModel):
         company_id = self.timesheet_id.company_id.id
         self.sudo().with_context(company_id=company_id).timesheet_id.write(self.timesheet_stats())
 
-        return True
+        return self.timesheet_id

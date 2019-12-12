@@ -1,4 +1,6 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.fields import DATE_LENGTH
+from odoo.exceptions import UserError
 
 
 class CrmPhonecall(models.Model):
@@ -22,6 +24,14 @@ class CrmPhonecall(models.Model):
     task_id = fields.Many2one(
         comodel_name='project.task',
         string='Task',
+    )
+    project_id = fields.Many2one(
+        comodel_name='project.project',
+        string='Project',
+    )
+    timesheet_ids = fields.One2many(
+        comodel_name='account.analytic.line',
+        inverse_name='phonecall_id',
     )
 
     # Compute these properties so they can serve as domains in xml views
@@ -93,6 +103,83 @@ class CrmPhonecall(models.Model):
     def _set_opportunity_team(self):
         if self.opportunity_id and self.opportunity_id.team_id:
             self.team_id = self.opportunity_id.team_id.id
+
+    @api.model
+    def _timesheet_prepare(self, vals):
+        """
+        Prepare timesheet values for writing timesheet from call duration.
+        """
+        if len(self) > 0:
+            raise UserError('Assign timesheet values on one call at a time')
+        date = vals.get('date', fields.Date.to_string(self.date))
+        if not date:
+            raise UserError(_('Date field must be filled.'))
+        project_id = vals.get('project_id', self.project_id.id)
+        task_id = vals.get('task_id', self.task_id.id)
+        user_id = vals.get('user_id', self.user_id.id)
+        unit_amount = vals.get('duration', self.duration)
+        res = {
+            'date': date[:DATE_LENGTH],
+            'user_id': user_id,
+            'name': vals.get('name', self.name),
+            'project_id': project_id,
+            'task_id': task_id,
+            'unit_amount': unit_amount / 60.0,
+            'code': 'phone',
+        }
+        return res
+
+    @api.model
+    def create(self, vals):
+        add_timesheet = self.env.context.get('timesheet_from_call_duration', True)
+        if add_timesheet and vals.get('project_id') and vals.get('duration', 0) > 0:
+            timesheet_data = self._timesheet_prepare(vals)
+            vals['timesheet_ids'] = vals.get('timesheet_ids', [])
+            vals['timesheet_ids'].append((0, 0, timesheet_data))
+
+        return super().create(vals)
+
+    @api.multi
+    def write(self, vals):
+        add_timesheet = self.env.context.get('timesheet_from_call_duration', True)
+        if not add_timesheet:
+            return super().write(vals)
+
+        AccountAnalyticLine = self.env['account.analytic.line']
+        for record in self:
+            timesheet = AccountAnalyticLine.search([
+                ('phonecall_id', '=', record.id),
+                ('code', '=', 'phone'),
+            ])
+            project_id = vals.get('project_id', record.project_id.id)
+            duration = vals.get('duration', record.duration) or 0
+            can_create_ts = project_id and duration > 0
+            if can_create_ts:
+                vals.update({
+                    'project_id': project_id,
+                    'duration': duration,
+                })
+            if timesheet:
+                if not can_create_ts:
+                    vals['timesheet_ids'] = [(2, timesheet.id, 0)]
+                else:
+                    vals['timesheet_ids'] = [(1, timesheet.id, self._timesheet_prepare(vals))]
+            elif can_create_ts:
+                vals['timesheet_ids'] = [(0, 0, self._timesheet_prepare(vals))]
+
+        return super().write(vals)
+
+    @api.multi
+    def button_end_call(self):
+        end_date = fields.Datetime.now()
+        for call in self:
+            if call.date:
+                start_date = fields.Datetime.from_string(call.date)
+                if end_date < start_date:
+                    call.duration = 0
+                else:
+                    call.duration = (end_date - start_date).total_seconds() / 60.0
+        return True
 
     @api.multi
     def create_task(self):

@@ -22,8 +22,9 @@ class TaskTimer(models.AbstractModel):
         If no HR Timesheet exists, and manage_hr_timesheet is True, create it.
         """
         self.ensure_one()
+        user_id = self.env.context.get('user_id', self.env.uid)
         employee = self.env['hr.employee'].search([
-            ('user_id', '=', self.env.uid),
+            ('user_id', '=', user_id),
         ], limit=1)
         if not employee:
             raise UserError('%s is not linked to an Employee Record' % self.env.user.name)
@@ -82,7 +83,7 @@ class TaskTimer(models.AbstractModel):
 
     @api.one
     def _user_timer_status(self):
-        user_id = self.env.uid
+        user_id = self.env.context.get('user_id', self.env.uid)
         AccountAnalyticLine = self.env['account.analytic.line'].sudo()
         clocked_in_count = AccountAnalyticLine.search_count([
             ('timer_status', '=', 'running'),
@@ -110,7 +111,7 @@ class TaskTimer(models.AbstractModel):
         Only one timesheet may be active at once per user, so Pause
         other active timers when Starting / Resuming timesheet
         """
-        user_id = self.env.uid
+        user_id = self.env.context.get('user_id', self.env.uid)
         AccountAnalyticLine = self.env['account.analytic.line'].sudo()
         user_clocked_in_task_ids = AccountAnalyticLine.search([
             ('timer_status', '=', 'running'),
@@ -165,19 +166,11 @@ class TaskTimer(models.AbstractModel):
             raise UserError(_('You already have an active timesheet on %s' % self.name))
 
         if self.timesheet_status_exists(status='paused'):
-            self.timer_resume()
-            return
+            return self.timer_resume()
 
-        user_id = self.env.uid
-        AccountAnalyticLine = self.env['account.analytic.line'].sudo()
-        active_ts = AccountAnalyticLine.search(
-            [
-                ('timer_status', '=', 'running'),
-                ('task_id', '!=', self.id),
-                ('user_id', '=', user_id),
-            ],
-            limit=1,
-        )
+        user_id = self.env.context.get('user_id', self.env.uid)
+        user = self.env['res.users'].browse(user_id)
+        active_ts = user.get_active_timesheet()
 
         if active_ts:
             # Only offer to switch time if user is on the webclient rather than API
@@ -188,11 +181,12 @@ class TaskTimer(models.AbstractModel):
 
             return self.move_or_pause(active_ts)
 
-        self._create_timesheet()
+        return self._create_timesheet()
 
     @api.multi
     def _create_timesheet(self):
         self.ensure_one()
+        user_id = self.env.context.get('user_id', self.env.uid)
 
         if not self.project_id.active or not self.project_id.analytic_account_id.active:
             raise UserError(
@@ -203,22 +197,21 @@ class TaskTimer(models.AbstractModel):
         Param = self.env['ir.config_parameter'].sudo()
         factor = self.env['hr_timesheet_invoice.factor'].search([('factor', '=', 0.0)], limit=1)
         offset = float(Param.get_param('start_stop.starting_time_offset', default=0))
+        AccountLine = self.env['account.analytic.line'].with_context(company_id=self.company_id.id)
 
-        self.with_context(company_id=self.company_id.id).write({
-            'timesheet_ids': [(
-                0, 0, {
-                    'name': 'Work In Progress',
-                    'date_start': datetime.now() - timedelta(minutes=offset),
-                    'timer_status': 'running',
-                    'invoice_status': 'notready',
-                    'account_id': self.project_id.analytic_account_id.id,
-                    'user_id': self.env.uid,
-                    'project_id': self.project_id.id,
-                    'factor': factor and factor[0].id,
-                    'sheet_id': self.get_hr_timesheet_id(),
-                    'company_id': self.company_id.id,
-                }
-            )]
+        return AccountLine.create({
+            'name': 'Work In Progress',
+            'date_start': datetime.now() - timedelta(minutes=offset),
+            'timer_status': 'running',
+            'invoice_status': 'notready',
+            'account_id': self.project_id.analytic_account_id.id,
+            'user_id': user_id,
+            'project_id': self.project_id.id,
+            'factor': factor and factor[0].id,
+            'sheet_id': self.get_hr_timesheet_id(),
+            'company_id': self.company_id.id,
+            'task_id': self.id,
+            'so_line': self.sale_line_id and self.sale_line_id.id,
         })
 
     @api.multi
@@ -234,7 +227,7 @@ class TaskTimer(models.AbstractModel):
 
     def timesheet_status_exists(self, status):
         """Timesheets of specified status exist"""
-        user_id = self.env.uid
+        user_id = self.env.context.get('user_id', self.env.uid)
         return self.sudo().timesheet_ids.search_count([
             ('timer_status', '=', status),
             ('task_id', '=', self.id),
@@ -246,14 +239,13 @@ class TaskTimer(models.AbstractModel):
         if not self.project_id:
             raise UserError(_('Please specify a project before closing Timesheet.'))
 
-        user_id = self.env.uid
+        user_id = self.env.context.get('user_id', self.env.uid)
         timesheet = self.sudo().timesheet_ids.search([
             ('timer_status', '=', status),
             ('task_id', '=', self.id),
             ('user_id', '=', user_id),
         ])
-        if not timesheet:
-            raise UserError(_('You have no "%s" timesheet!' % status))
+
         if len(timesheet) > 1:
             raise UserError(
                 _(
@@ -277,22 +269,29 @@ class TaskTimer(models.AbstractModel):
     def timer_pause(self):
         self.ensure_one()
         timesheet = self._get_timesheet(status='running')
+        if not timesheet:
+            return
+
         current_total_time = self._get_current_total_time(timesheet)
+        timesheet.save_as_last_running()
         timesheet.with_context(company_id=self.company_id.id).write({
             'timer_status': 'paused',
             'full_duration': current_total_time,
         })
-        self._user_timer_status()
+        return self._user_timer_status()
 
     @api.multi
     def timer_resume(self):
         self.ensure_one()
         self._pause_active_timers()
         timesheet = self._get_timesheet(status='paused')
+        if not timesheet:
+            return
         timesheet.with_context(company_id=self.company_id.id).write({
             'timer_status': 'running',
             'date_start': fields.Datetime.now(),
         })
+        return timesheet
 
     @api.multi
     def timer_stop(self):
@@ -302,7 +301,9 @@ class TaskTimer(models.AbstractModel):
         """
         self.ensure_one()
         timesheet = self._get_timesheet(status='running')
-
+        if not timesheet:
+            return
+        timesheet.clear_if_previously_running_timesheet()
         wizard_form = self.env.ref('care_center_timesheets.timesheet_timer_wizard', False)
         Timer = self.env['timesheet_timer.wizard']
         completed_timesheets = sum([ts.full_duration for ts in self.timesheet_ids])
@@ -331,6 +332,9 @@ class TaskTimer(models.AbstractModel):
         """
         self.ensure_one()
         wip_timesheet = self._get_timesheet(status='running')
+        if not wip_timesheet:
+            return False
+
         Timer = self.env['timesheet_timer.wizard']
         completed_timesheets = sum([ts.full_duration for ts in self.timesheet_ids])
 
@@ -341,4 +345,4 @@ class TaskTimer(models.AbstractModel):
             'date_stop': str(datetime.utcnow()),
         })
 
-        new.save_timesheet()
+        return new.save_timesheet()
