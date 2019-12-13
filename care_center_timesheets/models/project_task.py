@@ -129,9 +129,22 @@ class ProjectTask(models.Model):
                     'account_id': self.project_id.analytic_account_id.id,
                     'project_id': self.project_id.id,
                     'sheet_id': self.get_hr_timesheet_id(),
+                    'so_line': self.sale_line_id and self.sale_line_id.id,
                 }
             )]
         })
+
+    @api.onchange('sale_line_id')
+    def _onchange_sale_line_id(self):
+        """
+        Update timesheets with new sale_order_line
+        """
+        if not self.timesheet_ids:
+            return
+
+        self.timesheet_ids.filtered(
+            lambda ts: not ts.exclude_from_sale_order and not ts.timesheet_invoice_id
+        ).write({'so_line': self.sale_line_id.id})
 
     @api.onchange('project_id')
     def _onchange_project_id(self):
@@ -142,16 +155,18 @@ class ProjectTask(models.Model):
             self.sale_line_id = None
             return
 
-        sale_order = self.env['sale.order'].search(
+        try:
+            analytic_account_id = self.project_id.analytic_account_id.parent_id.id
+        except AttributeError:
+            analytic_account_id = self.project_id.analytic_account_id.id
+
+        service_line = self.env['sale.order.line'].search(
             [
-                ('state', 'not in', ('done', 'cancel')),
-                ('analytic_account_id', '=', self.project_id.analytic_account_id.id),
+                ('is_service', '=', True),
+                ('state', 'not in', ('cancel', 'done')),
+                ('order_id.analytic_account_id', '=', analytic_account_id),
             ],
             limit=1,
-            order='confirmation_date',
         )
 
-        so_lines = sale_order.order_line
-        service_product = so_lines.filtered(lambda l: l.product_id.invoice_policy != 'order')
-
-        self.sale_line_id = service_product and service_product[0].id
+        self.sale_line_id = service_line.id

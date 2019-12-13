@@ -62,6 +62,7 @@
                         <field name="unit_amount" string="Duration" widget="float_time" readonly="0"/>
                         <field name="project_id" invisible="1" required="0"/>
                         <field name="invoice_status" string="Invoice Status" invisible="0"/>
+                        <field name="exclude_from_sale_order" />
                     </tree>
                 </field>
             </field>
