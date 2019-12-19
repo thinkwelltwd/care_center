@@ -80,20 +80,23 @@ class MoveTimeheet(models.TransientModel):
         Move the entire timesheet to the new task
         """
         self.ensure_one()
-        task = self.destination_task_id
-        company_id = task.company_id.id
-        aa = task.project_id.analytic_account_id
+        destination_task = self.destination_task_id
+        company_id = destination_task.company_id.id
+        aa = destination_task.project_id.analytic_account_id
 
         self.timesheet_id.with_context(company_id=company_id).write({
             # have to include date in vals, for cost calculation in project_timesheet_currency
             'date': self.timesheet_id.date,
-            'task_id': task.id,
+            'task_id': destination_task.id,
             'company_id': company_id,
-            'project_id': task.project_id.id,
-            'partner_id': task.partner_id.id,
+            'project_id': destination_task.project_id.id,
+            'partner_id': destination_task.partner_id.id,
             'account_id': aa and aa.id,
-            'so_line': task.sale_line_id and task.sale_line_id.id,
+            'so_line': destination_task.sale_line_id and destination_task.sale_line_id.id,
         })
+
+        self.origin_task_id.delete_timesheet_reminder_activity()
+        destination_task._handle_timesheet_reminder_activity()
 
         return True
 
