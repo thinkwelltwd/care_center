@@ -17,6 +17,7 @@
         'note',
         'contacts',
         'crm_phonecall',
+        'base_phone',
         'support_team',
     ],
 

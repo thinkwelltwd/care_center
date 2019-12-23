@@ -6,6 +6,7 @@ valid_email = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 
 class ExtraContactInfo(models.Model):
     _name = 'extra.contactinfo'
+    _inherit = ['phone.validation.mixin']
     _description = 'Extra Contact Info'
     _order = 'sequence asc'
     _sql_constraints = [
@@ -47,6 +48,12 @@ class ExtraContactInfo(models.Model):
             raise ValidationError(
                 '{} is not a correctly formatted email address'.format(self.name)
             )
+
+    @api.onchange('name')
+    def _format_phone_number(self):
+        if not self.type or not self.name or self.type == 'email':
+            return
+        self.name = self.phone_format(self.name)
 
     @api.model
     def create(self, vals):
