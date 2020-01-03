@@ -184,6 +184,48 @@ class TaskTimer(models.AbstractModel):
         return self._create_timesheet()
 
     @api.multi
+    def _handle_timesheet_reminder_activity(self, create=True):
+        """
+        Gets or Creates activity of type 'Sign Out' on the current task & current user
+        to remind the user to close all open timesheets at the end of the day.
+        """
+        self.ensure_one()
+
+        Activity = self.env['mail.activity']
+        user_id = self.env.context.get('user_id', self.env.uid)
+        activity_type_id = self.env['mail.activity.type'].search([('name', '=', 'Sign Out')]).mapped('id')
+        res_model_id = self.env['ir.model'].search([('name', '=', 'Task')]).mapped('id')
+
+        if not activity_type_id:
+            return
+
+        current_activity = Activity.search([
+            ('user_id', '=', user_id),
+            ('res_model_id', '=', res_model_id[0]),
+            ('res_id', '=', self.id),
+            ('activity_type_id', "=", activity_type_id[0]),
+        ])
+
+        if current_activity:
+            return current_activity
+
+        if not create:
+            return
+
+        return Activity.create({
+            'activity_type_id': activity_type_id[0],
+            'res_id': self.id,
+            'res_model_id': res_model_id[0],
+            'user_id': user_id,
+        })
+
+    @api.multi
+    def delete_timesheet_reminder_activity(self):
+        activity = self._handle_timesheet_reminder_activity(create=False)
+        if activity:
+            activity.unlink()
+
+    @api.multi
     def _create_timesheet(self):
         self.ensure_one()
         user_id = self.env.context.get('user_id', self.env.uid)
@@ -199,7 +241,7 @@ class TaskTimer(models.AbstractModel):
         offset = float(Param.get_param('start_stop.starting_time_offset', default=0))
         AccountLine = self.env['account.analytic.line'].with_context(company_id=self.company_id.id)
 
-        return AccountLine.create({
+        timesheet = AccountLine.create({
             'name': 'Work In Progress',
             'date_start': datetime.now() - timedelta(minutes=offset),
             'timer_status': 'running',
@@ -213,6 +255,8 @@ class TaskTimer(models.AbstractModel):
             'task_id': self.id,
             'so_line': self.sale_line_id and self.sale_line_id.id,
         })
+        self._handle_timesheet_reminder_activity()
+        return timesheet
 
     @api.multi
     def has_active_timers(self):
@@ -291,6 +335,7 @@ class TaskTimer(models.AbstractModel):
             'timer_status': 'running',
             'date_start': fields.Datetime.now(),
         })
+        self._handle_timesheet_reminder_activity()
         return timesheet
 
     @api.multi
@@ -300,6 +345,7 @@ class TaskTimer(models.AbstractModel):
         edit the work description and closing time.
         """
         self.ensure_one()
+
         timesheet = self._get_timesheet(status='running')
         if not timesheet:
             return

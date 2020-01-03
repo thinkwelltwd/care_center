@@ -18,6 +18,7 @@
     ],
 
     'data': [
+        'data/mail_activity_type.xml',
         'data/invoice_factors.xml',
         'security/ir.model.access.csv',
         'report/project_task_template.xml',
