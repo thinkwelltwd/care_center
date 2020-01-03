@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-<template id="timesheets_template">
+    <template id="timesheets_template">
 
-    <div class="row">
-        <h4 t-if="o.timesheet_ids" style="text-align: center;">Timesheet Logs</h4>
-    </div>
-    <div class="row">
+        <div class="row">
+            <h4 t-if="o.timesheet_ids">Timesheet Logs</h4>
+        </div>
+        <div class="row">
             <table t-if="o.timesheet_ids" style="border:1px solid;width:100%;">
                 <thead>
                     <tr style="height:35px;border:1px solid">
@@ -17,7 +17,7 @@
                         <th style="width: 10%; vertical-align:middle;text-align:center;border:1px solid">Billable Hours</th>
                     </tr>
                 </thead>
-              <tbody>
+                <tbody>
                   <tr t-foreach="o.timesheet_ids" t-as="t" style="height:35px;border:1px solid">
                         <td style="vertical-align:middle;text-align:center;border:1px solid"><span t-esc="t.date"/></td>
                         <td style="vertical-align:middle;text-align:left;border:1px solid; padding-left: 10px;"><span t-esc="t.display_name"/></td>
@@ -25,17 +25,18 @@
                         <td style="vertical-align:middle;text-align:right;border:1px solid; padding-right: 10px;"><span t-esc="t.full_duration_rounded"/></td>
                         <td style="vertical-align:middle;text-align:right;border:1px solid; padding-right: 10px;"><span t-esc="t.billable_time"/></td>
                     </tr>
-              </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
 
-    </div>
+        <hr />
+        <div class="row">
+            <div class="col-sm-12">
+                <h3 t-esc="o.name"/>
+                <p t-raw="o.description"/>
+            </div>
+        </div>
 
-    <hr />
-    <div class="row">
-        <h3 t-esc="o.name"/>
-        <p t-raw="o.description"/>
-    </div>
-
-</template>
+    </template>
 
 </odoo>
