@@ -22,6 +22,31 @@
         </field>
     </record>
 
+    <record id="move_timesheet_or_split" model="ir.ui.view">
+        <field name="name">Split or Move Timesheet to This Task</field>
+        <field name="model">move_timesheet_or_split.wizard</field>
+        <field name="arch" type="xml">
+           <form string="Move or Split Current Timesheet"
+                 create="false" edit="false">
+               <group>
+                   <group>
+                        <field name="origin_task_id" readonly="1" />
+                        <field name="timesheet_id" readonly="1" />
+                    </group>
+                    <group>
+                        <field name="destination_task_id" domain="[('id', '!=', origin_task_id)]"/>
+                        <field name="ts_action" />
+                        <field name="time_to_move" widget="float_time" attrs="{'invisible':[('ts_action', '!=', 'split')]}"/>
+                    </group>
+               </group>
+                <footer>
+                    <button string="Save" type="object" name="process_time" class="oe_highlight"/>
+                    <button string="Cancel" special="cancel" class="oe_link"/>
+                </footer>
+           </form>
+        </field>
+    </record>
+
 
     <record id="move_timesheet_to_new_task_wizard" model="ir.ui.view">
         <field name="name">Move Time to New Task</field>

@@ -63,6 +63,7 @@
                         <field name="project_id" invisible="1" required="0"/>
                         <field name="invoice_status" string="Invoice Status" invisible="0"/>
                         <field name="exclude_from_sale_order" />
+                        <button string="Split or Move Timesheet" icon="fa-code-fork" name="move_or_split" type="object" attrs="{'invisible':[('invoice_status', '=', 'invoiced')]}" modifiers="{}" options="{}"/>
                     </tree>
                 </field>
             </field>

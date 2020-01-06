@@ -226,7 +226,7 @@ class TaskTimer(models.AbstractModel):
             activity.unlink()
 
     @api.multi
-    def _create_timesheet(self):
+    def _create_timesheet(self, time=0.0):
         self.ensure_one()
         user_id = self.env.context.get('user_id', self.env.uid)
 
@@ -254,6 +254,7 @@ class TaskTimer(models.AbstractModel):
             'company_id': self.company_id.id,
             'task_id': self.id,
             'so_line': self.sale_line_id and self.sale_line_id.id,
+            'full_duration': time,
         })
         self._handle_timesheet_reminder_activity()
         return timesheet

@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 
 class MoveTimeheetOrPause(models.TransientModel):
@@ -57,11 +57,7 @@ class MoveTimeheet(models.TransientModel):
 
     @api.multi
     def process_time(self):
-        self.ensure_one()
-        if self.timesheet_id.timer_status == 'running':
-            self.move_time_only()
-        else:
-            self.move_timesheet()
+        self.move_timesheet()
 
         task_form = self.env.ref('project.view_task_form2', False)
         return {
@@ -84,6 +80,13 @@ class MoveTimeheet(models.TransientModel):
         company_id = destination_task.company_id.id
         aa = destination_task.project_id.analytic_account_id
 
+        active_timesheet = self.destination_task_id.timesheet_ids.filtered(
+            lambda ts: ts.user_id == self.timesheet_id.user_id and ts.timer_status in ('running', 'paused')
+        )
+
+        if active_timesheet:
+            return self._merge_active_timesheets(active_timesheet)
+
         self.timesheet_id.with_context(company_id=company_id).write({
             # have to include date in vals, for cost calculation in project_timesheet_currency
             'date': self.timesheet_id.date,
@@ -97,6 +100,32 @@ class MoveTimeheet(models.TransientModel):
 
         self.origin_task_id.delete_timesheet_reminder_activity()
         destination_task._handle_timesheet_reminder_activity()
+
+        return True
+
+    @api.multi
+    def _merge_active_timesheets(self, destination_timesheet):
+        """
+        Merge original timesheet values with destination and then dele
+        """
+        self.timesheet_id.pause_timer_if_running()
+
+        resume_timer = destination_timesheet.pause_timer_if_running()
+        updated_time = destination_timesheet.full_duration + self.timesheet_id.full_duration
+
+        if not resume_timer and self.timesheet_id.timer_status in ('running', 'paused'):
+            resume_timer = True
+
+        destination_timesheet.write({
+            'full_duration': updated_time,
+        })
+
+        self.origin_task_id.delete_timesheet_reminder_activity()
+        self.destination_task_id._handle_timesheet_reminder_activity()
+        self.timesheet_id.unlink()
+
+        if resume_timer:
+            self.destination_task_id.timer_resume()
 
         return True
 
@@ -114,42 +143,120 @@ class MoveTimeheet(models.TransientModel):
             'timer_status': 'paused',
         })
 
+
+class MoveTimeheetOrSplit(models.TransientModel):
+    _name = 'move_timesheet_or_split.wizard'
+    _description = 'Move Timesheet or Split'
+
+    origin_task_id = fields.Many2one('project.task', string='Current Task')
+    destination_task_id = fields.Many2one('project.task', string='New Task', required=True)
+    timesheet_id = fields.Many2one('account.analytic.line', string='Current Timesheet')
+    ts_action = fields.Selection(
+        selection=[
+            ('split', 'Move partial time of Current Timesheet to New Task'),
+            ('move', 'Move Current Timesheet to New Task'),
+        ],
+        required=True,
+        string='Action',
+    )
+    time_to_move = fields.Float(string='Time To Move')
+
     @api.multi
-    def move_time_only(self):
-        """
-        If the timesheet was paused multiple times, and has more than
-        just the current session, create a timesheet with that amount
-        of time and and reset the original sheet start time & run status.
-        """
+    def process_time(self):
         self.ensure_one()
-        has_previous_session = self.timesheet_id.full_duration
 
-        # if the current timesheet was never paused, just move the whole thing
-        if not has_previous_session:
-            return self.move_timesheet()
+        if self.ts_action == 'split':
+            SplitTS = self.env['split_timesheet_between_tasks.wizard']
+            split_ts = SplitTS.create({
+                'origin_task_id': self.origin_task_id.id,
+                'destination_task_id': self.destination_task_id.id,
+                'timesheet_id': self.timesheet_id.id,
+                'time_to_move': self.time_to_move,
+            })
+            split_ts.process_time()
+        else:
+            MoveTS = self.env['move_timesheet_to_task.wizard']
+            mvts = MoveTS.create({
+                'origin_task_id': self.origin_task_id.id,
+                'destination_task_id': self.destination_task_id.id,
+                'timesheet_id': self.timesheet_id.id,
+            })
+            mvts.process_time()
+        return True
 
-        task = self.destination_task_id
-        company_id = task.company_id.id
-        timesheet = self.timesheet_id
-        aa = task.project_id.analytic_account_id
 
-        # yapf: disable
-        AccountAnalyticLine = self.env['account.analytic.line'].with_context(company_id=company_id)
-        AccountAnalyticLine.create({
-            'name':  'Work In Progress',
-            'task_id': task.id,
-            'project_id': task.project_id.id,
-            'partner_id': task.partner_id.id,
-            'account_id': aa and aa.id,
-            'timer_status': 'running',
-            'date': timesheet.date,
-            'date_start': timesheet.date_start,
-            'factor': timesheet.factor and timesheet.factor.id,
-            'sheet_id': task.get_hr_timesheet_id(),
-            'user_id': timesheet.user_id.id,
-            'company_id': task.company_id.id,
-            'so_line': task.sale_line_id and task.sale_line_id.id,
+class SplitTimeheet(models.TransientModel):
+    _name = 'split_timesheet_between_tasks.wizard'
+    _description = 'Split Timesheet between origin & new task'
+
+    def _origin_task(self):
+        return self.env.context.get('active_id', None)
+
+    origin_task_id = fields.Many2one('project.task', string='Origin Task', default=_origin_task)
+    destination_task_id = fields.Many2one('project.task', string='Destination Task', required=True)
+    timesheet_id = fields.Many2one('account.analytic.line', string='Timesheet', required=True)
+    time_to_move = fields.Float(string='Time To Move', required=True)
+
+    @api.multi
+    def process_time(self):
+        self.split_timesheet()
+
+        task_form = self.env.ref('project.view_task_form2', False)
+        return {
+            'name': 'Destination Task',
+            'type': 'ir.actions.act_window',
+            'res_model': 'project.task',
+            'res_id': self.destination_task_id.id,
+            'view_id': task_form.id,
+            'view_type': 'form',
+            'view_mode': 'form',
+        }
+
+    @api.multi
+    def split_timesheet(self):
+
+        self.ensure_one()
+
+        self.handle_origin_timesheet()
+        self.handle_destination_timesheet()
+
+        return True
+
+    @api.multi
+    def handle_origin_timesheet(self):
+
+        self.timesheet_id.pause_timer_if_running()
+
+        full_duration = self.timesheet_id.full_duration
+        if self.time_to_move > full_duration:
+            raise UserError(f"Time to move exceeds Timesheet duration of {full_duration}!")
+
+        updated_time = self.timesheet_id.full_duration - self.time_to_move
+
+        self.timesheet_id.write({
+            'full_duration': updated_time,
         })
-        # yapf: enable
 
-        self.reset_original_timesheet_start()
+        return True
+
+    @api.multi
+    def handle_destination_timesheet(self):
+
+        destination_timesheet = self.destination_task_id.timesheet_ids.filtered(
+            lambda ts: ts.user_id == self.timesheet_id.user_id and ts.timer_status in ('running', 'paused')
+        )
+
+        if not destination_timesheet:
+            return self.destination_task_id._create_timesheet(time=self.time_to_move)
+
+        resume_timer = destination_timesheet.pause_timer_if_running()
+
+        updated_time = destination_timesheet.full_duration + self.time_to_move
+        destination_timesheet.write({
+            "full_duration": updated_time,
+        })
+
+        if resume_timer:
+            self.destination_task_id.timer_resume()
+
+        return True

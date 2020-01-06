@@ -179,3 +179,42 @@ class AccountAnalyticLine(models.Model):
                 'account_id': values.get('account_id') or self.account_id.id or emp.account_id.id,
             }
         return {}
+
+    @api.multi
+    def move_or_split(self):
+        """
+        Give opportunity to split time between two timesheets or move entire
+        timesheet to the new Task.
+        """
+
+        Switcher = self.env['move_timesheet_or_split.wizard']
+        switch = Switcher.create({
+            'timesheet_id': self.id,
+            'origin_task_id': self.task_id.id,
+            'ts_action': 'split',
+        })
+
+        wizard_form = self.env.ref('care_center_timesheets.move_timesheet_or_split', False)
+
+        return {
+            'name': 'Move Timesheet or Split',
+            'type': 'ir.actions.act_window',
+            'res_model': 'move_timesheet_or_split.wizard',
+            'view_id': wizard_form.id,
+            'res_id': switch.id,
+            'view_type': 'form',
+            'view_mode': 'form',
+            'target': 'new'
+        }
+
+    @api.multi
+    def pause_timer_if_running(self):
+        """
+        See if the timesheet was originally running and if so
+        set timer_resume to True
+        """
+        if self.timer_status == 'running':
+            self.task_id.timer_pause()
+            return True
+
+        return False
