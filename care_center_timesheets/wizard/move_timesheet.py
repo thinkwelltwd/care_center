@@ -3,7 +3,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
 
 
-class MoveTimeheetOrPause(models.TransientModel):
+class MoveTimesheetOrPause(models.TransientModel):
     _name = 'move_timesheet_or_pause.wizard'
     _description = 'Move Timesheet or Pause'
 
@@ -37,7 +37,7 @@ class MoveTimeheetOrPause(models.TransientModel):
         return True
 
 
-class MoveTimeheet(models.TransientModel):
+class MoveTimesheet(models.TransientModel):
     _name = 'move_timesheet_to_task.wizard'
     _description = 'Move Timesheet to a new task'
 
@@ -144,12 +144,12 @@ class MoveTimeheet(models.TransientModel):
         })
 
 
-class MoveTimeheetOrSplit(models.TransientModel):
+class MoveTimesheetOrSplit(models.TransientModel):
     _name = 'move_timesheet_or_split.wizard'
     _description = 'Move Timesheet or Split'
 
     origin_task_id = fields.Many2one('project.task', string='Current Task')
-    destination_task_id = fields.Many2one('project.task', string='New Task', required=True)
+    destination_task_id = fields.Many2one('project.task', string='New Task')
     timesheet_id = fields.Many2one('account.analytic.line', string='Current Timesheet')
     ts_action = fields.Selection(
         selection=[
@@ -185,7 +185,7 @@ class MoveTimeheetOrSplit(models.TransientModel):
         return True
 
 
-class SplitTimeheet(models.TransientModel):
+class SplitTimesheet(models.TransientModel):
     _name = 'split_timesheet_between_tasks.wizard'
     _description = 'Split Timesheet between origin & new task'
 
