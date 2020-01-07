@@ -34,7 +34,7 @@
                         <field name="timesheet_id" readonly="1" />
                     </group>
                     <group>
-                        <field name="destination_task_id" required="1" domain="[('id', '!=', origin_task_id)]"/>
+                        <field name="destination_task_id" required="1" domain="['&amp;', '|',('user_id', '=', uid), ('timesheet_ids.user_id', '=', uid), ('id', '!=', origin_task_id)]"/>
                         <field name="ts_action" />
                         <field name="time_to_move" widget="float_time" attrs="{'invisible':[('ts_action', '!=', 'split')]}"/>
                     </group>
