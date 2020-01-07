@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+
+    <!--
+        Override template to add in Timer entries
+    -->
+    <t t-name="mail.systray.ActivityMenu.Previews">
+        <t t-if="_.isEmpty(activities)">
+            <div class="dropdown-item-text text-center o_no_activity">
+                <span>No activities planned.</span>
+            </div>
+        </t>
+        <t t-foreach="activities" t-as="activity">
+            <div class="o_mail_preview" t-att-data-res_model="activity.model" t-att-data-model_name="activity.name" data-filter='my' t-att-data-activity_type="activity.type">
+                <div class="o_mail_preview_image o_mail_preview_app">
+                    <img t-att-src="activity.icon" alt="Activity"/>
+                </div>
+                <div class="o_preview_info">
+                    <div class="o_preview_title">
+                        <span class="o_preview_name">
+                            <t t-esc="activity.name"/>
+                        </span>
+                        <div t-if="activity.actions" class="o_mail_activity_action_buttons">
+                            <t t-foreach="activity.actions" t-as="action">
+                                <button type="button"
+                                    t-att-title="action.name"
+                                    t-att-class="'o_mail_activity_action btn btn-link fa ' + action.icon"
+                                    t-att-data-action_xmlid="action.action_xmlid"
+                                    t-att-data-res_model="activity.model"
+                                    t-att-data-model_name="activity.name">
+                                </button>
+                            </t>
+                        </div>
+                    </div>
+                    <div t-if="activity and activity.type == 'activity'">
+                        <button t-if="activity.overdue_count" type="button" class="btn btn-link o_activity_filter_button mr16" t-att-data-res_model="activity.model" t-att-data-model_name="activity.name" data-filter='overdue'><t t-esc="activity.overdue_count"/> Late </button>
+                        <span t-if="!activity.overdue_count" class="o_no_activity mr16">0 Late </span>
+                        <button t-if="activity.today_count" type="button" class="btn btn-link o_activity_filter_button mr16" t-att-data-res_model="activity.model" t-att-data-model_name="activity.name" data-filter='today'> <t t-esc="activity.today_count"/> Today </button>
+                        <span t-if="!activity.today_count" class="o_no_activity mr16">0 Today </span>
+                        <button t-if="activity.planned_count" type="button" class="btn btn-link o_activity_filter_button float-right" t-att-data-res_model="activity.model" t-att-data-model_name="activity.name" data-filter='upcoming_all'> <t t-esc="activity.planned_count"/> Future </button>
+                        <span t-if="!activity.planned_count" class="o_no_activity float-right">0 Future</span>
+                    </div>
+                    <div t-if="activity and activity.type == 'timer'">
+                        <button t-if="activity.active_task_id" type="button" class="btn btn-link o_activity_filter_button o_timer_action mr16" t-att-data-active_task_name="activity.active_task_name" t-att-data-active_task_id="activity.active_task_id"> Active </button>
+                        <span t-if="!activity.active_task_id" class="o_no_activity mr16">0 Active </span>
+                        <button t-if="activity.my_timers" type="button" class="btn btn-link o_activity_filter_button o_timer_action mr16" data-my_timers="1"> <t t-esc="activity.my_timers"/> Timers </button>
+                        <span t-if="!activity.my_timers" class="o_no_activity mr16">0 Timers </span>
+                        <button t-if="activity.my_tasks" type="button" class="btn btn-link o_activity_filter_button o_timer_action float-right"> <t t-esc="activity.my_tasks"/> Tasks </button>
+                        <span t-if="!activity.my_tasks" class="o_no_activity float-right">0 Tasks</span>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </t>
+
+</templates>

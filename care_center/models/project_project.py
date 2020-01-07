@@ -12,7 +12,7 @@ class ProjectProject(models.Model):
         email_prefix = Param.get_param('mail.catchall.alias', '').lower()
         name_prefix = Param.get_param('care_center.alias_name_prefix', '')
 
-        if name_prefix == 'True':
+        if project.alias_name and name_prefix == 'True':
             if not project.alias_name.startswith(email_prefix):
                 project.write({'alias_name': '%s+%s' % (email_prefix, project.alias_name)})
 

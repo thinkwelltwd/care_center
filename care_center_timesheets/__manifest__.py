@@ -28,9 +28,14 @@
         'views/project_task.xml',
         'views/res_config.xml',
         'views/sale.xml',
+        'views/systray.xml',
 
         # Wizard Views
         'views/timesheet_timer.xml',
         'views/move_timesheet.xml',
+    ],
+
+    'qweb': [
+        'static/src/xml/systray.xml',
     ],
 }
