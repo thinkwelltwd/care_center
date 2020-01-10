@@ -32,7 +32,10 @@
         'views/project_task.xml',
         'views/base_automation.xml',
         'views/care_center.xml',
+
+        # Wizard Views
         'views/merge_tasks_wizard.xml',
+        'views/update_project_info.xml',
     ],
     'installable': True,
     'auto_install': False,

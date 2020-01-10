@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="update_project_info_form" model="ir.ui.view">
+        <field name="name">Update Project Info on This Task</field>
+        <field name="model">update_project_info.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Update Project Info on Current Task">
+                <group>
+                    <group>
+                        <field name="current_task" readonly="1"/>
+                        <field name="partner_id" width="30" class="oe_inline"/>
+                        <field name="new_project" width="30" class="oe_inline"/>
+                        <field name="add_follower"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Save" type="object" name="update_customer_project" class="oe_highlight"/>
+                    <button string="Cancel" special="cancel" class="oe_link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <act_window
+        id="update_project_info_wizard"
+        name="Update Project Info"
+        res_model="update_project_info.wizard"
+        src_model="project.task"
+        view_mode="form"
+        context="{'default_current_task': active_id}"
+        target="new"
+    />
+</odoo>
