@@ -18,7 +18,6 @@
         'sms_frame',
         'care_center',
         'care_center_contacts',
-        'project',
     ],
 
     'data': [

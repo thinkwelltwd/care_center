@@ -18,6 +18,16 @@
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_search_form"/>
         <field name="arch" type="xml">
+
+            <field name="user_id" position="after">
+                <field name="team_id"/>
+            </field>
+
+            <xpath expr="//filter[@name='my_tasks']" position="before">
+                <separator/>
+               <filter string="Assigned To My Team(s)" name="my_team_tasks" domain="[('team_id.member_ids','in',uid)]"/>
+            </xpath>
+
             <xpath expr="//group/filter[@name='user']" position="after">
                 <filter string="Team" name="team_id" context="{'group_by':'team_id'}"/>
             </xpath>

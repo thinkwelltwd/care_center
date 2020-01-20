@@ -14,11 +14,9 @@
     'version': '12.0.1.0.0',
 
     'depends': [
-        'note',
         'contacts',
-        'crm_phonecall',
         'base_phone',
-        'support_team',
+        'care_center',
     ],
 
     'data': [

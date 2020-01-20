@@ -12,8 +12,7 @@
 
     'depends': [
         'sale_timesheet_line_exclude',
-        'project',
-        'support_team',
+        'care_center',
         'web',
     ],
 

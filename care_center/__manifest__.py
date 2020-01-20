@@ -18,7 +18,6 @@
         'note',
         'calendar',
         'crm_phonecall',
-        'project',
         'support_team',
     ],
 

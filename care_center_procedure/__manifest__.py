@@ -13,7 +13,6 @@
 
     'depends': [
         'care_center',
-        'support_team',
     ],
 
     'data': [

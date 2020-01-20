@@ -2,7 +2,7 @@
 <odoo>
 
     <record model="ir.ui.view" id="task_lead_phone_filters">
-        <field name="name">Filter Calls by Leads and Tsaks</field>
+        <field name="name">Filter Calls by Leads and Tasks</field>
         <field name="model">crm.phonecall</field>
         <field name="inherit_id" ref="crm_phonecall.view_crm_case_phonecalls_filter"/>
         <field name="arch" type="xml">
@@ -10,6 +10,12 @@
             <field name="opportunity_id" position="before">
                <field name="task_id"/>
             </field>
+
+            <filter name="current" position="after">
+                <filter string="Overdue Calls" name="phonecalls_overdue" domain="[('state', 'in', ('open', 'pending')), ('date', '&lt;', context_today().strftime('%Y-%m-%d')), '|', ('team_id.member_ids', '=', uid), ('user_id', '=', uid)]"/>
+                <filter string="Due Today" name="phonecalls_today" domain="[('state', 'in', ('open', 'pending')), ('date', '&gt;=', context_today().strftime('%Y-%m-%d')), ('date', '&lt;', (context_today() + relativedelta(days=1)).strftime('%Y-%m-%d')), '|', ('team_id.member_ids', '=', uid), ('user_id', '=', uid)]"/>
+                <filter string="Scheduled Calls" name="phonecalls_planned" domain="[('state', 'in', ('open', 'pending')), ('date', '&gt;', context_today().strftime('%Y-%m-%d')), '|', ('team_id.member_ids', '=', uid), ('user_id', '=', uid)]"/>
+            </filter>
 
         </field>
     </record>

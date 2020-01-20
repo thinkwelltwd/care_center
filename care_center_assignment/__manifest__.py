@@ -11,7 +11,6 @@
     'version': '12.0.1.0.0',
 
     'depends': [
-        'support_team',
         'care_center',
     ],
 
