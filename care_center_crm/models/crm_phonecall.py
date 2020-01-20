@@ -5,7 +5,6 @@ from odoo.exceptions import UserError
 
 class CrmPhonecall(models.Model):
     _name = 'crm.phonecall'
-    _description = 'Care Center CRM Phone Call'
     _inherit = ['care_center.base', 'crm.phonecall']
 
     def _available_task_lead_ids(self):
@@ -24,10 +23,12 @@ class CrmPhonecall(models.Model):
     task_id = fields.Many2one(
         comodel_name='project.task',
         string='Task',
+        index=True,
     )
     project_id = fields.Many2one(
         comodel_name='project.project',
         string='Project',
+        index=True,
     )
     timesheet_ids = fields.One2many(
         comodel_name='account.analytic.line',
@@ -109,7 +110,7 @@ class CrmPhonecall(models.Model):
         """
         Prepare timesheet values for writing timesheet from call duration.
         """
-        if len(self) > 0:
+        if len(self) > 1:
             raise UserError('Assign timesheet values on one call at a time')
         date = vals.get('date', fields.Date.to_string(self.date))
         if not date:

@@ -32,5 +32,6 @@
         'views/crm_phonecall.xml',
         'views/project_task.xml',
         'views/add_phonecall.xml',
+        'views/crm_phonecall_to_phonecall.xml',
     ],
 }

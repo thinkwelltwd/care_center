@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="crm_phonecall_task_project" model="ir.ui.view">
+            <field name="name">crm.phonecall2phonecall.task.project</field>
+            <field name="model">crm.phonecall2phonecall</field>
+        <field name="inherit_id" ref="crm_phonecall.phonecall_to_phonecall_view"/>
+        <field name="arch" type="xml">
+                <field name="team_id" position="after">
+                    <field name="task_id"/>
+                    <field name="project_id"/>
+                </field>
+        </field>
+    </record>
+
+</odoo>
