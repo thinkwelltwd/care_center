@@ -44,6 +44,7 @@ class ResUsers(models.Model):
             if call_type['states'] in ('today', 'overdue'):
                 user_phonecalls['total_count'] += call_type['count']
 
-        res.insert(0, user_phonecalls)
+        if user_phonecalls['total_count'] or user_phonecalls['planned_count']:
+            res.insert(0, user_phonecalls)
 
         return res
