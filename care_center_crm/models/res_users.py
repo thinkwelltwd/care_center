@@ -16,9 +16,13 @@ class ResUsers(models.Model):
                     WHEN %(today)s::date - phonecall.date::date < 0 Then 'planned'
                 END AS states
             FROM crm_phonecall AS phonecall
-            WHERE 
-                (user_id IN (SELECT id FROM team_member_user_rel WHERE user_id = %(user_id)s) AND user_id IS NULL)
-                OR user_id = %(user_id)s
+            WHERE (
+                    (
+                        team_id IN (SELECT team_id FROM team_member_user_rel WHERE user_id = %(user_id)s) 
+                        AND user_id IS NULL
+                    )
+                    OR user_id = %(user_id)s
+                )
                 AND state IN ('open', 'pending')
             GROUP BY states;
         """

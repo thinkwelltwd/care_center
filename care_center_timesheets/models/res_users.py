@@ -36,39 +36,54 @@ class ResUsers(models.Model):
     def systray_get_activities(self):
         res = super(ResUsers, self).systray_get_activities()
 
-        Task = self.env['project.task'].sudo()
-        my_tasks = Task.search_count([
-            '|',
-            ('timesheet_ids.user_id', '=', self.env.uid),
-            ('user_id', '=', self.env.uid),
-        ])
+        my_tasks_sql = """
+            SELECT COUNT(*) FROM project_task
+            WHERE active = True
+            AND (user_id = %(user_id)s OR id IN (
+                    SELECT DISTINCT(task_id) 
+                    FROM account_analytic_line 
+                    WHERE user_id = %(user_id)s
+                    AND task_id IS NOT NULL
+                 )
+            )
+        """
+        self.env.cr.execute(my_tasks_sql, {'user_id': self.env.uid})
+        my_tasks = self.env.cr.dictfetchall()
 
         if my_tasks:
 
-            my_timers = Task.search_count([
-                ('stage_id.fold', '=', False),
-                ('timesheet_ids.user_id', '=', self.env.uid),
-            ])
+            my_timers_sql = """
+                SELECT DISTINCT(task_id), timer_status, project_task.name
+                FROM account_analytic_line
+                INNER JOIN project_task
+                ON account_analytic_line.task_id=project_task.id
+                WHERE 
+                    account_analytic_line.user_id = %s AND
+                    account_analytic_line.task_id IN (
+                        SELECT id FROM project_task 
+                        WHERE active = True 
+                        AND stage_id IN (SELECT id FROM project_task_type WHERE fold=False)
+                    );
+            """
 
-            AccountAnalyticLine = self.env['account.analytic.line'].sudo()
-            active_task = AccountAnalyticLine.search_read(
-                [
-                    ('timer_status', '=', 'running'),
-                    ('user_id', '=', self.env.uid),
-                ],
-                ['task_id']
-            )
-            if active_task:
-                task_id, name = active_task[0]['task_id']
-            else:
-                task_id, name = None, None
+            self.env.cr.execute(my_timers_sql, [self.env.uid])
+            task_timer_data = self.env.cr.dictfetchall()
+            task_id, task_name = None, None
+            unique_ids = set()
+
+            for task in task_timer_data:
+                unique_ids.add(task['task_id'])
+                if task['timer_status'] == 'running':
+                    task_id = task['task_id']
+                    task_name = task['name']
+                    break
 
             timer_systray = {
                 'type': 'timer',
                 'active_task_id': task_id,
-                'active_task_name': name,
-                'my_timers': my_timers,
-                'my_tasks': my_tasks,
+                'active_task_name': task_name,
+                'my_timers': len(unique_ids),
+                'my_tasks': my_tasks[0]['count'],
                 'name': _("My Tasks or Followed Tasks"),
                 'model': 'project.task',
                 'icon': modules.module.get_module_icon('care_center'),
