@@ -86,7 +86,10 @@ class CrmLeadToTaskWizard(models.TransientModel):
         if not self.partner_id:
             raise UserError('Lead must have a partner assigned to create Task')
 
-        task = self.env['project.task'].create({
+        company_id = lead.partner_id.company_id.id
+        Task = self.env['project.task'].with_context(company_id=company_id)
+
+        task = Task.create({
             'name': lead.name,
             'description': lead.description,
             'project_id': self.project_id.id,
@@ -94,6 +97,7 @@ class CrmLeadToTaskWizard(models.TransientModel):
             'user_id': lead.user_id and lead.user_id.id,
             'medium_id': lead.medium_id and lead.medium_id.id,
             'team_id': self.get_team_id(lead=lead),
+            'company_id': company_id,
             'tag_ids': [(6, 0, self.get_tag_ids(lead=lead))]
         })
         lead.message_change_thread(task)

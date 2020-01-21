@@ -193,18 +193,20 @@ class CrmPhonecall(models.Model):
         for call in self:
             tags = ProjectTags.search([('name', 'in', [tag.name for tag in call.tag_ids])])
             partner_id = call.partner_id
+            company_id = partner_id.company_id.id
             if partner_id:
                 email_from = partner_id.email
             else:
                 email_from = None
 
-            task_id = Task.create({
+            task_id = Task.with_context(company_id=company_id).create({
                 'name': call.name,
                 'partner_id': partner_id.id or False,
                 'description': call.description or False,
                 'email_from': email_from,
                 'priority': call.priority,
                 'phone': call.partner_phone or False,
+                'company_id': company_id,
                 'tag_ids': [(6, 0, [tag.id for tag in tags])],
             })
             vals = {
