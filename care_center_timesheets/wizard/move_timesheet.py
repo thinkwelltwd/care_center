@@ -95,22 +95,14 @@ class MoveTimesheet(models.TransientModel):
 
         self.timesheet_id.with_context(company_id=company_id).sudo().write({
             # have to include date in vals, for cost calculation in project_timesheet_currency
-            'date':
-            self.timesheet_id.date,
-            'task_id':
-            destination_task.id,
-            'company_id':
-            company_id,
-            'project_id':
-            destination_task.project_id.id,
-            'partner_id':
-            destination_task.partner_id.id,
-            'account_id':
-            aa and aa.id,
-            'so_line':
-            destination_task.sale_line_id and destination_task.sale_line_id.id,
-            'sheet_id':
-            sheet_id.id,
+            'date': self.timesheet_id.date,
+            'task_id': destination_task.id,
+            'company_id': company_id,
+            'project_id': destination_task.project_id.id,
+            'partner_id': destination_task.partner_id.id,
+            'account_id': aa and aa.id,
+            'so_line': destination_task.sale_line_id and destination_task.sale_line_id.id,
+            'sheet_id': sheet_id.id,
         })
 
         if self.timesheet_id.timer_status in ('running', 'paused'):
