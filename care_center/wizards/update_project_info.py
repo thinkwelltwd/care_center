@@ -27,14 +27,14 @@ class UpdateProjectInfo(models.TransientModel):
         if self.partner_id == self.current_task.partner_id:
             raise UserError('New Customer is same as old')
 
-    @api.onchange('new_project')
+    @api.onchange('partner_id')
     def _update_partner_id_domain(self):
         partner = self.partner_id
 
         if not partner:
             domain = []
         else:
-            partner_ids = self.current_task.get_partner_ids()
+            partner_ids = self.get_partner_ids()
             domain = self.get_partner_domain(partner_ids)
 
             # Only reset project if the Partner is set, and is
@@ -62,6 +62,12 @@ class UpdateProjectInfo(models.TransientModel):
         task.write({
             'partner_id': self.partner_id.id,
             'project_id': self.new_project.id,
+            'sale_order_id': False,
+            'sale_line_id': False,
         })
+
+        so_line = task._default_sale_line_id()
+        if so_line:
+            task.write({'sale_line_id': so_line})
 
         return True
