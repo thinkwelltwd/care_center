@@ -9,7 +9,7 @@ class EndInternalPhonecall(models.TransientModel):
     phonecall_id = fields.Many2one(
         'crm.phonecall',
         name='Phonecall',
-        default=lambda self: self.context.get('phonecall_id'),
+        default=lambda self: self.env.context.get('phonecall_id'),
     )
 
     @api.multi
