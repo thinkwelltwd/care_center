@@ -1,4 +1,6 @@
 from odoo import api, fields, models, modules, _
+from odoo.exceptions import UserError
+from odoo.tools import date_utils
 
 
 class ResUsers(models.Model):
@@ -76,3 +78,43 @@ class ResUsers(models.Model):
             res.insert(self._get_systray_index(res), timer_systray)
 
         return res
+
+    @api.multi
+    def get_hr_timesheet_id(self, company_id):
+        """
+        Always return HR Timesheet if one exists for the current Employee and Time period
+
+        If no HR Timesheet exists, and manage_hr_timesheet is True, create it.
+        """
+        self.ensure_one()
+
+        employee = self.env['hr.employee'].search([
+            ('user_id', '=', self.id),
+        ], limit=1)
+        if not employee:
+            raise UserError('%s is not linked to an Employee Record' % self.env.user.name)
+
+        Param = self.env['ir.config_parameter'].sudo()
+        manage_hr_time = Param.get_param('hr_timesheet.manage_hr_timesheet', default=True)
+
+        today = fields.Date.context_today(self)
+        TimesheetSheet = self.env['hr_timesheet.sheet'].sudo()
+        ts = TimesheetSheet.search(
+            [
+                ('employee_id', '=', employee.id),
+                ('date_start', '<=', today),
+                ('date_end', '>=', today),
+                ('company_id', '=', company_id),
+            ],
+            limit=1,
+        ).mapped('id')
+        if ts:
+            return ts[0]
+
+        if not manage_hr_time:
+            return False
+
+        return TimesheetSheet.with_context(company_id=company_id).create({
+            'employee_id': employee.id,
+            'company_id': company_id,
+        }).id

@@ -89,9 +89,10 @@ class MoveTimesheet(models.TransientModel):
         if active_timesheet:
             return self._merge_active_timesheets(active_timesheet)
 
-        sheet_id = origin_task.company_id.sudo().get_current_timesheet_sheet()
+        user = self.env['res.users'].browse([self.env.context.get('user_id', self.env.uid)])
+        sheet_id = user.get_hr_timesheet_id(origin_task.company_id.id)
         if destination_task.company_id != origin_task.company_id:
-            sheet_id = destination_task.company_id.sudo().get_current_timesheet_sheet()
+            sheet_id = user.get_hr_timesheet_id(destination_task.company_id.id)
 
         self.timesheet_id.with_context(company_id=company_id).sudo().write({
             # have to include date in vals, for cost calculation in project_timesheet_currency
@@ -102,7 +103,7 @@ class MoveTimesheet(models.TransientModel):
             'partner_id': destination_task.partner_id.id,
             'account_id': aa and aa.id,
             'so_line': destination_task.sale_line_id and destination_task.sale_line_id.id,
-            'sheet_id': sheet_id.id,
+            'sheet_id': sheet_id,
         })
 
         if self.timesheet_id.timer_status in ('running', 'paused'):
