@@ -76,18 +76,25 @@ class MoveTimesheet(models.TransientModel):
         Move the entire timesheet to the new task
         """
         self.ensure_one()
+        origin_task = self.origin_task_id
         destination_task = self.destination_task_id
         company_id = destination_task.company_id.id
         aa = destination_task.project_id.analytic_account_id
 
         active_timesheet = self.destination_task_id.timesheet_ids.filtered(
-            lambda ts: ts.user_id == self.timesheet_id.user_id and ts.timer_status in ('running', 'paused')
+            lambda ts: ts.user_id == self.timesheet_id.user_id and ts.timer_status in
+            ('running', 'paused')
         )
 
         if active_timesheet:
             return self._merge_active_timesheets(active_timesheet)
 
-        self.timesheet_id.with_context(company_id=company_id).write({
+        user = self.env['res.users'].browse([self.env.context.get('user_id', self.env.uid)])
+        sheet_id = user.get_hr_timesheet_id(origin_task.company_id.id)
+        if destination_task.company_id != origin_task.company_id:
+            sheet_id = user.get_hr_timesheet_id(destination_task.company_id.id)
+
+        self.timesheet_id.with_context(company_id=company_id).sudo().write({
             # have to include date in vals, for cost calculation in project_timesheet_currency
             'date': self.timesheet_id.date,
             'task_id': destination_task.id,
@@ -96,10 +103,12 @@ class MoveTimesheet(models.TransientModel):
             'partner_id': destination_task.partner_id.id,
             'account_id': aa and aa.id,
             'so_line': destination_task.sale_line_id and destination_task.sale_line_id.id,
+            'sheet_id': sheet_id,
         })
 
+        if self.timesheet_id.timer_status in ('running', 'paused'):
+            destination_task._handle_timesheet_reminder_activity()
         self.origin_task_id.delete_timesheet_reminder_activity()
-        destination_task._handle_timesheet_reminder_activity()
 
         return True
 
@@ -243,7 +252,8 @@ class SplitTimesheet(models.TransientModel):
     def handle_destination_timesheet(self):
 
         destination_timesheet = self.destination_task_id.timesheet_ids.filtered(
-            lambda ts: ts.user_id == self.timesheet_id.user_id and ts.timer_status in ('running', 'paused')
+            lambda ts: ts.user_id == self.timesheet_id.user_id and ts.timer_status in
+            ('running', 'paused')
         )
 
         if not destination_timesheet:
