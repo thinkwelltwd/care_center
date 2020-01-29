@@ -199,7 +199,7 @@ class CrmPhonecall(models.Model):
             else:
                 email_from = None
 
-            task_id = Task.with_context(company_id=company_id).create({
+            task_id = Task.with_context(force_company=company_id).create({
                 'name': call.name,
                 'partner_id': partner_id.id or False,
                 'description': call.description or False,

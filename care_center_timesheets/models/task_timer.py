@@ -49,7 +49,7 @@ class TaskTimer(models.AbstractModel):
         if not manage_hr_time:
             return False
 
-        return TimesheetSheet.with_context(company_id=self.company_id.id).create({
+        return TimesheetSheet.with_context(force_company=self.company_id.id).create({
             'employee_id': employee.id,
             'company_id': self.company_id.id,
         }).id
@@ -79,7 +79,7 @@ class TaskTimer(models.AbstractModel):
             # in project_timesheet_currency app doesn't crash
             for ts in task.timesheet_ids:
                 data['date'] = ts.date
-                ts.with_context(company_id=company_id).write(data)
+                ts.with_context(force_company=company_id).write(data)
 
     @api.one
     def _user_timer_status(self):
@@ -229,6 +229,7 @@ class TaskTimer(models.AbstractModel):
     def _create_timesheet(self, time=0.0):
         self.ensure_one()
         user_id = self.env.context.get('user_id', self.env.uid)
+        company_id = self.company_id.id
 
         if not self.project_id.active or not self.project_id.analytic_account_id.active:
             raise UserError(
@@ -239,7 +240,7 @@ class TaskTimer(models.AbstractModel):
         Param = self.env['ir.config_parameter'].sudo()
         factor = self.env['hr_timesheet_invoice.factor'].search([('factor', '=', 0.0)], limit=1)
         offset = float(Param.get_param('start_stop.starting_time_offset', default=0))
-        AccountLine = self.env['account.analytic.line'].with_context(company_id=self.company_id.id)
+        AccountLine = self.env['account.analytic.line'].with_context(force_company=company_id)
 
         timesheet = AccountLine.create({
             'name': 'Work In Progress',
@@ -319,7 +320,7 @@ class TaskTimer(models.AbstractModel):
 
         current_total_time = self._get_current_total_time(timesheet)
         timesheet.save_as_last_running()
-        timesheet.with_context(company_id=self.company_id.id).write({
+        timesheet.with_context(force_company=self.company_id.id).write({
             'timer_status': 'paused',
             'full_duration': current_total_time,
         })
@@ -332,7 +333,7 @@ class TaskTimer(models.AbstractModel):
         timesheet = self._get_timesheet(status='paused')
         if not timesheet:
             return
-        timesheet.with_context(company_id=self.company_id.id).write({
+        timesheet.with_context(force_company=self.company_id.id).write({
             'timer_status': 'running',
             'date_start': fields.Datetime.now(),
         })

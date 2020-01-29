@@ -129,7 +129,7 @@ class ResUsers(models.Model):
         if not manage_hr_time:
             return False
 
-        return TimesheetSheet.with_context(company_id=company_id).create({
+        return TimesheetSheet.with_context(force_company=company_id).create({
             'employee_id': employee.id,
             'company_id': company_id,
         }).id

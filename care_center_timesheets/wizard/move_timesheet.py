@@ -94,7 +94,7 @@ class MoveTimesheet(models.TransientModel):
         if destination_task.company_id != origin_task.company_id:
             sheet_id = user.get_hr_timesheet_id(destination_task.company_id.id)
 
-        self.timesheet_id.with_context(company_id=company_id).sudo().write({
+        self.timesheet_id.with_context(force_company=company_id).sudo().write({
             # have to include date in vals, for cost calculation in project_timesheet_currency
             'date': self.timesheet_id.date,
             'task_id': destination_task.id,

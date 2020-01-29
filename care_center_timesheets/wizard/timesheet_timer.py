@@ -101,7 +101,8 @@ class TimesheetTimerWizard(models.TransientModel):
 
         # re-call stats because we didn't persist the wizard
         company_id = self.timesheet_id.company_id.id
-        self.sudo().with_context(company_id=company_id).timesheet_id.write(self.timesheet_stats())
+        data = self.timesheet_stats()
+        self.sudo().with_context(force_company=company_id).timesheet_id.write(data)
         self.timesheet_id.task_id.delete_timesheet_reminder_activity()
 
         return self.timesheet_id
