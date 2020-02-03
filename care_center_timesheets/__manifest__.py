@@ -12,6 +12,7 @@
 
     'depends': [
         'sale_timesheet_line_exclude',
+        'hr_timesheet_sheet',
         'care_center',
         'web',
     ],
