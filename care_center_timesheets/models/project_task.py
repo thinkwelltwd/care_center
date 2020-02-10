@@ -145,28 +145,3 @@ class ProjectTask(models.Model):
         self.timesheet_ids.filtered(
             lambda ts: not ts.exclude_from_sale_order and not ts.timesheet_invoice_id
         ).write({'so_line': self.sale_line_id.id})
-
-    @api.onchange('project_id')
-    def _onchange_project_id(self):
-        """
-        Set correct sale_line_id from Project Sales Order
-        """
-        if not self.project_id:
-            self.sale_line_id = None
-            return
-
-        try:
-            analytic_account_id = self.project_id.analytic_account_id.parent_id.id
-        except AttributeError:
-            analytic_account_id = self.project_id.analytic_account_id.id
-
-        service_line = self.env['sale.order.line'].search(
-            [
-                ('is_service', '=', True),
-                ('state', 'not in', ('cancel', 'done')),
-                ('order_id.analytic_account_id', '=', analytic_account_id),
-            ],
-            limit=1,
-        )
-
-        self.sale_line_id = service_line.id
