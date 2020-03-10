@@ -1,4 +1,5 @@
-from ..utils import get_factored_duration
+from datetime import timedelta
+from ..utils import get_factored_duration, round_timedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
@@ -8,31 +9,24 @@ _logger = logging.getLogger(__name__)
 
 class TimesheetTimerWizard(models.TransientModel):
     _name = 'timesheet_timer.wizard'
+    _inherit = 'task.duration.fields'
     _description = 'Timesheet Timer'
 
-    name = fields.Char(string='Work Description')
-    date_stop = fields.Datetime(string='Stop Time')
-    completed_timesheets = fields.Float(string='Hours So Far')
+    name = fields.Char(string='Work Description', required=True)
+    date_stop = fields.Datetime(string='Stop Time', default=fields.Datetime.now)
+    exclude_from_sale_order = fields.Boolean(
+        string='Exclude from SO',
+        help='Checking this would exclude this timesheet entry from Sale Order',
+    )
+    completed_timesheets = fields.Float(string='Hours from previously completed timesheets')
     timesheet_id = fields.Many2one(
         'account.analytic.line',
         string='Timesheet',
     )
-
-    factor = fields.Many2one(
-        'hr_timesheet_invoice.factor',
-        'Factor',
-        default=lambda s: s.env['hr_timesheet_invoice.factor'].search(
-            [('factor', '=', 0.0)],
-            limit=1,
-        ),
-        required=True,
-        help="Allows setting the discount while making invoice."
-        " Set to 'No' if the time should not be invoiced."
-    )
-    full_duration = fields.Float(
-        'Time',
+    paused_duration = fields.Float(
+        'Paused Duration',
         default=0.0,
-        help='Total and undiscounted amount of time spent on timesheet',
+        help='Duration from paused timers',
     )
     unit_amount = fields.Float(
         'Duration',
@@ -40,14 +34,18 @@ class TimesheetTimerWizard(models.TransientModel):
         help='Invoiceable amount of time spent on timesheet',
     )
 
-    @api.onchange('name', 'date_stop', 'factor')
+    @api.constrains('date_start', 'date_stop')
+    def _valid_timesheet(self):
+        if self.date_start and self.date_stop and self.date_stop < self.date_start:
+            raise ValidationError('Start Time must be before Stop Time')
+
+    @api.onchange('name', 'date_start', 'date_stop', 'factor')
     def timesheet_stats(self):
         """
         Display calculated data to the user, and return a dict
         of data to save the timesheet.
         """
-        stop = fields.Datetime.to_datetime(self.date_stop) or fields.Datetime.now()
-        timesheet_duration = self.timesheet_id.get_timesheet_duration(stop=stop)
+        timesheet_duration = self.get_timesheet_duration()
         self.full_duration = self.get_minimum_duration(timesheet_duration)
         self.unit_amount = get_factored_duration(self.full_duration, self.factor)
 
@@ -57,7 +55,32 @@ class TimesheetTimerWizard(models.TransientModel):
             'full_duration': self.full_duration,
             'factor': self.factor.id,
             'unit_amount': self.unit_amount,
+            'exclude_from_sale_order': self.exclude_from_sale_order,
         }
+
+    def get_timesheet_duration(self):
+        """
+        Get complete timesheet duration. full_duration is populated
+        from Pause / Resume cycles, so include full_duration
+        """
+        start = fields.Datetime.to_datetime(self.date_start)
+        stop = fields.Datetime.to_datetime(self.date_stop)
+        timesheet_duration = (stop - start).total_seconds() / 60.0
+        full_duration = self.paused_duration * 60 + timesheet_duration
+
+        return round_timedelta(
+            td=timedelta(minutes=full_duration),
+            period=self.get_rounded_minutes(),
+        ).total_seconds() / 3600.0
+
+    def get_rounded_minutes(self):
+        """
+        Timesheets are rounded per minimum minutes on entire Ticket / Task,
+        and if that minimum is reached, then minimum time per timesheet
+        """
+        Param = self.env['ir.config_parameter'].sudo()
+        minutes = float(Param.get_param('start_stop.minutes_increment', default=0))
+        return timedelta(minutes=minutes)
 
     @api.constrains('name')
     def _check_name(self):
@@ -68,7 +91,7 @@ class TimesheetTimerWizard(models.TransientModel):
     def _check_date_stop(self):
         # Only test if user provides a value in the form
         if self.date_stop:
-            start = fields.Datetime.to_datetime(self.timesheet_id.date_start)
+            start = fields.Datetime.to_datetime(self.date_start)
             stop = fields.Datetime.to_datetime(self.date_stop)
             if stop < start:
                 raise ValidationError(_('Stop time must be later than Start time'))

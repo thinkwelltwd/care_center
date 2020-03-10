@@ -18,7 +18,11 @@ LOCK_TS_FIELDS = {
 
 
 class AccountAnalyticLine(models.Model):
-    _inherit = 'account.analytic.line'
+    _name = 'account.analytic.line'
+    _inherit = [
+        'task.duration.fields',
+        'account.analytic.line',
+    ]
 
     invoice_status = fields.Selection(
         selection=[
@@ -43,44 +47,10 @@ class AccountAnalyticLine(models.Model):
         string='Timer Status',
     )
 
-    date_start = fields.Datetime('Started')
-    factor = fields.Many2one(
-        'hr_timesheet_invoice.factor',
-        'Factor',
-        default=lambda s: s.env['hr_timesheet_invoice.factor'].search(
-            [('factor', '=', 0.0)],
-            limit=1,
-        ),
-        help="Set the billing percentage when making invoice invoice.",
-    )
-
-    full_duration = fields.Float(
-        string='Time',
-        default=0.0,
-        help='Total and undiscounted amount of time spent on timesheet',
-    )
-
-    full_duration_rounded = fields.Float(compute='_round_full_duration')
-    billable_time = fields.Float(compute='_get_billable_time')
-
-    @api.one
-    @api.depends('full_duration')
-    def _round_full_duration(self):
-        self.full_duration_rounded = round(self.full_duration, 2)
-
-    @api.one
-    @api.depends('full_duration_rounded')
-    def _get_billable_time(self):
-        factored_duration = get_factored_duration(
-            hours=self.full_duration_rounded,
-            invoice_factor=self.factor,
-        )
-        self.billable_time = round(factored_duration, 2)
-
     @api.onchange('factor')
     def _set_factor(self):
+        super()._set_factor()
         if self.factor and float(self.factor.factor) == 100.0:
-            self.exclude_from_sale_order = True
             self._onchange_exclude_from_sale_order()
 
     @api.onchange('full_duration', 'factor')
@@ -131,31 +101,6 @@ class AccountAnalyticLine(models.Model):
         """
         if self.id == self.user_id.previous_running_timesheet.id:
             self.user_id.write({'previous_running_timesheet': False})
-
-    def get_timesheet_duration(self, stop=None):
-        """
-        Get complete timesheet duration. full_duration is populated
-        from Pause / Resume cycles, so include full_duration
-        """
-        start = fields.Datetime.to_datetime(self.date_start)
-        stop = stop or fields.Datetime.now()
-        current_duration = (stop - start).total_seconds() / 60.0
-        full_duration_minutes = self.full_duration * 60.0
-        all_duration = full_duration_minutes + current_duration
-
-        return round_timedelta(
-            td=timedelta(minutes=all_duration),
-            period=self.get_rounded_minutes(),
-        ).total_seconds() / 3600.0
-
-    def get_rounded_minutes(self):
-        """
-        Timesheets are rounded per minimum minutes on entire Ticket / Task,
-        and if that minimum is reached, then minimum time per timesheet
-        """
-        Param = self.env['ir.config_parameter'].sudo()
-        minutes = float(Param.get_param('start_stop.minutes_increment', default=0))
-        return timedelta(minutes=minutes)
 
     def _get_timesheet_cost(self, values):
         """

@@ -3,6 +3,51 @@ from datetime import datetime, timedelta
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
+from ..utils import get_factored_duration
+
+
+class TaskDurationFields(models.AbstractModel):
+    _name = 'task.duration.fields'
+    _description = "Duration calculations for Timesheets"
+
+    date_start = fields.Datetime('Started')
+    factor = fields.Many2one(
+        'hr_timesheet_invoice.factor',
+        'Factor',
+        default=lambda s: s.env['hr_timesheet_invoice.factor'].search(
+            [('factor', '=', 0.0)],
+            limit=1,
+        ),
+        help="Set the billing percentage when making invoice invoice.",
+    )
+    full_duration = fields.Float(
+        string='Time',
+        default=0.0,
+        help='Total and undiscounted amount of time spent on timesheet',
+    )
+    full_duration_rounded = fields.Float(compute='_round_full_duration')
+    billable_time = fields.Float(compute='_get_billable_time')
+
+    @api.onchange('factor')
+    def _set_factor(self):
+        if self.factor and float(self.factor.factor) == 100.0:
+            self.exclude_from_sale_order = True
+
+    @api.one
+    @api.depends('full_duration')
+    def _round_full_duration(self):
+        self.full_duration_rounded = round(self.full_duration, 2)
+
+    @api.one
+    @api.depends('full_duration_rounded')
+    def _get_billable_time(self):
+        factored_duration = get_factored_duration(
+            hours=self.full_duration_rounded,
+            invoice_factor=self.factor,
+        )
+        self.billable_time = round(factored_duration, 2)
+
+
 
 class TaskTimer(models.AbstractModel):
     _name = 'task.timer'
@@ -361,8 +406,10 @@ class TaskTimer(models.AbstractModel):
 
         new = Timer.create({
             'completed_timesheets': completed_timesheets,
+            'date_start': timesheet.date_start,
             'timesheet_id': timesheet.id,
             'factor': timesheet.factor.id,
+            'paused_duration': timesheet.full_duration,
         })
 
         return {

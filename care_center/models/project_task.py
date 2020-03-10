@@ -227,6 +227,9 @@ class ProjectTask(models.Model):
 
     @api.constrains('project_id', 'partner_id')
     def check_matching_company(self):
+        if not self.project_id or not self.partner_id:
+            return
+
         proj_comp = self.project_id.company_id.name
         part_comp = self.partner_id.company_id.name
 
@@ -237,26 +240,31 @@ class ProjectTask(models.Model):
                 f'Partner: {part_comp}'
             )
 
-    # @api.constrains('project_id')
-    # def check_relationships(self):
-    #     """
-    #     If project has partner assigned, it must
-    #     be related to the Ticket Partner
-    #     """
-    #     proj_partner = self.project_id.partner_id.id
-    #     if not proj_partner:
-    #         return
-    #
-    #     ticket_partner = self.partner_id and self.partner_id.id
-    #     ticket_parent_partner = self.partner_id and \
-    #                            self.partner_id.parent_id and \
-    #                            self.partner_id.parent_id.id
-    #
-    #     if proj_partner != ticket_partner and proj_partner != ticket_parent_partner:
-    #         raise ValidationError(
-    #             'Project Contact and Ticket Contact must be the same, '
-    #             'or have the same parent Company.'
-    #         )
+    def confirm_relationships(self):
+        """
+        If project has partner assigned, it must
+        be related to the Ticket Partner.
+
+        Call before closing to allow placeholder
+        projects to be used until specific
+        projects can be assigned.
+        """
+
+        if not self.project_id or not self.partner_id:
+            return
+
+        task_partner = self.partner_id.commercial_partner_id.id
+        related_project_partners = self.project_id.related_partner_ids()
+
+        if task_partner not in related_project_partners:
+            task_partner = self.partner_id.name
+            project_partner = self.project_id.partner_id.name or 'No Partner assigned to Project'
+            raise ValidationError(
+                'Task Partner is not related to or associated with Project Partner.\n\n'
+                'Project Partner: %s\n'
+                'Task Partner: %s\n\n'
+                'Assign a related Project to this Task' % (project_partner, task_partner)
+            )
 
     @api.model
     def message_get_reply_to(self, res_ids, default=None):
@@ -301,6 +309,7 @@ class ProjectTask(models.Model):
     def close_task(self):
         self.ensure_one()
         self.confirm_subtasks_done()
+        self.confirm_relationships()
         self.stage_id = self.env['project.task.type'].search([('name', '=', 'Done')])
         if self.active:
             self.toggle_active()
