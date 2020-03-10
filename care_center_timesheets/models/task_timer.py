@@ -354,7 +354,10 @@ class TaskTimer(models.AbstractModel):
         timesheet.clear_if_previously_running_timesheet()
         wizard_form = self.env.ref('care_center_timesheets.timesheet_timer_wizard', False)
         Timer = self.env['timesheet_timer.wizard']
-        completed_timesheets = sum([ts.full_duration for ts in self.timesheet_ids])
+        completed_timesheets = sum([
+            ts.full_duration for ts in self.timesheet_ids
+            if not ts.exclude_from_sale_order
+        ])
 
         new = Timer.create({
             'completed_timesheets': completed_timesheets,

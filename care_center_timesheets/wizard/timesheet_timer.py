@@ -47,7 +47,8 @@ class TimesheetTimerWizard(models.TransientModel):
         of data to save the timesheet.
         """
         stop = fields.Datetime.to_datetime(self.date_stop) or fields.Datetime.now()
-        self.full_duration = self.timesheet_id.get_timesheet_duration(stop=stop)
+        timesheet_duration = self.timesheet_id.get_timesheet_duration(stop=stop)
+        self.full_duration = self.get_minimum_duration(timesheet_duration)
         self.unit_amount = get_factored_duration(self.full_duration, self.factor)
 
         return {
@@ -80,15 +81,18 @@ class TimesheetTimerWizard(models.TransientModel):
         """
         # Sometimes a ticket really shouldn't have a minimum
         # duration especially on internal communications
-        if self.env.context.get('calculate_minimum_duration', False):
+        if not self.env.context.get('calculate_minimum_duration', True):
             return duration
 
         Param = self.env['ir.config_parameter'].sudo()
-        work_log_min = float(Param.get_param('start_stop.minimum_work_log', default=0))
-        total_minutes = (self.completed_timesheets * 60) + duration
+        work_log_min = float(Param.get_param('start_stop.minimum_work_log', default=0)) / 60
+        if not work_log_min:
+            return duration
 
-        if work_log_min and total_minutes < work_log_min:
-            return work_log_min
+        all_timesheets = self.completed_timesheets + duration
+
+        if all_timesheets < work_log_min:
+            return duration + (work_log_min - duration)
 
         return duration
 
