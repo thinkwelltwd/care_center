@@ -225,6 +225,18 @@ class ProjectTask(models.Model):
                     ('name', '=', self.env.context['project_tag']),
                 ])
 
+    @api.constrains('project_id', 'partner_id')
+    def check_matching_company(self):
+        proj_comp = self.project_id.company_id.name
+        part_comp = self.partner_id.company_id.name
+
+        if part_comp != proj_comp:
+            raise ValidationError(
+                f'Project Company does not equal Partner Company \n\n'
+                f'Project: {proj_comp}\n'
+                f'Partner: {part_comp}'
+            )
+
     # @api.constrains('project_id')
     # def check_relationships(self):
     #     """
