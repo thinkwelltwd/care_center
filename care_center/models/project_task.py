@@ -258,33 +258,6 @@ class ProjectTask(models.Model):
         return dict((task.id, aliases.get(task.project_id and task.project_id.id or 0, False))
                     for task in tasks)
 
-    def email_the_customer(self):
-        """
-        Helper function to be called from close_ticket or email_customer.
-        Can't be a decorated and be called from other dectorated methods
-        """
-
-        compose_form = self.env.ref('mail.email_compose_message_wizard_form', False)
-        template = self.env['mail.template'].search([('name', '=', 'CF Ticket - Close')])
-        ctx = {
-            'default_model': 'project.task',
-            'default_res_id': self.id,
-            'default_use_template': bool(template),
-            'default_template_id': template.id,
-            'default_composition_mode': 'comment',
-        }
-        return {
-            'name': 'Compose Email',
-            'type': 'ir.actions.act_window',
-            'view_type': 'form',
-            'view_mode': 'form',
-            'res_model': 'mail.compose.message',
-            'views': [(compose_form.id, 'form')],
-            'view_id': compose_form.id,
-            'target': 'new',
-            'context': ctx,
-        }
-
     @api.multi
     def confirm_subtasks_done(self):
         for subtask in self.child_task_ids:
@@ -313,13 +286,12 @@ class ProjectTask(models.Model):
         return super(ProjectTask, self).write(values)
 
     @api.multi
-    def close_ticket(self):
+    def close_task(self):
         self.ensure_one()
         self.confirm_subtasks_done()
         self.stage_id = self.env['project.task.type'].search([('name', '=', 'Done')])
         if self.active:
             self.toggle_active()
-        return self.email_the_customer()
 
     @api.multi
     def reopen_ticket(self):
@@ -328,13 +300,6 @@ class ProjectTask(models.Model):
         self.active = True
         self.date_close = None
 
-    @api.multi
-    def email_customer(self):
-        """
-        Open a window to compose an email
-        """
-        self.ensure_one()
-        return self.email_the_customer()
 
     @api.multi
     def toggle_active(self):

@@ -18,6 +18,7 @@
 
             <field name="project_id" position="after">
                 <field name="assignment_count" invisible="1"/>
+                <field name="task_active" invisible="1"/>
             </field>
 
             <!-- Change these fields only via Reassign button -->

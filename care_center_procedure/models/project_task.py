@@ -72,12 +72,12 @@ class ProjectTask(models.Model):
             raise ValidationError('Please close all open Checklists')
 
     @api.multi
-    def close_ticket(self):
+    def close_task(self):
         self.confirm_checklists_done()
-        return super(ProjectTask, self).close_ticket()
+        return super().close_task()
 
     @api.multi
     def toggle_active(self):
         if self.active:
             self.confirm_checklists_done()
-        return super(ProjectTask, self).toggle_active()
+        return super().toggle_active()
