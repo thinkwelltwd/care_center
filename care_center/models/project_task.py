@@ -249,8 +249,11 @@ class ProjectTask(models.Model):
         projects to be used until specific
         projects can be assigned.
         """
+        invoiceable_timesheets = self.timesheet_ids.filtered(
+            lambda ts: not ts.exclude_from_sale_order
+        )
 
-        if not self.project_id or not self.partner_id:
+        if not self.project_id or not self.partner_id or not invoiceable_timesheets:
             return
 
         task_partner = self.partner_id.commercial_partner_id.id
@@ -260,10 +263,12 @@ class ProjectTask(models.Model):
             task_partner = self.partner_id.name
             project_partner = self.project_id.partner_id.name or 'No Partner assigned to Project'
             raise ValidationError(
-                'Task Partner is not related to or associated with Project Partner.\n\n'
+                'Task has invoiceable timesheets but Task Partner is not related to or associated '
+                'with Project Partner.\n\n'
                 'Project Partner: %s\n'
                 'Task Partner: %s\n\n'
-                'Assign a related Project to this Task' % (project_partner, task_partner)
+                'For correct billing, assign a Project associated with %s to this Task.' %
+                (project_partner, task_partner, task_partner)
             )
 
     @api.model
