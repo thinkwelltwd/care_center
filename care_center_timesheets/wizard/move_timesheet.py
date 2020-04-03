@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
+from ..utils import get_factored_duration
 
 
 class MoveTimesheetOrPause(models.TransientModel):
@@ -81,9 +82,9 @@ class MoveTimesheet(models.TransientModel):
         company_id = destination_task.company_id.id
         aa = destination_task.project_id.analytic_account_id
 
-        active_timesheet = self.destination_task_id.timesheet_ids.filtered(
-            lambda ts: ts.user_id == self.timesheet_id.user_id and ts.timer_status in
-            ('running', 'paused')
+        active_timesheet = self.destination_task_id.has_active_timers(
+            singleton=True,
+            user_id=self.timesheet_id.user_id,
         )
 
         if active_timesheet:
@@ -169,6 +170,23 @@ class MoveTimesheetOrSplit(models.TransientModel):
         string='Action',
     )
     time_to_move = fields.Float(string='Time To Move')
+    description = fields.Char(string='Time Description')
+    needs_description = fields.Boolean(default=False)
+
+    @api.onchange('destination_task_id', 'ts_action')
+    def check_needs_description(self):
+        if not self.destination_task_id.has_active_timers(
+                singleton=True,
+                user_id=self.timesheet_id.user_id,
+        ) and self.ts_action == 'split':
+            self.needs_description = True
+        else:
+            self.needs_description = False
+
+    @api.constrains('needs_description')
+    def _constrain_needs_description(self):
+        if self.needs_description and not self.description:
+            raise UserError(_('You must give a description for this timesheet.'))
 
     @api.multi
     def process_time(self):
@@ -181,6 +199,7 @@ class MoveTimesheetOrSplit(models.TransientModel):
                 'destination_task_id': self.destination_task_id.id,
                 'timesheet_id': self.timesheet_id.id,
                 'time_to_move': self.time_to_move,
+                'description': self.description,
             })
             split_ts.process_time()
         else:
@@ -205,6 +224,7 @@ class SplitTimesheet(models.TransientModel):
     destination_task_id = fields.Many2one('project.task', string='Destination Task', required=True)
     timesheet_id = fields.Many2one('account.analytic.line', string='Timesheet', required=True)
     time_to_move = fields.Float(string='Time To Move', required=True)
+    description = fields.Char(string='Time Description')
 
     @api.multi
     def process_time(self):
@@ -238,12 +258,18 @@ class SplitTimesheet(models.TransientModel):
 
         full_duration = self.timesheet_id.full_duration
         if self.time_to_move > full_duration:
-            raise UserError(f"Time to move exceeds Timesheet duration of {full_duration}!")
+            raise UserError(_(f"Time to move exceeds Timesheet duration of {round(full_duration, 2)}!"))
+        elif not (self.time_to_move > 0):
+            raise UserError(_("Time to move can not be less than 00:01"))
 
         updated_time = self.timesheet_id.full_duration - self.time_to_move
-
+        unit_amount = get_factored_duration(
+            hours=updated_time,
+            invoice_factor=self.timesheet_id.factor,
+        )
         self.timesheet_id.write({
             'full_duration': updated_time,
+            'unit_amount': unit_amount,
         })
 
         return True
@@ -251,13 +277,23 @@ class SplitTimesheet(models.TransientModel):
     @api.multi
     def handle_destination_timesheet(self):
 
-        destination_timesheet = self.destination_task_id.timesheet_ids.filtered(
-            lambda ts: ts.user_id == self.timesheet_id.user_id and ts.timer_status in
-            ('running', 'paused')
+        destination_timesheet = self.destination_task_id.has_active_timers(
+            singleton=True,
+            user_id=self.timesheet_id.user_id,
         )
 
         if not destination_timesheet:
-            return self.destination_task_id._create_timesheet(time=self.time_to_move)
+            unit_amount = get_factored_duration(
+                hours=self.time_to_move,
+                invoice_factor=self.timesheet_id.factor,
+            )
+            return self.destination_task_id._create_timesheet(
+                time=self.time_to_move,
+                timer_status='stopped',
+                name=self.description,
+                unit_amount=unit_amount,
+                factor=self.timesheet_id.factor,
+            )
 
         resume_timer = destination_timesheet.pause_timer_if_running()
 

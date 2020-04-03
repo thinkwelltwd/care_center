@@ -163,3 +163,14 @@ class AccountAnalyticLine(models.Model):
             return True
 
         return False
+
+    @api.multi
+    def match_user(self, user_id):
+        """
+        Check if user_id is related to this timesheet
+        @param user_id: ResUser
+        @return: Bool, always True if users match else False
+        """
+        if not user_id:
+            return False
+        return self.user_id == user_id

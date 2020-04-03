@@ -271,7 +271,7 @@ class TaskTimer(models.AbstractModel):
             activity.unlink()
 
     @api.multi
-    def _create_timesheet(self, time=0.0):
+    def _create_timesheet(self, time=0.0, timer_status='running', name='Work In Progress', unit_amount=False, factor=False):
         self.ensure_one()
         user_id = self.env.context.get('user_id', self.env.uid)
         company_id = self.company_id.id
@@ -283,14 +283,15 @@ class TaskTimer(models.AbstractModel):
             )
 
         Param = self.env['ir.config_parameter'].sudo()
-        factor = self.env['hr_timesheet_invoice.factor'].search([('factor', '=', 0.0)], limit=1)
+        if not factor:
+            factor = self.env['hr_timesheet_invoice.factor'].search([('factor', '=', 0.0)], limit=1)
         offset = float(Param.get_param('start_stop.starting_time_offset', default=0))
         AccountLine = self.env['account.analytic.line'].with_context(force_company=company_id)
 
         timesheet = AccountLine.create({
-            'name': 'Work In Progress',
+            'name': name,
             'date_start': datetime.now() - timedelta(minutes=offset),
-            'timer_status': 'running',
+            'timer_status': timer_status,
             'invoice_status': 'notready',
             'account_id': self.project_id.analytic_account_id.id,
             'user_id': user_id,
@@ -301,20 +302,31 @@ class TaskTimer(models.AbstractModel):
             'task_id': self.id,
             'so_line': self.sale_line_id and self.sale_line_id.id,
             'full_duration': time,
+            'unit_amount': unit_amount,
         })
-        self._handle_timesheet_reminder_activity()
+
+        if timer_status != 'stopped':
+            self._handle_timesheet_reminder_activity()
+
         return timesheet
 
     @api.multi
-    def has_active_timers(self):
+    def has_active_timers(self, singleton=False, user_id=None):
         """
-        Check for active timesheets before closing / deactivation
+        Check for active timesheets before closing / deactivation.
+        Or check if a singleton has active timesheets.
+        A user can also be specificed for a timesheet
+        @param singleton: Bool, whether you want it to check all tasks or just a singleton
+        @param user_id: ResUser, whether you also want to see if the active timesheet relates to a specific user
         """
-        for record in self:
-            if record.sudo().timesheet_ids.filtered(
-                    lambda ts: ts.timer_status in ('running', 'paused')
-            ):
-                raise UserError('Please close all Running / Paused Timesheets first!')
+        if not singleton:
+            for record in self:
+                if record.sudo().has_active_timers(singleton=True):
+                    raise UserError('Please close all Running / Paused Timesheets first!')
+
+        return self.timesheet_ids.filtered(
+            lambda ts: ts.timer_status in ('running', 'paused') and (ts.match_user(user_id) if user_id else True)
+        )
 
     def timesheet_status_exists(self, status):
         """Timesheets of specified status exist"""

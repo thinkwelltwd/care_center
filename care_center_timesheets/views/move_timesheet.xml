@@ -37,6 +37,8 @@
                         <field name="destination_task_id" required="1" domain="['&amp;', '|',('user_id', '=', uid), ('timesheet_ids.user_id', '=', uid), ('id', '!=', origin_task_id)]"/>
                         <field name="ts_action" />
                         <field name="time_to_move" widget="float_time" attrs="{'invisible':[('ts_action', '!=', 'split')]}"/>
+                        <field name="needs_description" invisible="1"/>
+                        <field name="description" attrs="{'invisible':['|', ('needs_description', '==', False), ('ts_action', '!=', 'split')]}"/>
                     </group>
                </group>
                 <footer>
@@ -46,7 +48,6 @@
            </form>
         </field>
     </record>
-
 
     <record id="move_timesheet_to_new_task_wizard" model="ir.ui.view">
         <field name="name">Move Time to New Task</field>
