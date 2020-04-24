@@ -12,7 +12,7 @@ class TimesheetTimerWizard(models.TransientModel):
     _inherit = 'task.duration.fields'
     _description = 'Timesheet Timer'
 
-    name = fields.Char(string='Work Description', required=True)
+    name = fields.Char(string='Work Description')
     date_stop = fields.Datetime(string='Stop Time', default=fields.Datetime.now)
     exclude_from_sale_order = fields.Boolean(
         string='Exclude from SO',

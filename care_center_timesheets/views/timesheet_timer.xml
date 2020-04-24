@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
            <form string="Work Description" create="false" edit="false">
                 <group>
-                    <field name="name" placeholder="Briefly describe work performed"/>
+                    <field name="name" placeholder="Briefly describe work performed" required="1"/>
                 </group>
                 <group col="4" colspan="2">
                     <field name="factor" options="{'no_create': True}"/>
