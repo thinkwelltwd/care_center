@@ -227,7 +227,7 @@ class ProjectTask(models.Model):
 
     @api.constrains('project_id', 'partner_id')
     def check_matching_company(self):
-        if not self.project_id or not self.partner_id:
+        if not self.project_id or not self.partner_id or self.mailserver_mode():
             return
 
         proj_comp = self.project_id.company_id.name
@@ -306,7 +306,7 @@ class ProjectTask(models.Model):
     @api.multi
     def write(self, values):
         """ on_change doesn't fire for stage_id clicks """
-        if values.get('stage_id'):
+        if values.get('stage_id') and self.mailserver_mode():
             self._check_stage_id(values['stage_id'])
         return super(ProjectTask, self).write(values)
 

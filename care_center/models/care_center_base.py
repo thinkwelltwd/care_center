@@ -36,3 +36,12 @@ class CareCenterBase(models.AbstractModel):
             ('partner_id', '=', False),
             ('partner_id', 'in', partner_ids),
         ]
+
+    @api.multi
+    def mailserver_mode(self):
+        """
+        Model is being created / modified from mailserver cron job.
+        In such cases, relax validation checks to permit the record
+        to be created. Users can refine / correct later.
+        """
+        return 'fetchmail_cron_running' in self.env.context
