@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <template id="portal_home_create_ticket" name="Portal Home Create Ticket" inherit_id="compass_portal.portal_my_home"
+    priority="10">
+        <div class="dropdown-menu" position="inside">
+            <a class="dropdown-item" href="/my/tasks/create/">Task</a>
+        </div>
+    </template>
+
+</odoo>

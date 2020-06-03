@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="portal_layout_links" name="Task Links" inherit_id="project.portal_layout" priority="10">
+
+        <xpath expr="//li[@t-attf-class=&quot;breadcrumb-item #{'active ' if not task else ''}&quot;]" position="attributes">
+            <attribute name="t-if" add="or page_name == 'ticket_create'" separator=" "/>
+        </xpath>
+
+        <xpath expr="//a[@t-if='task']" position="attributes">
+            <attribute name="t-if" add="or mode == 'create'" separator=" "/>
+        </xpath>
+
+    </template>
+
+    <template id="portal_my_tasks_create_message" name="Create Task Message" inherit_id="project.portal_my_tasks">
+        <xpath expr="//t[@t-call='portal.portal_searchbar']" position="attributes">
+            <attribute name="t-call">compass_portal.portal_searchbar</attribute>
+        </xpath>
+    </template>
+
+    <template id="portal_create_task_detail" inherit_id="project.portal_my_task">
+        <xpath expr="//t[@t-call='portal.portal_record_layout']" position="before">
+
+            <t t-call="compass_portal.create_edit_alerts">
+                <t t-set="record_string" t-value="'Ticket'"/>
+            </t>
+
+        </xpath>
+    </template>
+
+    <template id="portal_create_task_fields" name="Create Task Form Fields">
+        <div class="form-row">
+            <div class="form-group row col-5 ml-auto">
+                <label for="name" class="col-form-label-lg p-0">Subject</label>
+                <div class="col-sm-10">
+                    <input id="name" name="name" type="text" t-att-value="name" class="form-control" required="required"/>
+                </div>
+            </div>
+            <div class="form-group row col-5 mr-auto">
+                <label for="projects" class="col-form-label-lg p-0">Project</label>
+                <div class="col-sm-10">
+                    <select t-if="projects" name="project_id" id="project_id" class="form-control" t-att-value="project_id" placeholder="Create or Select Project">
+                        <t t-foreach="projects" t-as="project">
+                            <option t-att-value="project.id"><span t-field="project.name"/></option>
+                        </t>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group row col-10 mx-auto">
+                <label for="description" class="col-form-label-lg p-0">Description</label>
+                <div class="col-sm-10">
+                    <textarea  style="height:100%;" id="description" t-att-value="description" name="description" type="text" class="form-control"
+                     placeholder="Detailed Description" required="required" rows="4"/>
+                </div>
+            </div>
+        </div>
+
+        <!--    Invisible input for needed value       -->
+        <input id="partner_id" name="partner_id" type="hidden" class="form-control" t-att-value="request.env.user.partner_id.id" required="required"/>
+
+    </template>
+
+    <template id="portal_create_task_form" name="Create Task Form">
+        <t t-call="compass_portal.portal_layout_save_discard">
+            <t t-call="portal.portal_record_layout">
+                <t t-set="card_header">
+                    <h5 class="mb-1 mb-md-0 d-inline-block">
+                        New Ticket
+                    </h5>
+                </t>
+                <t t-set="card_body">
+                    <form action="/my/tasks/create/" method="post" id="task-create">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <t t-call="care_center_portal.portal_create_task_fields"/>
+                    </form>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+
+
+</odoo>

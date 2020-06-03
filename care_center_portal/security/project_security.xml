@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+     <!-- Portal -->
+    <record id="project_task_rule_portal" model="ir.rule">
+        <field name="name">Project Task: portal users: portal and following</field>
+        <field name="model_id" ref="project.model_project_task"/>
+        <field name="domain_force">
+            [('message_partner_ids', 'child_of', [user.partner_id.commercial_partner_id.id])]
+        </field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+
+</odoo>
