@@ -17,6 +17,9 @@
         <xpath expr="//t[@t-call='portal.portal_searchbar']" position="attributes">
             <attribute name="t-call">compass_portal.portal_searchbar</attribute>
         </xpath>
+        <t t-call="compass_portal.portal_searchbar" position="inside">
+            <t t-set="margin_bottom" t-value="''"/>
+        </t>
     </template>
 
     <template id="portal_create_task_detail" inherit_id="project.portal_my_task">
@@ -27,6 +30,12 @@
             </t>
 
         </xpath>
+        <t t-call="portal.portal_layout" position="attributes">
+            <attribute name="t-call">compass_portal.portal_layout</attribute>
+        </t>
+        <t t-call="compass_portal.portal_layout" position="inside">
+            <t t-set="margin_bottom" t-value="'ml-2'"/>
+        </t>
     </template>
 
     <template id="portal_create_task_fields" name="Create Task Form Fields">
