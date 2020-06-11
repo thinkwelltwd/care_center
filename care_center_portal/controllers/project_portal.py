@@ -1,10 +1,9 @@
 from odoo import http
 from odoo.http import request
-from odoo.addons.compass_portal.controllers.portal import CFCustomerPortal
 from odoo.addons.project.controllers.portal import CustomerPortal
 
 
-class CustomerPortal(CFCustomerPortal, CustomerPortal):
+class CustomerPortal(CustomerPortal):
 
     @http.route('/my/tasks/create/', auth='user', website=True)
     def portal_create_task(self, *args, **kw):
@@ -19,7 +18,7 @@ class CustomerPortal(CFCustomerPortal, CustomerPortal):
                 projects,
                 user.partner_id,
             )
-        
+
         return request.render(
             'care_center_portal.portal_create_task_form',
             {'projects': projects, 'page_name': 'ticket_create', 'mode': 'create'},
@@ -46,11 +45,5 @@ class CustomerPortal(CFCustomerPortal, CustomerPortal):
         task.message_unsubscribe((15783,))
         task.message_subscribe((partner.id,))
         if task:
-            return request.redirect(self.add_url_params(
-                task.get_portal_url(),
-                status=f'{mode}_success',
-            ))
-        return request.redirect(self.add_url_params(
-                task.get_portal_url(),
-                status=f'{mode}_failed',
-            ))
+            return request.redirect(task.get_portal_url() + f'&status={mode}_success')
+        return request.redirect(task.get_portal_url() + f'&status={mode}_failed')

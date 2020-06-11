@@ -15,26 +15,45 @@
 
     <template id="portal_my_tasks_create_message" name="Create Task Message" inherit_id="project.portal_my_tasks">
         <xpath expr="//t[@t-call='portal.portal_searchbar']" position="attributes">
-            <attribute name="t-call">compass_portal.portal_searchbar</attribute>
+            <attribute name="t-call">care_center_portal.portal_searchbar</attribute>
         </xpath>
-        <t t-call="compass_portal.portal_searchbar" position="inside">
+        <t t-call="care_center_portal.portal_searchbar" position="inside">
             <t t-set="margin_bottom" t-value="''"/>
         </t>
+    </template>
+
+     <template id="create_edit_alerts" name="Portal Create/Edit Alerts">
+
+        <div class="alert alert-success text-center rounded-0 fade show d-print-none mb-0" role="alert"
+                 t-if="request.params.get('status') == 'create_success'">
+            <t t-esc="record_string"/> created successfully!
+        </div>
+        <div class="alert alert-success text-center rounded-0 fade show d-print-none mb-0" role="alert"
+             t-if="request.params.get('status') == 'edit_success'">
+            Edits saved successfully!
+        </div>
+        <div t-if="error_message" class="alert alert-danger text-center rounded-0 fade show d-print-none mb-0" role="alert">
+            <t t-foreach="error_message" t-as="err">
+                <t t-esc="err"/><br />
+            </t>
+        </div>
+
     </template>
 
     <template id="portal_create_task_detail" inherit_id="project.portal_my_task">
         <xpath expr="//t[@t-call='portal.portal_record_layout']" position="before">
 
-            <t t-call="compass_portal.create_edit_alerts">
+            <t t-call="care_center_portal.create_edit_alerts">
                 <t t-set="record_string" t-value="'Ticket'"/>
             </t>
 
         </xpath>
         <t t-call="portal.portal_layout" position="attributes">
-            <attribute name="t-call">compass_portal.portal_layout</attribute>
+            <attribute name="t-call">care_center_portal.portal_layout</attribute>
         </t>
-        <t t-call="compass_portal.portal_layout" position="inside">
+        <t t-call="care_center_portal.portal_layout" position="inside">
             <t t-set="margin_bottom" t-value="'ml-2'"/>
+            <t t-set="default_url" t-value="'/my/tasks'"/>
         </t>
     </template>
 
@@ -74,7 +93,7 @@
     </template>
 
     <template id="portal_create_task_form" name="Create Task Form">
-        <t t-call="compass_portal.portal_layout_save_discard">
+        <t t-call="care_center_portal.portal_layout_save_discard">
             <t t-call="portal.portal_record_layout">
                 <t t-set="card_header">
                     <h5 class="mb-1 mb-md-0 d-inline-block">
@@ -90,8 +109,5 @@
             </t>
         </t>
     </template>
-
-
-
 
 </odoo>

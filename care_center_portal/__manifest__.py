@@ -14,14 +14,12 @@
     'depends': [
         'base',
         'project',
-        'compass_portal',
     ],
 
     # always loaded
     'data': [
         'security/project_security.xml',
-        # Portal Views
         'views/project_portal_templates.xml',
-        'views/compass_portal_portal_templates.xml',
+        'views/portal_templates.xml',
     ],
 }
