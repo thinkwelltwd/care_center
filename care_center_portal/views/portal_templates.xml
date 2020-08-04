@@ -81,4 +81,96 @@
 
     </template>
 
+    <template id="text_field">
+         <div t-att-class="('form-group row col-10 mx-0 ' if not no_label else '') + 'mb-1 ' + (class_width if class_width else '')" t-attf-style="width: {{ field_width }}%;">
+             <t t-if="not label_size" t-set="label_size" t-value="4"/>
+             <t t-if="not label_pos" t-set="label_pos" t-value="center"/>
+             <label t-if="not no_label" t-att-for="field_name" t-attf-class="col-sm-{{ label_size }} col-form-label p-0 align-self-{{ label_pos }}">
+                 <strong><t t-esc="string"/>:</strong>
+             </label>
+             <t t-if="error_value">
+                 <t t-if="records">
+                     <t t-set="record_value" t-value="int(error_value)"/>
+                 </t>
+                 <t t-else="">
+                     <t t-set="record_value" t-value="error_value"/>
+                 </t>
+             </t>
+             <t t-elif="field">
+                 <t t-if="relational">
+                     <t t-if="records">
+                         <t t-set="record_value" t-value="field.id"/>
+                     </t>
+                     <t t-elif="attribute">
+                         <t t-set="record_value" t-value="field.code"/>
+                     </t>
+                     <t t-else="">
+                         <t t-set="record_value" t-value="field.name"/>
+                     </t>
+                 </t>
+                 <t t-else="">
+                     <t t-set="record_value" t-value="field"/>
+                 </t>
+             </t>
+             <t t-else="">
+                 <t t-set="record_value" t-value=""/>
+             </t>
+             <t t-set="input_value">
+                 <input
+                        type="text"
+                        t-att-name="field_name"
+                        t-attf-class="form-control px-2 {{error.get(field_name) and 'is-invalid' or ''}}"
+                        t-att-value="record_value or optional_test"
+                        readonly="1"
+                        required="1"
+                        t-att-placeholder="placeholder"
+                        t-att-hidden="hidden or 0"
+                 />
+             </t>
+             <t t-if="not no_label">
+                <div class="col-sm-8">
+                     <t t-raw="input_value"/>
+                </div>
+             </t>
+             <t t-else="">
+                 <t t-raw="input_value"/>
+             </t>
+
+        </div>
+    </template>
+
+    <template id="text_field_edit" inherit_id="care_center_portal.text_field" primary="True">
+        <input t-att-name="field_name" position="attributes">
+            <attribute name="readonly"/>
+        </input>
+    </template>
+
+    <template id="select_field_edit" inherit_id="care_center_portal.text_field" primary="True">
+        <input t-att-name="field_name" position="replace">
+            <select t-att-name="field_name" t-attf-class="form-control px-1 #{error.get(field_name) and 'is-invalid' or ''}">
+                <option value=""><t t-esc="string"/>...</option>
+                <t t-foreach="records or []" t-as="rec">
+                    <option
+                            t-att-value="rec[0]"
+                            t-att-selected="rec[0] == (record_value or optional_test)"
+                            t-att="{k: rec[-1] if not v else v for k, v in extra_attrs.items() } if extra_attrs else ''">
+                        <t t-esc="rec[1]" />
+                    </option>
+                </t>
+            </select>
+        </input>
+    </template>
+
+    <template id="textarea_field" inherit_id="care_center_portal.text_field" primary="True">
+        <input position="replace">
+            <textarea
+                       t-att-value="record_value or optional_test"
+                       t-att-name="field_name"
+                       type="text"
+                       t-attf-class="form-control px-1 #{error.get(field_name) and 'is-invalid' or ''}l"
+                       t-att-placeholder="placeholder"
+                       required="required"
+            />
+        </input>
+    </template>
 </odoo>

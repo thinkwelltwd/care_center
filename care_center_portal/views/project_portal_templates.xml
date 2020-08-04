@@ -58,32 +58,37 @@
     </template>
 
     <template id="portal_create_task_fields" name="Create Task Form Fields">
-        <div class="form-row">
-            <div class="form-group row col-5 ml-auto">
-                <label for="name" class="col-form-label-lg p-0">Subject</label>
-                <div class="col-sm-10">
-                    <input id="name" name="name" type="text" t-att-value="name" class="form-control" required="required"/>
-                </div>
+        <div class="row">
+            <div class="col-12 col-md-6 mb-1">
+                <t t-call="care_center_portal.text_field_edit" id="name">
+                    <t t-set="field_name" t-value="'name'"/>
+                    <t t-set="field" t-value="task.name if task else ''"/>
+                    <t t-set="string" t-value="'Subject'"/>
+                    <t t-set="error_value" t-value="name"/>
+                </t>
             </div>
-            <div class="form-group row col-5 mr-auto">
-                <label for="projects" class="col-form-label-lg p-0">Project</label>
-                <div class="col-sm-10">
-                    <select t-if="projects" name="project_id" id="project_id" class="form-control" t-att-value="project_id" placeholder="Create or Select Project">
-                        <t t-foreach="projects" t-as="project">
-                            <option t-att-value="project.id"><span t-field="project.name"/></option>
-                        </t>
-                    </select>
-                </div>
+            <div class="col-12 col-md-6 mb-1">
+                <t t-call="care_center_portal.select_field_edit" id="project_id">
+                    <t t-set="field_name" t-value="'project_id'"/>
+                    <t t-set="field" t-value="task.project_id if task else ''"/>
+                    <t t-set="string" t-value="'Project'"/>
+                    <t t-set="error_value" t-value="project_id"/>
+                    <t t-set="records" t-value="projects.mapped(lambda p: (p.id, p.name))"/>
+                </t>
             </div>
         </div>
 
-        <div class="form-row">
-            <div class="form-group row col-10 mx-auto">
-                <label for="description" class="col-form-label-lg p-0">Description</label>
-                <div class="col-sm-10">
-                    <textarea  style="height:100%;" id="description" t-att-value="description" name="description" type="text" class="form-control"
-                     placeholder="Detailed Description" required="required" rows="4"/>
-                </div>
+        <div class="row">
+            <div class="col-12 col-md-11 mb-1">
+                <t t-call="care_center_portal.textarea_field" id="description">
+                    <t t-set="field_name" t-value="'description'"/>
+                    <t t-set="field" t-value="task.description if task else ''"/>
+                    <t t-set="placeholder" t-value="'Detailed Description'"/>
+                    <t t-set="string" t-value="'Description'"/>
+                    <t t-set="error_value" t-value="description"/>
+                    <t t-set="label_size" t-value="2"/>
+                    <t t-set="label_pos" t-value="top"/>
+                </t>
             </div>
         </div>
 
@@ -92,7 +97,7 @@
 
     </template>
 
-    <template id="portal_create_task_form" name="Create Task Form">
+    <template id="create_task" name="Create Task Form">
         <t t-call="care_center_portal.portal_layout_save_discard">
             <t t-call="portal.portal_record_layout">
                 <t t-set="card_header">
