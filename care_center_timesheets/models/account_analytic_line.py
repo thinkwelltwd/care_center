@@ -24,6 +24,7 @@ class AccountAnalyticLine(models.Model):
         'account.analytic.line',
     ]
 
+    sheet_id = fields.Many2one(required=True)
     invoice_status = fields.Selection(
         selection=[
             ('notready', 'Not Ready'),
