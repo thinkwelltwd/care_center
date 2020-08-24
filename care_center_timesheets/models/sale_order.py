@@ -95,7 +95,6 @@ class SaleOrderLine(models.Model):
         Override superclass in /odoo/addons/sale/modules/sale.py (around line 1023) to round 'HALF-UP' on timesheet
         lines to match _get_delivered_quantity_by_analytic() (same file around line 1294).
         """
-        print('in the overridden _get_invoice_qty')
         for line in self:
             if line.qty_delivered_method != 'timesheet':
                 super()._get_invoice_qty()
@@ -104,7 +103,6 @@ class SaleOrderLine(models.Model):
             qty_invoiced = 0.0
             for invoice_line in line.invoice_lines:
                 if invoice_line.invoice_id.state != 'cancel':
-                    print(f'round by HALF-UP on UOM {invoice_line.uom_id.name}')
                     line_rounded = invoice_line.uom_id._compute_quantity(
                         invoice_line.quantity, line.product_uom, rounding_method='HALF-UP'
                     )
