@@ -326,7 +326,6 @@ class ProjectTask(models.Model):
         self.active = True
         self.date_close = None
 
-
     @api.multi
     def toggle_active(self):
         """ Inverse the value of the field ``active`` on the records in ``self``. """
@@ -366,3 +365,15 @@ class ProjectTask(models.Model):
             'res_id': False,
             'domain': [('parent_task_id', '=', parent_task_id)],
         }
+
+
+class ProjectTaskType(models.Model):
+    _inherit = 'project.task.type'
+
+    _sql_constraints = [
+        (
+            'task_type_name_unique',
+            'unique(name)',
+            'There is already a task stage with that name!',
+        ),
+    ]
