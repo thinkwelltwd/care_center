@@ -12,7 +12,6 @@ class CrmLeadToTaskWizard(models.TransientModel):
     _description = 'Care Center CRM Lead To Task Wizard'
     _inherit = 'crm.partner.binding'
 
-    lead_id = fields.Many2one('crm.lead', string='Lead')
     partner_id = fields.Many2one('res.partner', string='Customer')
     project_id = fields.Many2one('project.project', string='Project')
 
@@ -82,20 +81,19 @@ class CrmLeadToTaskWizard(models.TransientModel):
     @api.multi
     def action_lead_to_task(self):
         self.ensure_one()
-        lead = self.lead_id
+        lead = self.get_lead()
         if not self.partner_id:
             raise UserError('Lead must have a partner assigned to create Task')
 
         company_id = lead.partner_id.company_id.id
         Task = self.env['project.task'].with_context(force_company=company_id)
-
         task = Task.create({
             'name': lead.name,
             'description': lead.description,
             'project_id': self.project_id.id,
             'partner_id': lead.partner_id.id,
             'user_id': lead.user_id and lead.user_id.id,
-            'medium_id': lead.medium_id and lead.medium_id.id,
+            'medium_id': (lead.medium_id and lead.medium_id.id) or False,
             'team_id': self.get_team_id(lead=lead),
             'company_id': company_id,
             'tag_ids': [(6, 0, self.get_tag_ids(lead=lead))]
@@ -115,3 +113,6 @@ class CrmLeadToTaskWizard(models.TransientModel):
             'type': 'ir.actions.act_window',
             'res_id': task.id,
         }
+
+    def get_lead(self):
+        return self.env['crm.lead'].browse(self.env.context.get('active_id'))
