@@ -30,11 +30,11 @@
         <ol position="replace">
             <div class="nav flex-column">
                 <t>$0</t>
-                <a t-attf-href="{{ default_url }}/create" t-att-class="'btn btn-primary btn-inline-block mb-2 py-1 px-1 ' + margin_bottom"
-                   role="button" style="width: 5em">
-                    <i class="fa fa-plus"></i>
-                    Create
-                </a>
+                <div class="mb-2">
+                    <t t-call="care_center_portal.create_button">
+                        <t t-set="create_url" t-value="default_url + '/create'"/>
+                    </t>
+                </div>
             </div>
         </ol>
 
@@ -42,30 +42,24 @@
 
     <template id="portal_breadcrumbs_save_discard" inherit_id="portal.portal_breadcrumbs" primary="True">
         <ol position="after">
-            <button type="submit" class="btn btn-primary btn-inline-block ml-2 mb-2 py-1 px-2" onclick="document.forms[document.forms.length - 1].submit();">
-                <i class="fa fa-check"></i>
-                Save
-            </button>
-            <button type="reset" class="btn btn-light btn-inline-block mb-2 py-1 px-2 border" onclick="window.history.back();">
-                <i class="fa fa-times"></i>
-                Discard
-            </button>
+            <div class="ml-2 mb-2">
+                <t t-call="care_center_portal.submit_button"/>
+                <t t-call="care_center_portal.discard_button"/>
+            </div>
         </ol>
     </template>
 
     <template id="portal_breadcrumbs_edit_create" inherit_id="portal.portal_breadcrumbs" primary="True">
+
         <ol position="after">
             <t t-if="not edit_url">
                 <t t-set="edit_url" t-value="record.get_portal_url().split('?')[0] + '/edit?' + record.get_portal_url().split('?')[1]"/>
             </t>
-            <a t-att-href="edit_url" class="btn btn-primary btn-inline-block ml-2 mb-2 py-1 px-2" role="button">
-                <i class="fa fa-pencil"></i>
-                Edit
-            </a>
-            <a t-att-href="create_url" class="btn btn-light btn-inline-block mb-2 py-1 px-2 border" role="button">
-                <i class="fa fa-plus"></i>
-                Create
-            </a>
+            <t t-set="create_url" t-value="'/my/tasks/create'"/>
+            <div class="ml-2 mb-2">
+<!--                <t t-call="care_center_portal.update_button"/>-->
+                <t t-call="care_center_portal.create_button"/>
+            </div>
         </ol>
     </template>
 
@@ -79,6 +73,54 @@
             <attribute name="t-attf-class" add="d-flex align-items-start px-2" separator=" "/>
         </nav>
 
+    </template>
+
+    <template id="button">
+        <a t-att-href="url" t-attf-class="btn btn-{{ button_size or 'md' }} btn-transition btn-{{ color }} mx-.5 {{ rounded or '' }}" type="button">
+            <i t-attf-class="fa fa-{{ icon_size or 'lg' }} fa-{{ icon }}"></i>
+        </a>
+    </template>
+
+    <template id="form_button">
+        <button t-attf-type="{{ type }}" t-attf-class="btn btn-md btn-transition btn-{{ color }} rounded ml-.5" t-attf-onclick="{{ onclick }}">
+            <i t-attf-class="fa fa-lg fa-{{ icon }}"></i>
+        </button>
+    </template>
+
+    <template id="create_button">
+        <t t-call="care_center_portal.button">
+            <t t-set="url" t-value="create_url"/>
+            <t t-set="color" t-value="'primary'"/>
+            <t t-set="icon" t-value="'plus'"/>
+            <t t-set="rounded" t-value="'rounded'"/>
+        </t>
+    </template>
+
+    <template id="update_button">
+        <t t-call="care_center_portal.button">
+            <t t-set="url" t-value="edit_url"/>
+            <t t-set="color" t-value="'secondary'"/>
+            <t t-set="icon" t-value="'edit'"/>
+            <t t-set="rounded" t-value="'rounded'"/>
+        </t>
+    </template>
+
+    <template id="submit_button">
+        <t t-call="care_center_portal.form_button">
+            <t t-set="type" t-value="'submit'"/>
+            <t t-set="color" t-value="'primary'"/>
+            <t t-set="onclick" t-value="'document.forms[document.forms.length - 1].submit();'"/>
+            <t t-set="icon" t-value="'check'"/>
+        </t>
+    </template>
+
+    <template id="discard_button">
+        <t t-call="care_center_portal.form_button">
+            <t t-set="type" t-value="'reset'"/>
+            <t t-set="color" t-value="'secondary'"/>
+            <t t-set="onclick" t-value="'window.history.back();'"/>
+            <t t-set="icon" t-value="'times'"/>
+        </t>
     </template>
 
     <template id="text_field">
@@ -167,7 +209,7 @@
                        t-att-value="record_value or optional_test"
                        t-att-name="field_name"
                        type="text"
-                       t-attf-class="form-control px-1 #{error.get(field_name) and 'is-invalid' or ''}l"
+                       t-attf-class="form-control px-1 #{error.get(field_name) and 'is-invalid' or ''}"
                        t-att-placeholder="placeholder"
                        required="required"
             />

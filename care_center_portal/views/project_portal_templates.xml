@@ -22,7 +22,7 @@
         </t>
     </template>
 
-     <template id="create_edit_alerts" name="Portal Create/Edit Alerts">
+     <template id="create_edit_alerts" name="Task Portal Create/Edit Alerts">
 
         <div class="alert alert-success text-center rounded-0 fade show d-print-none mb-0" role="alert"
                  t-if="request.params.get('status') == 'create_success'">
@@ -41,7 +41,7 @@
     </template>
 
     <template id="portal_create_task_detail" inherit_id="project.portal_my_task">
-        <xpath expr="//t[@t-call='portal.portal_record_layout']" position="before">
+        <xpath expr="//t[@t-call='portal.portal_record_layout']" position="inside">
 
             <t t-call="care_center_portal.create_edit_alerts">
                 <t t-set="record_string" t-value="'Ticket'"/>
@@ -49,11 +49,11 @@
 
         </xpath>
         <t t-call="portal.portal_layout" position="attributes">
-            <attribute name="t-call">care_center_portal.portal_layout</attribute>
+            <attribute name="t-call">care_center_portal.portal_layout_edit_create</attribute>
         </t>
-        <t t-call="care_center_portal.portal_layout" position="inside">
+        <t t-call="care_center_portal.portal_layout_edit_create" position="inside">
             <t t-set="margin_bottom" t-value="'ml-2'"/>
-            <t t-set="default_url" t-value="'/my/tasks'"/>
+            <t t-set="record" t-value="task"/>
         </t>
     </template>
 
@@ -83,9 +83,9 @@
                 <t t-call="care_center_portal.textarea_field" id="description">
                     <t t-set="field_name" t-value="'description'"/>
                     <t t-set="field" t-value="task.description if task else ''"/>
+                    <t t-set="error_value" t-value="description"/>
                     <t t-set="placeholder" t-value="'Detailed Description'"/>
                     <t t-set="string" t-value="'Description'"/>
-                    <t t-set="error_value" t-value="description"/>
                     <t t-set="label_size" t-value="2"/>
                     <t t-set="label_pos" t-value="top"/>
                 </t>
@@ -99,10 +99,13 @@
 
     <template id="create_task" name="Create Task Form">
         <t t-call="care_center_portal.portal_layout_save_discard">
+            <t t-call="care_center_portal.create_edit_alerts">
+                <t t-set="record_string" t-value="'Ticket'"/>
+            </t>
             <t t-call="portal.portal_record_layout">
                 <t t-set="card_header">
                     <h5 class="mb-1 mb-md-0 d-inline-block">
-                        New Ticket
+                        Ticket
                     </h5>
                 </t>
                 <t t-set="card_body">
