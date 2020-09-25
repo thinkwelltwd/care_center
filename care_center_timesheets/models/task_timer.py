@@ -28,11 +28,6 @@ class TaskDurationFields(models.AbstractModel):
     full_duration_rounded = fields.Float(compute='_round_full_duration')
     billable_time = fields.Float(compute='_get_billable_time')
 
-    @api.onchange('factor')
-    def _set_factor(self):
-        if self.factor and float(self.factor.factor) == 100.0:
-            self.exclude_from_sale_order = True
-
     @api.one
     @api.depends('full_duration')
     def _round_full_duration(self):
@@ -46,7 +41,6 @@ class TaskDurationFields(models.AbstractModel):
             invoice_factor=self.factor,
         )
         self.billable_time = round(factored_duration, 2)
-
 
 
 class TaskTimer(models.AbstractModel):
@@ -325,7 +319,8 @@ class TaskTimer(models.AbstractModel):
                     raise UserError('Please close all Running / Paused Timesheets first!')
 
         return self.timesheet_ids.filtered(
-            lambda ts: ts.timer_status in ('running', 'paused') and (ts.match_user(user_id) if user_id else True)
+            lambda ts: ts.timer_status in ('running', 'paused') and
+            (ts.match_user(user_id) if user_id else True)
         )
 
     def timesheet_status_exists(self, status):
@@ -412,8 +407,7 @@ class TaskTimer(models.AbstractModel):
         wizard_form = self.env.ref('care_center_timesheets.timesheet_timer_wizard', False)
         Timer = self.env['timesheet_timer.wizard']
         completed_timesheets = sum([
-            ts.full_duration for ts in self.timesheet_ids
-            if not ts.exclude_from_sale_order
+            ts.full_duration for ts in self.timesheet_ids if not ts.exclude_from_sale_order
         ])
 
         new = Timer.create({

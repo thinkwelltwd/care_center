@@ -48,12 +48,6 @@ class AccountAnalyticLine(models.Model):
         string='Timer Status',
     )
 
-    @api.onchange('factor')
-    def _set_factor(self):
-        super()._set_factor()
-        if self.factor and float(self.factor.factor) == 100.0:
-            self._onchange_exclude_from_sale_order()
-
     @api.onchange('full_duration', 'factor')
     def _compute_durations(self):
         self.unit_amount = get_factored_duration(
