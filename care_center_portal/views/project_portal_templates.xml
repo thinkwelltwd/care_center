@@ -55,6 +55,19 @@
             <t t-set="margin_bottom" t-value="'ml-2'"/>
             <t t-set="record" t-value="task"/>
         </t>
+
+        <small class="text-right" position="before">
+            <span t-if="task.stage_id.name != 'Done'" class="ml-2 float-right">
+                <t t-call="care_center_portal.smart_button">
+                    <t t-set="no_icon" t-value="1"/>
+                    <t t-set="text" t-value="'Mark Resolved'"/>
+                    <t t-set="url" t-value="partner.get_portal_url(record=task) + '&amp;close_task=True'"/>
+                    <t t-set="color" t-value="'secondary'"/>
+                    <t t-set="button_size" t-value="'sm'"/>
+                </t>
+            </span>
+        </small>
+
     </template>
 
     <template id="portal_create_task_fields" name="Create Task Form Fields">
@@ -70,16 +83,17 @@
             <div class="col-12 col-md-6 mb-1">
                 <t t-call="care_center_portal.select_field_edit" id="project_id">
                     <t t-set="field_name" t-value="'project_id'"/>
-                    <t t-set="field" t-value="task.project_id if task else ''"/>
+                    <t t-set="field" t-value="request.env['project.project'].sudo().browse(int(request.params.get('filterby'))) if request.params.get('filterby') else ''"/>
                     <t t-set="string" t-value="'Project'"/>
                     <t t-set="error_value" t-value="project_id"/>
+                    <t t-set="relational" t-value="1"/>
                     <t t-set="records" t-value="projects.mapped(lambda p: (p.id, p.name))"/>
                 </t>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-12 col-md-11 mb-1">
+            <div class="col-12 col-md-9 mb-1">
                 <t t-call="care_center_portal.textarea_field" id="description">
                     <t t-set="field_name" t-value="'description'"/>
                     <t t-set="field" t-value="task.description if task else ''"/>
@@ -93,7 +107,7 @@
         </div>
 
         <!--    Invisible input for needed value       -->
-        <input id="partner_id" name="partner_id" type="hidden" class="form-control" t-att-value="request.env.user.partner_id.id" required="required"/>
+        <input id="partner_id" name="partner_id" type="hidden" class="form-control" t-att-value="partner.id or request.env.user.partner_id.id" required="required"/>
 
     </template>
 
@@ -109,13 +123,26 @@
                     </h5>
                 </t>
                 <t t-set="card_body">
-                    <form action="/my/tasks/create/" method="post" id="task-create">
+                    <t t-set="action_url" t-value="((partner and '/my/companies/' + str(partner.id) + '/tasks') or default_url) + '/create'"/>
+                    <form t-att-action="action_url" method="post" id="task-create">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <t t-call="care_center_portal.portal_create_task_fields"/>
                     </form>
                 </t>
             </t>
         </t>
+    </template>
+
+    <template id="portal_my_tasks" inherit_id="project.portal_my_tasks">
+        <a t-attf-href="/my/task/#{task.id}?{{ keep_query() }}" position="attributes">
+            <attribute name="t-attf-href">{{ ((partner and partner.get_portal_url(record=task) or task.get_portal_url())) + ('&amp;' + keep_query())}}</attribute>
+        </a>
+    </template>
+
+    <template id="list_projects" inherit_id="project.portal_my_projects">
+        <a t-attf-href="/my/project/#{project.id}?{{ keep_query() }}" position="attributes">
+            <attribute name="t-attf-href">{{ ((partner and partner.get_portal_url(record=project) or project.get_portal_url())) + ('&amp;' + keep_query())}}</attribute>
+        </a>
     </template>
 
 </odoo>

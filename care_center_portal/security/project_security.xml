@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+    <data>
+        <function name="write" model="ir.model.data">
+            <function name="search" model="ir.model.data">
+                <value
+                    eval="[('module', '=', 'project'), ('name', 'in', ('project_project_rule_portal', 'project_task_rule_portal'))]"
+                 />
+            </function>
 
-     <!-- Portal -->
-    <record id="project_task_rule_portal" model="ir.rule">
-        <field name="name">Project Task: portal users: portal and following</field>
-        <field name="model_id" ref="project.model_project_task"/>
-        <field name="domain_force">
-            [('message_partner_ids', 'child_of', [user.partner_id.commercial_partner_id.id])]
-        </field>
-        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
-    </record>
+            <!--Set noupdate to False-->
+            <value eval="{'noupdate': False}" />
+        </function>
 
+        <!--   Change Project Domain for Portal Users    -->
+        <record model="ir.rule" id="project.project_project_rule_portal">
+            <field name="domain_force">[('message_partner_ids', 'child_of', user.partner_id.get_companies().ids)]</field>
+        </record>
+
+        <!--   Change Task Domain for Portal Users    -->
+        <record model="ir.rule" id="project.project_task_rule_portal">
+            <field name="domain_force">[('project_id.message_partner_ids', 'child_of', user.partner_id.get_companies().ids)]</field>
+        </record>
+    </data>
 </odoo>

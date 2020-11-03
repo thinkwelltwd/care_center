@@ -32,7 +32,7 @@
                 <t>$0</t>
                 <div class="mb-2">
                     <t t-call="care_center_portal.create_button">
-                        <t t-set="create_url" t-value="default_url + '/create'"/>
+                        <t t-set="create_url" t-value="((partner and '/my/companies/' + str(partner.id) + '/tasks') or default_url) + ('/create?' + keep_query())"/>
                     </t>
                 </div>
             </div>
@@ -55,7 +55,7 @@
             <t t-if="not edit_url">
                 <t t-set="edit_url" t-value="record.get_portal_url().split('?')[0] + '/edit?' + record.get_portal_url().split('?')[1]"/>
             </t>
-            <t t-set="create_url" t-value="'/my/tasks/create'"/>
+            <t t-set="create_url" t-value="((partner and '/my/companies/' + str(partner.id) + '/tasks') or default_url) + ('/create?' + keep_query())"/>
             <div class="ml-2 mb-2">
 <!--                <t t-call="care_center_portal.update_button"/>-->
                 <t t-call="care_center_portal.create_button"/>
@@ -77,7 +77,14 @@
 
     <template id="button">
         <a t-att-href="url" t-attf-class="btn btn-{{ button_size or 'md' }} btn-transition btn-{{ color }} mx-.5 {{ rounded or '' }}" type="button">
-            <i t-attf-class="fa fa-{{ icon_size or 'lg' }} fa-{{ icon }}"></i>
+            <i t-if="not no_icon" t-attf-class="fa fa-{{ icon_size or 'lg' }} fa-{{ icon }}"></i>
+        </a>
+    </template>
+
+    <template id="smart_button" inherit_id="care_center_portal.button">
+        <a position="inside">
+            <span t-esc="count"/>
+            <span t-esc="text"/>
         </a>
     </template>
 
@@ -124,10 +131,8 @@
     </template>
 
     <template id="text_field">
-         <div t-att-class="('form-group row col-10 mx-0 ' if not no_label else '') + 'mb-1 ' + (class_width if class_width else '')" t-attf-style="width: {{ field_width }}%;">
-             <t t-if="not label_size" t-set="label_size" t-value="4"/>
-             <t t-if="not label_pos" t-set="label_pos" t-value="center"/>
-             <label t-if="not no_label" t-att-for="field_name" t-attf-class="col-sm-{{ label_size }} col-form-label p-0 align-self-{{ label_pos }}">
+         <div t-att-class="('form-group row col-12 mx-0 px-0 ' if not no_label else '') + 'mb-1 ' + (class_width if class_width else '')" t-attf-style="width: {{ field_width }}%;">
+             <label t-if="not no_label" t-att-for="field_name" t-attf-class="col-sm-{{ label_size or 3 }} col-form-label py-0 px-1 align-self-{{ label_pos or 'center' }}">
                  <strong><t t-esc="string"/>:</strong>
              </label>
              <t t-if="error_value">
@@ -161,7 +166,7 @@
                  <input
                         type="text"
                         t-att-name="field_name"
-                        t-attf-class="form-control px-2 {{error.get(field_name) and 'is-invalid' or ''}}"
+                        t-attf-class="form-control {{error.get(field_name) and 'is-invalid' or ''}}"
                         t-att-value="record_value or optional_test"
                         readonly="1"
                         required="1"
@@ -170,7 +175,7 @@
                  />
              </t>
              <t t-if="not no_label">
-                <div class="col-sm-8">
+                <div class="col-sm-8 px-0">
                      <t t-raw="input_value"/>
                 </div>
              </t>
@@ -209,7 +214,7 @@
                        t-att-value="record_value or optional_test"
                        t-att-name="field_name"
                        type="text"
-                       t-attf-class="form-control px-1 #{error.get(field_name) and 'is-invalid' or ''}"
+                       t-attf-class="form-control load_editor #{error.get(field_name) and 'is-invalid' or ''}"
                        t-att-placeholder="placeholder"
                        required="required"
             />

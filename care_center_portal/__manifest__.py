@@ -14,6 +14,8 @@
     'depends': [
         'base',
         'project',
+        'portal',
+        # 'website_forum',
     ],
 
     # always loaded
@@ -21,5 +23,9 @@
         'security/project_security.xml',
         'views/project_portal_templates.xml',
         'views/portal_templates.xml',
+        # 'views/assets.xml',
     ],
+    'qweb': [
+        'static/src/xml/portal_chatter.xml'
+    ]
 }
