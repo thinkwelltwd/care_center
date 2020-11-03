@@ -418,7 +418,6 @@ class CustomerPortal(CP):
             try:
                 response.qcontext['task'].close_task()
             except Exception as e:
-                print(f'XXX {e} {response.qcontext} {kw}')
                 self._handle_exception(e, response.qcontext, kw)
 
         return response
