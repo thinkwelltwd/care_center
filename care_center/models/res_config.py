@@ -6,7 +6,7 @@ class ResConfigSettings(models.TransientModel):
 
     alias_name_prefix = fields.Boolean(
         string='Alias Name Prefix',
-        default=True,
+        default=False,
         config_parameter='care_center.alias_name_prefix',
         help='Prepend catchall email alias as prefix to project alias name. \n'
         'i.e. support+project-name',
