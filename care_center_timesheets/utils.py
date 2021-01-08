@@ -6,7 +6,7 @@ def get_factored_duration(hours, invoice_factor):
     Return discounted duration based on invoice_factor
     """
     if invoice_factor:
-        hours -= (hours * invoice_factor.factor / 100.0)
+        hours = ((1 - invoice_factor.factor) * hours)
     hours = hours if hours > 0.0 else 0.0
 
     return hours
