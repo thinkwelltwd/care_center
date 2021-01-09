@@ -236,8 +236,8 @@ class ProjectTask(models.Model):
         if part_comp != proj_comp:
             raise ValidationError(
                 f'Project Company does not equal Partner Company \n\n'
-                f'Project: {proj_comp}\n'
-                f'Partner: {part_comp}'
+                f'Project {self.project_id.id}: {proj_comp}\n'
+                f'Partner {self.partner_id.id}: {part_comp}'
             )
 
     def confirm_relationships(self):
