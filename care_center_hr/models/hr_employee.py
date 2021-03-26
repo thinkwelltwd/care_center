@@ -12,7 +12,7 @@ class HrEmployee(models.Model):
         """
         user_clocked_in_task_ids = self.env['account.analytic.line'].search([
             ('timer_status', '=', 'running'),
-            ('user_id', '=', self.user_id.id),
+            ('user_id', '=', self.env.uid),
         ]).mapped('task_id.id')
 
         for task in self.env['project.task'].search([
