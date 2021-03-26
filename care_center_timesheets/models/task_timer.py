@@ -440,13 +440,18 @@ class TaskTimer(models.AbstractModel):
             return False
 
         Timer = self.env['timesheet_timer.wizard']
-        completed_timesheets = sum([ts.full_duration for ts in self.timesheet_ids])
+        completed_timesheets = sum([
+            ts.full_duration for ts in self.timesheet_ids if not ts.exclude_from_sale_order
+        ])
 
         new = Timer.create({
             'name': summary,
             'timesheet_id': wip_timesheet.id,
             'completed_timesheets': completed_timesheets,
+            'date_start': wip_timesheet.date_start,
             'date_stop': str(datetime.utcnow()),
+            'factor': wip_timesheet.factor.id,
+            'paused_duration': wip_timesheet.full_duration,
         })
 
         return new.save_timesheet()
