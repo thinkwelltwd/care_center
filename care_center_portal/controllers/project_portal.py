@@ -356,7 +356,7 @@ class CustomerPortal(CP):
         partner = request.env['res.partner'].sudo().browse(partner_id)
         if not partner:
             partner = request.env.user.partner_id
-        Task = request.env['project.task'].sudo().with_context({'tracking_disable': True})
+        Task = request.env['project.task'].sudo()
         qcontext.update({
             'error': {},
             'error_message': [],
@@ -370,14 +370,6 @@ class CustomerPortal(CP):
                         qcontext,
                         partner,
                     )
-                    admin = request.env['res.partner'].sudo().with_context(
-                        active_test=False
-                    ).search([
-                        ('name', '=', 'Compass ERP'),
-                    ]).mapped('id')[0]
-                    task.message_unsubscribe([admin])
-                    task.message_subscribe([partner.id] +
-                                           task.team_id.member_ids.mapped('partner_id').ids)
                     return request.redirect(
                         partner.get_portal_url(record=task) + f'&status=create_success'
                     )
@@ -439,24 +431,44 @@ class CustomerPortal(CP):
         :param error: dict, holding which fields are in an error state
         :param error_message: list->str, holding error messages
         """
-        for field_name in fields:
+        self._check_all_mandatory(data, fields, error, error_message)
+        self._check_any_mandatory(data, fields, error, error_message)
+
+    def _check_all_mandatory(self, data, fields, error, error_message):
+        for field_name in fields.get('all'):
             if not data.get(field_name):
                 error[field_name] = 'missing'
 
-        # error message for empty required fields
         if [err for err in error.values() if err == 'missing']:
             error_message.append('Some required fields are empty.')
 
+    def _check_any_mandatory(self, data, fields, error, error_message):
+        any_mandatory = fields.get('any')
+        if not any_mandatory:
+            return
+
+        for field_name in any_mandatory:
+            if not data.get(field_name):
+                error[field_name] = 'missing'
+
+        if len([err for err in error.values() if err == 'missing']) == len(any_mandatory):
+            error_message.append(
+                f'At least one of fields ({", ".join(any_mandatory)}) must be filled out.'
+            )
+        else:
+            error.clear()
+
     @staticmethod
-    def _check_email(data, error, error_message):
+    def _check_email(data, email, error, error_message):
         """
         Make sure email field is a valid address
         :param data: dict, data common from form POST
         :param error: dict, holding which fields are in an error state
         :param error_message: list->str, holding error messages
         """
-        if data.get('email') and not tools.single_email_re.match(data.get('email')):
-            error["email"] = 'error'
+        email = data.get(email)
+        if email and not tools.single_email_re.match(email):
+            error[email] = 'error'
             error_message.append('Invalid Email! Please enter a valid email address.')
 
     @staticmethod
@@ -507,7 +519,7 @@ class CustomerPortal(CP):
         if check_mandatory:
             self._check_mandatory(data, fields['mandatory'], error, error_message)
         if check_email:
-            self._check_email(data, error, error_message)
+            self._check_email(data, fields['email'], error, error_message)
         if check_numeric:
             self._check_numeric(data, fields['numeric'], error, error_message, check_punc)
 
@@ -517,9 +529,12 @@ class CustomerPortal(CP):
         form_error, error_message = self._form_validate(
             data,
             {
-                'mandatory': ['name', 'project_id', 'description'],
+                'mandatory': {
+                    'all': ['name', 'project_id', 'description']
+                },
             },
             check_numeric=False,
+            check_email=False,
         )
         context.update({'error': form_error, 'error_message': error_message})
         context.update(data)
