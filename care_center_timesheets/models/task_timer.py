@@ -89,8 +89,10 @@ class TaskTimer(models.AbstractModel):
             return False
 
         return TimesheetSheet.with_context(force_company=self.company_id.id).create({
-            'employee_id': employee.id,
-            'company_id': self.company_id.id,
+            'employee_id':
+            employee.id,
+            'company_id':
+            self.company_id.id,
         }).id
 
     @api.multi
@@ -100,6 +102,9 @@ class TaskTimer(models.AbstractModel):
         then update the Timesheets as well.
         """
         for task in self:
+            if not task.timesheet_ids:
+                continue
+
             aa = task.project_id.analytic_account_id
             team = task.project_id.team_id
             company_id = task.company_id.id
@@ -265,7 +270,14 @@ class TaskTimer(models.AbstractModel):
             activity.unlink()
 
     @api.multi
-    def _create_timesheet(self, time=0.0, timer_status='running', name='Work In Progress', unit_amount=False, factor=False):
+    def _create_timesheet(
+        self,
+        time=0.0,
+        timer_status='running',
+        name='Work In Progress',
+        unit_amount=False,
+        factor=False
+    ):
         self.ensure_one()
         user_id = self.env.context.get('user_id', self.env.uid)
         company_id = self.company_id.id
@@ -373,8 +385,10 @@ class TaskTimer(models.AbstractModel):
         current_total_time = self._get_current_total_time(timesheet)
         timesheet.save_as_last_running()
         timesheet.with_context(force_company=self.company_id.id).write({
-            'timer_status': 'paused',
-            'full_duration': current_total_time,
+            'timer_status':
+            'paused',
+            'full_duration':
+            current_total_time,
         })
         return self._user_timer_status()
 
@@ -386,8 +400,10 @@ class TaskTimer(models.AbstractModel):
         if not timesheet:
             return
         timesheet.with_context(force_company=self.company_id.id).write({
-            'timer_status': 'running',
-            'date_start': fields.Datetime.now(),
+            'timer_status':
+            'running',
+            'date_start':
+            fields.Datetime.now(),
         })
         self._handle_timesheet_reminder_activity()
         return timesheet
