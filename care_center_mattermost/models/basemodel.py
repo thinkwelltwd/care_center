@@ -32,7 +32,7 @@ def generate_url(self):
     :return: string with url
     """
     self.ensure_one()
-    base_url = self.env['ir.config_parameter'].get_param('web.base.url')
+    base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
 
     action = self.get_access_action()
     action['base_url'] = base_url
