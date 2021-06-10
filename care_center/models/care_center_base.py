@@ -33,9 +33,14 @@ class CareCenterBase(models.AbstractModel):
 
         return [
             '|',
-            ('partner_id', '=', False),
+            self.get_catchall_domain(),
             ('partner_id', 'in', partner_ids),
         ]
+
+    @api.model
+    def get_catchall_domain(self):
+        """This is a hook to be overridden in subclasses"""
+        return ('partner_id', '=', False)
 
     @api.multi
     def mailserver_mode(self):

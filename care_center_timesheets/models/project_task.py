@@ -1,5 +1,25 @@
 from odoo import api, models, fields
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
+
+
+class Project(models.Model):
+    _inherit = 'project.project'
+
+    catchall = fields.Boolean(string='Catchall')
+
+    @api.constrains('catchall', 'partner_id')
+    def _check_catchall_partner(self):
+        for project in self:
+            if project.catchall and project.partner_id:
+                raise ValidationError(
+                    'A Catchall project cannot have a partner set!\
+                                        Please remove the partner or uncheck Catchall.'
+                )
+
+    @api.onchange('catchall')
+    def _onchange_catchall(self):
+        if self.catchall and self.partner_id:
+            self.partner_id = False
 
 
 class ProjectTaskType(models.Model):
@@ -188,3 +208,20 @@ class ProjectTask(models.Model):
         self.timesheet_ids.filtered(
             lambda ts: not ts.exclude_from_sale_order and not ts.timesheet_invoice_id
         ).write({'so_line': self.sale_line_id.id})
+
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        res = super()._onchange_partner_id()
+        result = res or {}
+
+        if self.partner_id:
+            partner_ids = self.get_partner_ids()
+            project_domain = self.project_id.get_partner_domain(partner_ids)
+
+            existing_domain = result.get('domain')
+            if existing_domain:
+                existing_domain['project_id'] = project_domain
+            else:
+                result['domain'] = {'project_id': project_domain}
+
+        return result

@@ -2,7 +2,8 @@ from odoo import api, models
 
 
 class ProjectProject(models.Model):
-    _inherit = 'project.project'
+    _name = 'project.project'
+    _inherit = ['project.project', 'care_center.base']
 
     @api.model
     def related_partner_ids(self) -> set:
@@ -15,6 +16,11 @@ class ProjectProject(models.Model):
         if self.partner_id:
             return set([self.partner_id.commercial_partner_id.id, self.partner_id.id])
         return set()
+
+    @api.model
+    def get_catchall_domain(self):
+        """Override superclass (care_center.base) hook."""
+        return ('catchall', '=', True)
 
     @api.model
     def create(self, vals):
