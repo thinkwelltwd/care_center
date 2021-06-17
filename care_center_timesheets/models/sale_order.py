@@ -34,14 +34,14 @@ class SaleOrderLine(models.Model):
             details.append(line.name)
         return details
 
-    def get_timesheet_lines(self):
+    def get_timesheet_lines(self, invoice_status='ready'):
         """
         Return all timesheet lines that reflect work being done even if not invoiceable
         so that the customer can see all the work performed on the ticket.
         """
         domain = [
             ('so_line', '=', self.id),
-            ('invoice_status', '=', 'ready'),
+            ('invoice_status', '=', invoice_status),
         ]
         return self.env['account.analytic.line'].search(domain, order='date, id')
 
@@ -111,3 +111,25 @@ class SaleOrderLine(models.Model):
                     elif invoice_line.invoice_id.type == 'out_refund':
                         qty_invoiced -= line_rounded
             line.qty_invoiced = qty_invoiced
+
+    @api.depends(
+        'qty_invoiced',
+        'qty_delivered',
+        'product_uom_qty',
+        'order_id.state',
+    )
+    def _get_to_invoice_qty(self):
+        """
+        Override super to subtract timesheets that are not ready to be invoiced addons/sale/models/sale.py (around line
+        1035).
+        """
+        res = super()._get_to_invoice_qty()
+        lines = self.filtered(lambda l: l.qty_delivered_method == 'timesheet')
+        for line in lines:
+            timesheet_ids = line.get_timesheet_lines(invoice_status='notready')
+            if not timesheet_ids:
+                continue
+            line.qty_to_invoice = line.qty_to_invoice - round(
+                sum(timesheet_ids.mapped('unit_amount')), 2
+            )
+        return res
