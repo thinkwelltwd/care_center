@@ -1,7 +1,7 @@
 from datetime import timedelta
 from ..utils import get_factored_duration, round_timedelta
 from odoo import fields, models, api
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 # Fields that cannot be changed after
 # timesheet line is invoiced.
@@ -24,7 +24,6 @@ class AccountAnalyticLine(models.Model):
         'account.analytic.line',
     ]
 
-    sheet_id = fields.Many2one(required=True)
     invoice_status = fields.Selection(
         selection=[
             ('notready', 'Not Ready'),
@@ -169,3 +168,9 @@ class AccountAnalyticLine(models.Model):
         if not user_id:
             return False
         return self.user_id == user_id
+
+    @api.multi  # constrains fields copied from _get_sheet_affecting_fields (wasn't sure if possible to call method?)
+    @api.constrains('date', 'employee_id', 'project_id', 'company_id')
+    def check_has_timesheet_sheet(self):
+        if self.project_id and not self.sheet_id:
+            raise ValidationError('This timesheet must be attached to a sheet!')

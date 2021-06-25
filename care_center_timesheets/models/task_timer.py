@@ -292,8 +292,8 @@ class TaskTimer(models.AbstractModel):
         if not factor:
             factor = self.env['hr_timesheet_invoice.factor'].search([('factor', '=', 0.0)], limit=1)
         offset = float(Param.get_param('start_stop.starting_time_offset', default=0))
-        AccountLine = self.env['account.analytic.line'].with_context(force_company=company_id)
 
+        AccountLine = self.env['account.analytic.line'].with_context(force_company=company_id, sheet_create=True)
         timesheet = AccountLine.create({
             'name': name,
             'date_start': datetime.now() - timedelta(minutes=offset),
@@ -310,7 +310,6 @@ class TaskTimer(models.AbstractModel):
             'full_duration': time,
             'unit_amount': unit_amount,
         })
-
         if timer_status != 'stopped':
             self._handle_timesheet_reminder_activity()
 

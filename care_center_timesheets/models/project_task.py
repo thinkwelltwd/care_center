@@ -177,7 +177,7 @@ class ProjectTask(models.Model):
         if self.remaining_hours <= 0:
             return
 
-        self.write({
+        self.with_context(sheet_create=True).write({
             'timesheet_ids': [(
                 0,
                 0,
