@@ -56,13 +56,21 @@ class AccountAnalyticLine(models.Model):
 
     @api.model
     def create(self, vals):
-        # When creating entries manually, *_status values
+        super_call = super()
+        # When creating entries manually, *_status values and set sheet_id
         if ('project_id' in vals or 'task_id' in vals) and not vals.get('timer_status', False):
+            task_id = self.env['project.task'].browse(vals.get('task_id', None))
+            sheet_id = task_id and task_id.get_hr_timesheet_id()
+
             vals.update({
                 'timer_status': 'stopped',
                 'invoice_status': 'notready',
+                'sheet_id': sheet_id,
             })
-        return super(AccountAnalyticLine, self).create(vals)
+
+            super_call = super_call.with_context(sheet_create=True)
+
+        return super_call.create(vals)
 
     @api.multi
     def write(self, values):
