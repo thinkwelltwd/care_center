@@ -173,35 +173,6 @@ class ProjectTask(models.Model):
 
         return super(ProjectTask, self).message_new(msg, custom_values=data)
 
-    @api.multi
-    def redirect_task_view(self):
-        """Enable redirecting to a Ticket when created from a phone call."""
-        self.ensure_one()
-
-        form_view = self.env.ref('project.view_task_form2')
-        tree_view = self.env.ref('project.view_task_tree2')
-        kanban_view = self.env.ref('project.view_task_kanban')
-        calendar_view = self.env.ref('project.view_task_calendar')
-        graph_view = self.env.ref('project.view_project_task_graph')
-        views = [
-            (form_view.id, 'form'),
-            (tree_view.id, 'tree'),
-            (kanban_view.id, 'kanban'),
-            (calendar_view.id, 'calendar'),
-            (graph_view.id, 'graph'),
-        ]
-
-        return {
-            'name': _('Ticket'),
-            'view_type': 'form',
-            'view_mode': 'tree, form, calendar, kanban',
-            'res_model': 'project.task',
-            'res_id': self.id,
-            'view_id': False,
-            'views': views,
-            'type': 'ir.actions.act_window',
-        }
-
     @api.onchange('partner_id')
     def _partner_id(self):
         """

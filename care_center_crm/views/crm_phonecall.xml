@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
+    <act_window id="create_task_from_phonecall_btn_action"
+                name="Create Task"
+                res_model="crm.phonecall2task.wizard"
+                src_model="crm.phonecall"
+                view_mode="form"
+                target="new"/>
+
     <record model="ir.ui.view" id="task_lead_phone_filters">
         <field name="name">Filter Calls by Leads and Tasks</field>
         <field name="model">crm.phonecall</field>
@@ -81,9 +88,10 @@
                         type="action"/>
                 <button string="Create Task"
                         icon="fa-life-ring"
-                        name="action_button_create_task"
+                        name="%(create_task_from_phonecall_btn_action)d"
                         attrs="{'invisible':['|', ('opportunity_id','!=',False), ('task_id', '!=', False)]}"
-                        type="object"/>
+                        type="action"
+                        context="{'default_partner_id': partner_id, 'default_phonecall_id': active_id}"/>
                 <button string="Meeting"
                         icon="fa-calendar"
                         name="action_make_meeting" type="object"/>
@@ -105,11 +113,12 @@
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button string="Create Task"
                     class="oe_inline oe_stat_button"
-                    type="object"
-                    name="action_button_create_task"
+                    type="action"
+                    name="%(create_task_from_phonecall_btn_action)d"
                     states="open,pending"
                     icon="fa-life-ring"
-                    attrs="{'invisible':['|', ('opportunity_id','!=',False), ('task_id', '!=', False)]}"/>
+                    attrs="{'invisible':['|', ('opportunity_id','!=',False), ('task_id', '!=', False)]}"
+                    context="{'default_partner_id': partner_id, 'default_phonecall_id': active_id}"/>
             </xpath>
 
             <field name="opportunity_id" position="replace">

@@ -27,6 +27,7 @@
 
     'data': [
         'views/crm_lead2task_wizard.xml',
+        'views/crm_phonecall2task_wizard.xml',
         'views/crm_lead.xml',
         'views/crm_phonecall.xml',
         'views/project_task.xml',
