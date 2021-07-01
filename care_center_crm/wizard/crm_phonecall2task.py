@@ -10,8 +10,12 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
     _description = 'Care Center CRM Phone Call To Task Wizard'
     _inherit = 'crm.partner.binding'
 
-    partner_id = fields.Many2one('res.partner', string='Customer')
-    phonecall_id = fields.Many2one('crm.phonecall', string='Phone Call')
+    def _get_partner_id(self):
+        return self.env['crm.phonecall'].browse(
+            self.env.context.get('active_id')
+        ).partner_id
+
+    partner_id = fields.Many2one('res.partner', string='Customer', default=_get_partner_id)
     project_id = fields.Many2one('project.project', string='Project')
 
     @api.onchange('partner_id')
@@ -38,8 +42,12 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
         Task = self.env['project.task']
         ProjectTags = self.env['project.tags']
 
-        tags = ProjectTags.search([('name', 'in', [tag.name for tag in self.phonecall_id.tag_ids])])
-        partner_id = self.phonecall_id.partner_id
+        phonecall_id = self.env['crm.phonecall'].browse(
+            self.env.context.get('active_id')
+        )
+
+        tags = ProjectTags.search([('name', 'in', [tag.name for tag in phonecall_id.tag_ids])])
+        partner_id = phonecall_id.partner_id
         company_id = partner_id.company_id.id
         if partner_id:
             email_from = partner_id.email
@@ -47,13 +55,13 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
             email_from = None
 
         task_id = Task.with_context(force_company=company_id).create({
-            'name': self.phonecall_id.name,
+            'name': phonecall_id.name,
             'project_id': self.project_id.id,
             'partner_id': partner_id.id,
-            'description': self.phonecall_id.description,
+            'description': phonecall_id.description,
             'email_from': email_from,
-            'priority': self.phonecall_id.priority,
-            'phone': self.phonecall_id.partner_phone or False,
+            'priority': phonecall_id.priority,
+            'phone': phonecall_id.partner_phone or False,
             'company_id': company_id,
             'tag_ids': [(6, 0, [tag.id for tag in tags])],
         })
@@ -61,7 +69,7 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
             'task_id': task_id.id,
             'state': 'done',
         }
-        self.phonecall_id.write(vals)
+        phonecall_id.write(vals)
 
         return {
             'name': 'Task created',

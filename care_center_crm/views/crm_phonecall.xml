@@ -91,7 +91,6 @@
                         name="%(create_task_from_phonecall_btn_action)d"
                         attrs="{'invisible':['|', ('opportunity_id','!=',False), ('task_id', '!=', False)]}"
                         type="action"
-                        context="{'default_partner_id': partner_id, 'default_phonecall_id': active_id}"/>
                 <button string="Meeting"
                         icon="fa-calendar"
                         name="action_make_meeting" type="object"/>
@@ -118,7 +117,6 @@
                     states="open,pending"
                     icon="fa-life-ring"
                     attrs="{'invisible':['|', ('opportunity_id','!=',False), ('task_id', '!=', False)]}"
-                    context="{'default_partner_id': partner_id, 'default_phonecall_id': active_id}"/>
             </xpath>
 
             <field name="opportunity_id" position="replace">
