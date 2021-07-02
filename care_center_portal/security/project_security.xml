@@ -14,12 +14,12 @@
 
         <!--   Change Project Domain for Portal Users    -->
         <record model="ir.rule" id="project.project_project_rule_portal">
-            <field name="domain_force">[('message_partner_ids', 'child_of', user.partner_id.get_companies().ids)]</field>
+            <field name="domain_force">[('partner_id', 'child_of', user.partner_id.get_companies().ids)]</field>
         </record>
 
         <!--   Change Task Domain for Portal Users    -->
         <record model="ir.rule" id="project.project_task_rule_portal">
-            <field name="domain_force">[('project_id.message_partner_ids', 'child_of', user.partner_id.get_companies().ids)]</field>
+            <field name="domain_force">[('project_id.partner_id', 'child_of', user.partner_id.get_companies().ids)]</field>
         </record>
     </data>
 </odoo>
