@@ -75,14 +75,15 @@ class AccountAnalyticLine(models.Model):
     @api.multi
     def write(self, values):
 
-        locked_fields = LOCK_TS_FIELDS.intersection(values)
-        if locked_fields:
-            lfields = ', '.join(locked_fields)
-            for record in self:
-                if record.invoice_status == 'invoiced':
-                    raise UserError(
-                        f'Field(s) "{lfields}"" cannot be changed after timesheet is invoiced!'
-                    )
+        if 'override_lock_ts_fields' not in self.env.context:
+            locked_fields = LOCK_TS_FIELDS.intersection(values)
+            if locked_fields:
+                lfields = ', '.join(locked_fields)
+                for record in self:
+                    if record.invoice_status == 'invoiced':
+                        raise UserError(
+                            f'Field(s) "{lfields}"" cannot be changed after timesheet is invoiced!'
+                        )
 
         return super(AccountAnalyticLine, self).write(values)
 

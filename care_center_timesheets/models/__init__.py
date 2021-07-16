@@ -6,3 +6,4 @@ from . import project_task
 from . import res_config
 from . import res_users
 from . import hr_timesheet_sheet
+from . import account_invoice
