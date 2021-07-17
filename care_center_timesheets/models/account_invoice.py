@@ -9,11 +9,14 @@ class AccountInvoice(models.Model):
         """
         Reset all timesheet invoice statuses
         """
+        invoice_ids = [invoice.id for invoice in self if invoice.type == 'out_invoice']
+
         AccountAnalyticLine = self.env['account.analytic.line'].sudo()
-        for invoice in self:
-            AccountAnalyticLine.search([
-                ('timesheet_invoice_id', '=', invoice.id),
-            ]).with_context(override_lock_ts_fields=True).write({
-                'invoice_status': 'ready',
-            })
-        return super().unlink()
+        timesheets = AccountAnalyticLine.search([
+            ('timesheet_invoice_id', 'in', invoice_ids),
+        ])
+
+        res = super().unlink()
+        timesheets.write({'invoice_status': 'ready'})
+
+        return res
