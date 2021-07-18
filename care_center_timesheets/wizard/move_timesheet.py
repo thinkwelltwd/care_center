@@ -103,7 +103,7 @@ class MoveTimesheet(models.TransientModel):
             'project_id': destination_task.project_id.id,
             'partner_id': destination_task.partner_id.id,
             'account_id': aa and aa.id,
-            'so_line': destination_task.sale_line_id and destination_task.sale_line_id.id,
+            'so_line': None,  # will be set when destination Task is closed
             'sheet_id': sheet_id,
         })
 

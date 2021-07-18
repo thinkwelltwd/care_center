@@ -75,6 +75,12 @@ class ProjectTask(models.Model):
         new_timesheets = self.timesheet_ids.filtered(lambda ts: ts.invoice_status == 'notready')
         new_timesheets.write({'invoice_status': 'ready'})
 
+        invoiceable = self.timesheet_ids.filtered(lambda ts: not ts.exclude_from_sale_order)
+
+        for timesheet in invoiceable:
+            so_line = timesheet._timesheet_get_sale_line()
+            timesheet.write({'so_line': so_line.id})
+
     def timesheet_factor_unconfirmed(self):
         """
         Don't change allow switching to an invoiceable stage

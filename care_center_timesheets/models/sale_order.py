@@ -34,17 +34,6 @@ class SaleOrderLine(models.Model):
             details.append(line.name)
         return details
 
-    def get_timesheet_lines(self, invoice_status='ready'):
-        """
-        Return all timesheet lines that reflect work being done even if not invoiceable
-        so that the customer can see all the work performed on the ticket.
-        """
-        domain = [
-            ('so_line', '=', self.id),
-            ('invoice_status', '=', invoice_status),
-        ]
-        return self.env['account.analytic.line'].search(domain, order='date, id')
-
     @api.multi
     def _prepare_invoice_line(self, qty):
         """
@@ -56,7 +45,18 @@ class SaleOrderLine(models.Model):
             return res
         note = []
 
-        timesheets = self.get_timesheet_lines()
+        domain = [
+            ('so_line', '=', self.id),
+            # the module sale_timesheet_invoice_description on which this functionality is based
+            # but rather filters by whether or not the timesheet is older than any prior invoices
+            # that filter is problematic, as it excludes timesheets that might've been open for
+            # some time before marked as Ready to Invoice.
+            # And no filter other than `so_line` is problematic too, as old lines already billed
+            # can get their descriptions inserted, so this seems to work well.
+            ('timesheet_invoice_id', '=', False),
+        ]
+        timesheets = self.env['account.analytic.line'].search(domain, order='date, id')
+
         for line in timesheets:
             details = self._prepare_invoice_line_details(line, desc_rule)
             note.append(' - '.join([str(x) or '' for x in details]))
@@ -70,24 +70,6 @@ class SaleOrderLine(models.Model):
         timesheets.write({'invoice_status': 'invoiced'})
 
         return res
-
-    @api.multi
-    def _compute_analytic(self, domain=None):
-        """
-        This function writes 'qty_delivered' field to the relevant SO line.
-
-        Only write such lines when the Timesheet is Ready to Invoice.
-
-        The Sale Order should not be in 'to invoice' state until the
-        Task has been finished.
-        """
-        if not domain and self.ids:
-            domain = [
-                ('so_line', 'in', self.ids),
-                ('invoice_status', '=', 'ready'),
-            ]
-
-        return super(SaleOrderLine, self)._compute_analytic(domain=domain)
 
     @api.depends('invoice_lines.invoice_id.state', 'invoice_lines.quantity')
     def _get_invoice_qty(self):
@@ -111,25 +93,3 @@ class SaleOrderLine(models.Model):
                     elif invoice_line.invoice_id.type == 'out_refund':
                         qty_invoiced -= line_rounded
             line.qty_invoiced = qty_invoiced
-
-    @api.depends(
-        'qty_invoiced',
-        'qty_delivered',
-        'product_uom_qty',
-        'order_id.state',
-    )
-    def _get_to_invoice_qty(self):
-        """
-        Override super to subtract timesheets that are not ready to be invoiced addons/sale/models/sale.py (around line
-        1035).
-        """
-        res = super()._get_to_invoice_qty()
-        lines = self.filtered(lambda l: l.qty_delivered_method == 'timesheet')
-        for line in lines:
-            timesheet_ids = line.get_timesheet_lines(invoice_status='notready')
-            if not timesheet_ids:
-                continue
-            line.qty_to_invoice = line.qty_to_invoice - round(
-                sum(timesheet_ids.mapped('unit_amount')), 2
-            )
-        return res

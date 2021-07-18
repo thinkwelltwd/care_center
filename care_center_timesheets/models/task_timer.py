@@ -306,7 +306,7 @@ class TaskTimer(models.AbstractModel):
             'sheet_id': self.get_hr_timesheet_id(),
             'company_id': self.company_id.id,
             'task_id': self.id,
-            'so_line': self.sale_line_id and self.sale_line_id.id,
+            'so_line': None,  # will be set when closing Task
             'full_duration': time,
             'unit_amount': unit_amount,
         })

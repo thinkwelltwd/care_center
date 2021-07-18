@@ -181,3 +181,15 @@ class AccountAnalyticLine(models.Model):
     def check_has_timesheet_sheet(self):
         if self.project_id and not self.sheet_id:
             raise ValidationError('This timesheet must be attached to a sheet!')
+
+    @api.multi
+    def _timesheet_get_sale_line(self):
+        """
+        Override from sale_timesheet_line_exclude to ensure that notready
+        timesheets never have so_line assigned
+        """
+        self.ensure_one()
+        if self.invoice_status == 'notready':
+            return False
+
+        return super()._timesheet_get_sale_line()
