@@ -183,6 +183,15 @@ class ProjectTask(models.Model):
         if self.remaining_hours <= 0:
             return
 
+        billable_timesheets = self.timesheet_ids.filtered(
+            lambda ts: not ts.exclude_from_sale_order
+            and not ts.timesheet_invoice_id
+        )
+        if billable_timesheets:
+            timesheet = billable_timesheets[0]
+            timesheet.write({'unit_amount': timesheet.unit_amount + self.remaining_hours})
+            return
+
         self.with_context(sheet_create=True).write({
             'timesheet_ids': [(
                 0,
