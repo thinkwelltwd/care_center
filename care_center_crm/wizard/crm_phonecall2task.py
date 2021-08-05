@@ -15,8 +15,13 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
             self.env.context.get('active_id')
         ).partner_id
 
+    def _get_project_id(self):
+        return self.env['crm.phonecall'].browse(
+            self.env.context.get('active_id')
+        ).project_id
+
     partner_id = fields.Many2one('res.partner', string='Customer', default=_get_partner_id)
-    project_id = fields.Many2one('project.project', string='Project')
+    project_id = fields.Many2one('project.project', string='Project', default=_get_project_id)
 
     @api.onchange('partner_id')
     def set_project_domain(self):
