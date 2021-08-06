@@ -13,7 +13,7 @@ class Phonecall(models.Model):
 class PurchaseOrder(models.Model):
     _name = 'purchase.order'
     _inherit = [
-        'sale.order',
+        'purchase.order',
         'disable.followers',
     ]
     _followers_key = 'sale_followers'
