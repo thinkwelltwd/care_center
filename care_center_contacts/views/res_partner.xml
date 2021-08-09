@@ -7,9 +7,8 @@
         <field name="arch" type="xml">
             <field name="is_company" invisible="1"/>
             <notebook position="inside">
-                <page string="Extra Contact Info">
+                <page string="Extra Contact Info" attrs="{'invisible': [('is_company', '=', True)]}">
                     <field name="contact_info_ids"
-                        attrs="{'invisible': [('is_company', '=', True)]}"
                         context="{'default_partner_id': active_id}"/>
                 </page>
             </notebook>
