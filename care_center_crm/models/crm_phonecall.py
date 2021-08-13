@@ -20,6 +20,17 @@ class CrmPhonecall(models.Model):
         self.available_task_ids = self.env['project.task'].search(domain)
         self.available_lead_ids = self.env['crm.lead'].search(domain)
 
+    def _available_project_ids(self):
+        """
+        Enable dynamic domain filters when Editing
+        records where the on_change doesn't fire
+        """
+        self.available_project_ids = self.env['project.project'].search([
+            '|',
+            ('catchall', '=', True),
+            ('partner_id', 'in', self.get_partner_ids()),
+        ])
+
     task_id = fields.Many2one(
         comodel_name='project.task',
         string='Task',
@@ -39,6 +50,7 @@ class CrmPhonecall(models.Model):
     # active even on Edit mode when partner_id field hasn't been changed
     available_task_ids = fields.Many2many('project.task', compute='_available_task_lead_ids')
     available_lead_ids = fields.Many2many('crm.lead', compute='_available_task_lead_ids')
+    available_project_ids = fields.Many2many('project.project', compute='_available_project_ids')
 
     description = fields.Html('Description')
 
@@ -51,12 +63,14 @@ class CrmPhonecall(models.Model):
         partner = self.partner_id
         task = self.task_id
         opportunity = self.opportunity_id
+        project = self.project_id
 
         if not partner:
             return {
                 'domain': {
                     'task_id': [],
                     'opportunity_id': [],
+                    'project_id': [],
                 }
             }
 
@@ -69,11 +83,18 @@ class CrmPhonecall(models.Model):
             self.task_id = False
         if opportunity and opportunity.partner_id and opportunity.partner_id.id not in partner_ids:
             self.opportunity_id = False
+        if project and not project.catchall and project.partner_id and project.partner_id.id not in partner_ids:
+            self.project_id = False
 
         return {
             'domain': {
                 'task_id': domain,
                 'opportunity_id': domain,
+                'project_id': [
+                    '|',
+                    ('catchall', '=', True),
+                    ('partner_id', 'in', partner_ids),
+                ],
             },
         }
 

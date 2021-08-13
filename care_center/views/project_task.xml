@@ -63,6 +63,7 @@
 
             <field name="project_id" position="before">
                 <field name="partner_id" options="{'no_quick_create': True}" required="True"/>
+                <field name="available_project_ids" invisible="1"/>
             </field>
 
             <field name="project_id" position="after">
@@ -72,6 +73,7 @@
             <field name="project_id" position="attributes">
                <attribute name="required">True</attribute>
                <attribute name="no_quick_create">True</attribute>
+               <attribute name="domain">[('id' , 'in', available_project_ids)]</attribute>
             </field>
 
             <xpath expr="//div[@name='button_box']" position="inside">

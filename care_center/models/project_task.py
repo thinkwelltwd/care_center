@@ -9,6 +9,17 @@ class ProjectTask(models.Model):
     _description = 'Care Center Project Task'
     _inherit = ['care_center.base', 'project.task']
 
+    def _available_project_ids(self):
+        """
+        Enable dynamic domain filters when Editing
+        records where the on_change doesn't fire
+        """
+        self.available_project_ids = self.env['project.project'].search([
+            '|',
+            ('catchall', '=', True),
+            ('partner_id', 'in', self.get_partner_ids()),
+        ])
+
     parent_task_id = fields.Many2one(
         'project.task',
         string='Parent Task',
@@ -29,6 +40,10 @@ class ProjectTask(models.Model):
     description = fields.Html('Private Note')
     task_active = fields.Boolean(compute='_task_active')
     subtask_count = fields.Integer(compute='_subtask_count')
+
+    # Compute these properties so they can serve as domains in xml views
+    # active even on Edit mode when partner_id field hasn't been changed
+    available_project_ids = fields.Many2many('project.project', compute='_available_project_ids')
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -176,28 +191,32 @@ class ProjectTask(models.Model):
     @api.onchange('partner_id')
     def _partner_id(self):
         """
-        Filter Tickets by Partner, including all
-        Tickets of Partner Parent or Children
+        Filter Projects by Partner, including all
+        Projects of Partner Parent or Children
         """
         partner = self.partner_id
+        project = self.project_id
 
         if not partner:
-            domain = []
+            return {
+                'domain': {
+                    'project_id': [],
+                }
+            }
 
-        else:
+        partner_ids = self.get_partner_ids()
 
-            partner_ids = self.get_partner_ids()
-            domain = self.get_partner_domain(partner_ids)
-
-            # Only reset project if the Partner is set, and is
-            # NOT related to the current Contact selected
-            proj_partner = self.project_id.partner_id and self.project_id.partner_id.id
-            if proj_partner and proj_partner not in partner_ids:
-                self.project_id = None
+        # Only reset project if set, not catchall, and NOT related to the current Contact selected
+        if project and not project.catchall and project.partner_id and project.partner_id.id not in partner_ids:
+            self.project_id = False
 
         return {
             'domain': {
-                'project_id': domain,
+                'project_id': [
+                    '|',
+                    ('catchall', '=', True),
+                    ('partner_id', 'in', partner_ids),
+                ],
             },
         }
 

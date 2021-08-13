@@ -135,7 +135,9 @@
             </field>
 
             <field name="opportunity_id" position="after">
+                <field name="available_project_ids" invisible="1"/>
                 <field name="project_id"
+                    domain="[('id' , 'in', available_project_ids)]"
                     options="{'no_open': True, 'no_create': True}"/>
             </field>
             <field name="description" position="after">
