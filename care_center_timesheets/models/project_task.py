@@ -75,7 +75,9 @@ class ProjectTask(models.Model):
         new_timesheets = self.timesheet_ids.filtered(lambda ts: ts.invoice_status == 'notready')
         new_timesheets.write({'invoice_status': 'ready'})
 
-        invoiceable = self.timesheet_ids.filtered(lambda ts: not ts.exclude_from_sale_order)
+        invoiceable = self.timesheet_ids.filtered(
+            lambda ts: not ts.exclude_from_sale_order and ts.invoice_status != 'invoiced'
+        )
 
         for timesheet in invoiceable:
             so_line = timesheet._timesheet_get_sale_line()
