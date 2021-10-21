@@ -255,12 +255,18 @@ class ProjectTask(models.Model):
         Call before closing to allow placeholder
         projects to be used until specific
         projects can be assigned.
+
+        If a catchall project on an inhouse task,
+        don't raise billing error
         """
         invoiceable_timesheets = self.timesheet_ids.filtered(
             lambda ts: not ts.exclude_from_sale_order
         )
 
         if not self.project_id or not self.partner_id or not invoiceable_timesheets:
+            return
+
+        if self.project_id.catchall and self.commercial_partner_id == self.company_id.partner_id:
             return
 
         task_partner = self.partner_id.commercial_partner_id.id
