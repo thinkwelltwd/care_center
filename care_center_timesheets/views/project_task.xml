@@ -105,7 +105,7 @@
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_kanban" />
         <field name="arch" type="xml">
-            <xpath expr="//div[@class='oe_kanban_content']//div[1]" position="after">
+            <xpath expr="//div[hasclass('oe_kanban_content')]//div[1]" position="after">
 
                 <field name="user_timer_status" invisible="1"/>
 
