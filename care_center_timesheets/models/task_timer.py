@@ -28,19 +28,21 @@ class TaskDurationFields(models.AbstractModel):
     full_duration_rounded = fields.Float(compute='_round_full_duration')
     billable_time = fields.Float(compute='_get_billable_time')
 
-    @api.one
     @api.depends('full_duration')
     def _round_full_duration(self):
-        self.full_duration_rounded = round(self.full_duration, 2)
+        self.ensure_one()
+        for rec in self:
+            rec.full_duration_rounded = round(rec.full_duration, 2)
 
-    @api.one
     @api.depends('full_duration_rounded')
     def _get_billable_time(self):
-        factored_duration = get_factored_duration(
-            hours=self.full_duration_rounded,
-            invoice_factor=self.factor,
-        )
-        self.billable_time = round(factored_duration, 2)
+        self.ensure_one()
+        for rec in self:
+            factored_duration = get_factored_duration(
+                hours=rec.full_duration_rounded,
+                invoice_factor=rec.factor,
+            )
+            rec.billable_time = round(factored_duration, 2)
 
 
 class TaskTimer(models.AbstractModel):
@@ -123,29 +125,30 @@ class TaskTimer(models.AbstractModel):
                 data['date'] = ts.date
                 ts.with_context(force_company=company_id).write(data)
 
-    @api.one
     def _user_timer_status(self):
-        user_id = self.env.context.get('user_id', self.env.uid)
-        AccountAnalyticLine = self.env['account.analytic.line'].sudo()
-        clocked_in_count = AccountAnalyticLine.search_count([
-            ('timer_status', '=', 'running'),
-            ('task_id', '=', self.id),
-            ('user_id', '=', user_id),
-        ])
-        if clocked_in_count > 0:
-            self.user_timer_status = 'running'
-            return
+        self.ensure_one()
+        for rec in self:
+            user_id = rec.env.context.get('user_id', rec.env.uid)
+            AccountAnalyticLine = rec.env['account.analytic.line'].sudo()
+            clocked_in_count = AccountAnalyticLine.search_count([
+                ('timer_status', '=', 'running'),
+                ('task_id', '=', rec.id),
+                ('user_id', '=', user_id),
+            ])
+            if clocked_in_count > 0:
+                rec.user_timer_status = 'running'
+                return
 
-        paused_count = AccountAnalyticLine.search_count([
-            ('timer_status', '=', 'paused'),
-            ('task_id', '=', self.id),
-            ('user_id', '=', user_id),
-        ])
-        if paused_count > 0:
-            self.user_timer_status = 'paused'
-            return
+            paused_count = AccountAnalyticLine.search_count([
+                ('timer_status', '=', 'paused'),
+                ('task_id', '=', rec.id),
+                ('user_id', '=', user_id),
+            ])
+            if paused_count > 0:
+                rec.user_timer_status = 'paused'
+                return
 
-        self.user_timer_status = 'stopped'
+            rec.user_timer_status = 'stopped'
 
     def _pause_active_timers(self):
         """
