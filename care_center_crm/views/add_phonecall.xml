@@ -22,7 +22,7 @@
     <act_window id="action_add_task_to_phonecall"
                 name="Link to Phonecall"
                 res_model="set_task_on_phone.wizard"
-                src_model="project.task"
+                binding_model="project.task"
                 view_mode="form"
                 target="new"
                 />
@@ -48,7 +48,7 @@
     <act_window id="action_add_lead_to_phonecall"
                 name="Link to Phonecall"
                 res_model="set_lead_on_phone.wizard"
-                src_model="crm.lead"
+                binding_model="crm.lead"
                 view_mode="form"
                 target="new"
                 />

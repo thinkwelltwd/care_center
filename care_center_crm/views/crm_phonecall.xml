@@ -4,7 +4,7 @@
     <act_window id="create_task_from_phonecall_btn_action"
                 name="Create Task"
                 res_model="crm.phonecall2task.wizard"
-                src_model="crm.phonecall"
+                binding_model="crm.phonecall"
                 view_mode="form"
                 target="new"/>
 

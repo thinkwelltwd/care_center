@@ -4,14 +4,14 @@
     <act_window id="action_place_internal_phonecall"
                 name="Place Internal Phonecall"
                 res_model="add_internal_phonecall.wizard"
-                src_model="project.task"
+                binding_model="project.task"
                 view_mode="form"
                 target="new"/>
 
     <act_window id="action_end_internal_phonecall"
                 name="End Internal Phonecall"
                 res_model="end_internal_phonecall.wizard"
-                src_model="project.task"
+                binding_model="project.task"
                 view_mode="form"
                 target="new"/>
 

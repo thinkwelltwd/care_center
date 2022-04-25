@@ -70,7 +70,7 @@
     <act_window id="move_timesheet_wizard"
             name="Move Time to New Task"
             res_model="move_timesheet_to_task.wizard"
-            src_model="project.task"
+            binding_model="project.task"
             view_mode="form"
             target="new"
             />

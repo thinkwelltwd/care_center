@@ -41,7 +41,7 @@
       multi="True"
       key2="client_action_multi"
       res_model="merge.task.wizard"
-      src_model="project.task"
+      binding_model="project.task"
       view_mode="form"
       target="new"
       />
