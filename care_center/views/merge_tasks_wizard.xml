@@ -39,7 +39,7 @@
       id="action_merge_tasks"
       name="Merge Tasks"
       multi="True"
-      key2="client_action_multi"
+      
       res_model="merge.task.wizard"
       binding_model="project.task"
       view_mode="form"
