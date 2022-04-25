@@ -105,7 +105,6 @@
     <record id="action_procedures" model="ir.actions.act_window">
         <field name="name">Procedures</field>
         <field name="res_model">procedure.procedure</field>
-        <field name="view_type">form</field>
         <field name="domain">[('parent_id', '=', False)]</field>
         <field name="context">{'hide_checklist': False}</field>
         <field name="view_id" ref="view_procedure_tree"/>
@@ -121,7 +120,6 @@
     <record id="action_checklists" model="ir.actions.act_window">
         <field name="name">Checklists</field>
         <field name="res_model">procedure.procedure</field>
-        <field name="view_type">form</field>
         <field name="context">{'hide_checklist': True}</field>
         <field name="domain">[('parent_id', '!=', False)]</field>
         <field name="view_id" ref="view_procedure_tree"/>

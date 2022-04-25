@@ -5,7 +5,6 @@
         <field name="name">Ticket Actions</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">ir.actions.server</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('model_id','=', 'Task')]</field>
         <field name="context" eval="{'default_model_id': ref('project.model_project_task'), 'default_kind': 'on_create', 'key': 'server_action'}"/>
@@ -28,7 +27,6 @@
     <record id="base_automation_ticket" model="ir.actions.act_window">
         <field name="name">Ticket Rules</field>
         <field name="res_model">base.automation</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('model_id','=', 'Task')]</field>
         <field name="context" eval="{'default_model_id': ref('project.model_project_task')}"/>

@@ -22,7 +22,6 @@
     <record id="convert_lead2task_wizard_action" model="ir.actions.act_window">
         <field name="name">Convert to Task</field>
         <field name="res_model">crm.lead2task.wizard</field>
-        <field name="view_type">form</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>

@@ -4,7 +4,6 @@
     <record id="support_team_config_action" model="ir.actions.act_window">
         <field name="name">Support Teams</field>
         <field name="res_model">crm.team</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('type_team','=','support')]</field>
         <field name="context">{'default_type_team':'support'}</field>
@@ -31,7 +30,6 @@
     <record id="crm_team_supportteams_dashboard" model="ir.actions.act_window">
         <field name="name">Support Dashboard</field>
         <field name="res_model">crm.team</field>
-        <field name="view_type">form</field>
         <field name="view_mode">kanban,form</field>
         <field name="domain">[('type_team','=','support')]</field>
         <field name="context">{}</field>

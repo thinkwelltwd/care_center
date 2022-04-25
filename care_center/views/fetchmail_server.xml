@@ -4,7 +4,6 @@
     <record id="action_incoming_email_server_tree" model="ir.actions.act_window">
         <field name="name">Tickets From Incoming Emails</field>
         <field name="res_model">fetchmail.server</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('object_id','=', 'Task')]</field>
         <field name="context" eval="{'default_object_id': ref('project.model_project_task')}"/>
@@ -22,7 +21,6 @@
     <record model="ir.actions.act_window" id="action_email_template_tree_all">
         <field name="name">Templates</field>
         <field name="res_model">mail.template</field>
-        <field name="view_type">form</field>
         <field name="view_mode">form,tree</field>
         <field name="domain">[('model_id', 'in', ( 'Task', 'Phonecall'))]</field>
         <field name="context" eval="{'default_model_id': ref('project.model_project_task')}"/>

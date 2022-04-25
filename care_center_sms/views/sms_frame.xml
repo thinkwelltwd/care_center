@@ -30,7 +30,6 @@
       <record id="cc_sms_message_action" model="ir.actions.act_window">
           <field name="name">SMS / MMS Messages</field>
           <field name="res_model">sms.message</field>
-          <field name="view_type">form</field>
           <field name="view_mode">kanban,tree,form</field>
           <field name="search_view_id" ref="view_sms_message_filter"/>
           <field name="help" type="html">

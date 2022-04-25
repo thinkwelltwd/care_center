@@ -41,7 +41,6 @@
         <field name="name">Reassign User or Team</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">reassign_task.wizard</field>
-        <field name="view_type">form</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="reassign_user_team_wizard"/>
         <field name="context">{'default_task_id': active_id}</field>
