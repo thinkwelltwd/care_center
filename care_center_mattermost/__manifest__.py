@@ -10,7 +10,7 @@
     'website': "http://www.thinkwelldesigns.com",
 
     'category': 'Projects and Sales',
-    'version': '12.0.1.0.0',
+    'version': '13.0.1.0.0',
 
     'depends': [
         'base',

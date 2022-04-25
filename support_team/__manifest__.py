@@ -3,7 +3,7 @@
 
 {
     'name': 'Support Teams',
-    'version': '12.0.1.0.0',
+    'version': '13.0.1.0.0',
     'category': 'Support',
     'summary': 'Manage Support Teams on Tickets & Tasks',
     'author': "Thinkwell Designs",

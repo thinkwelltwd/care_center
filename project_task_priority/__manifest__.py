@@ -1,7 +1,7 @@
 {
     "name": "Project Task Priority",
     "summary": "Adds all priority levels found in project_issue_priority",
-    "version": "10.0.1.0.0",
+    "version": "13.0.1.0.0",
     "author": "Dave Burkholder <dave@thinkwelldesigns.com>",
     "license": "AGPL-3",
     "category": "Project Management",
