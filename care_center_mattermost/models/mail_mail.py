@@ -34,7 +34,6 @@ class MailMail(models.Model):
 
         mail.write({'state': 'sent'})
 
-    @api.multi
     def send(self, auto_commit=False, raise_exception=False):
 
         for mail in self:

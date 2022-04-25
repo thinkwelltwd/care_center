@@ -48,7 +48,6 @@ class UpdateProjectInfo(models.TransientModel):
             },
         }
 
-    @api.multi
     def update_customer_project(self):
         """
         Update Task to the selected customer & project then

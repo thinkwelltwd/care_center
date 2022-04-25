@@ -20,7 +20,6 @@ class MoveTimesheetOrPause(models.TransientModel):
         string='Action',
     )
 
-    @api.multi
     def process_time(self):
         self.ensure_one()
 
@@ -56,7 +55,6 @@ class MoveTimesheet(models.TransientModel):
                 '%s does not have a project assigned' % self.destination_task_id.name
             )
 
-    @api.multi
     def process_time(self):
         self.move_timesheet()
 
@@ -71,7 +69,6 @@ class MoveTimesheet(models.TransientModel):
             'view_mode': 'form',
         }
 
-    @api.multi
     def move_timesheet(self):
         """
         Move the entire timesheet to the new task
@@ -113,7 +110,6 @@ class MoveTimesheet(models.TransientModel):
 
         return True
 
-    @api.multi
     def _merge_active_timesheets(self, destination_timesheet):
         """
         Merge original timesheet values with destination and then dele
@@ -188,7 +184,6 @@ class MoveTimesheetOrSplit(models.TransientModel):
         if self.needs_description and not self.description:
             raise UserError(_('You must give a description for this timesheet.'))
 
-    @api.multi
     def process_time(self):
         self.ensure_one()
 
@@ -226,7 +221,6 @@ class SplitTimesheet(models.TransientModel):
     time_to_move = fields.Float(string='Time To Move', required=True)
     description = fields.Char(string='Time Description')
 
-    @api.multi
     def process_time(self):
         self.split_timesheet()
 
@@ -241,7 +235,6 @@ class SplitTimesheet(models.TransientModel):
             'view_mode': 'form',
         }
 
-    @api.multi
     def split_timesheet(self):
 
         self.ensure_one()
@@ -251,7 +244,6 @@ class SplitTimesheet(models.TransientModel):
 
         return True
 
-    @api.multi
     def handle_origin_timesheet(self):
 
         self.timesheet_id.pause_timer_if_running()
@@ -274,7 +266,6 @@ class SplitTimesheet(models.TransientModel):
 
         return True
 
-    @api.multi
     def handle_destination_timesheet(self):
 
         destination_timesheet = self.destination_task_id.has_active_timers(

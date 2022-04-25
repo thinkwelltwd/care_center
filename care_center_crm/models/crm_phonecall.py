@@ -161,7 +161,6 @@ class CrmPhonecall(models.Model):
 
         return super().create(vals)
 
-    @api.multi
     def write(self, vals):
         add_timesheet = self.env.context.get('timesheet_from_call_duration', True)
         if not add_timesheet:
@@ -191,7 +190,6 @@ class CrmPhonecall(models.Model):
 
         return super().write(vals)
 
-    @api.multi
     def button_end_call(self):
         end_date = fields.Datetime.now()
         for call in self:

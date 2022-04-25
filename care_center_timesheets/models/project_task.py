@@ -39,14 +39,12 @@ class ProjectTask(models.Model):
         compute='_has_active_timesheets',
     )
 
-    @api.multi
     def _has_active_timesheets(self):
         for task in self:
             task.has_active_timesheets = task.timesheet_ids.filtered(
                 lambda ts: ts.timer_status != 'stopped'
             )
 
-    @api.multi
     def write(self, vals):
         task = super(ProjectTask, self).write(vals)
 
@@ -56,7 +54,6 @@ class ProjectTask(models.Model):
 
         return task
 
-    @api.multi
     def toggle_active(self):
         for record in self:
             if record.active:
@@ -100,7 +97,6 @@ class ProjectTask(models.Model):
         if self.has_active_timesheets:
             raise UserError('Please stop all Running / Paused timesheets.')
 
-    @api.multi
     def email_customer(self):
         """
         Open a window to compose an email
@@ -141,7 +137,6 @@ class ProjectTask(models.Model):
             'context': ctx,
         }
 
-    @api.multi
     def close_task(self):
         """
         Close Task, timesheets and set stage.

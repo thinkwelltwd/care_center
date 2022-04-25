@@ -119,7 +119,6 @@ class TimesheetTimerWizard(models.TransientModel):
 
         return duration
 
-    @api.multi
     def save_timesheet(self):
         """
         'write' method wants to return a view so, we use custom function

@@ -23,7 +23,6 @@ class ProjectTask(models.Model):
         compute='_user_active_call',
     )
 
-    @api.multi
     def _user_active_call(self):
         for task in self:
             active_timesheets = task.timesheet_ids.filtered(
@@ -35,7 +34,6 @@ class ProjectTask(models.Model):
             if active_timesheets:
                 task.active_phonecall_id = active_timesheets.phonecall_id.id
 
-    @api.multi
     def _can_be_converted(self):
         for task in self:
             convertable = True
@@ -47,7 +45,6 @@ class ProjectTask(models.Model):
                 convertable = False
             task.convertable = convertable
 
-    @api.multi
     def _phonecall_count(self):
         for task in self:
             task.phonecall_count = self.env['crm.phonecall'].search_count([
@@ -102,7 +99,6 @@ class ProjectTask(models.Model):
             'res_id': opportunity_id,
         })
 
-    @api.multi
     def convert_to_opportunity(self):
         """
         Tasks may get created prematurely, or from emails sent to the incorrect alias.
@@ -148,7 +144,6 @@ class ProjectTask(models.Model):
             'res_id': opportunity.id,
         }
 
-    @api.multi
     def action_view_phonecalls(self):
         """
         Display Phonecalls associated with this task.

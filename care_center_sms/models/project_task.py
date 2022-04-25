@@ -10,7 +10,6 @@ class ProjectTask(models.Model):
             return False
         return self.partner_id.mobile
 
-    @api.multi
     def sms_action(self):
         self.ensure_one()
 

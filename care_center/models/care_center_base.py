@@ -9,7 +9,6 @@ class CareCenterBase(models.AbstractModel):
     _name = 'care_center.base'
     _description = 'Care Center Base'
 
-    @api.multi
     def get_partner_ids(self, field=None):
         """
         partner_id can be a Company or Contact on a company.
@@ -26,7 +25,6 @@ class CareCenterBase(models.AbstractModel):
 
         return partner_ids
 
-    @api.multi
     def get_partner_domain(self, partner_ids=()):
         if not partner_ids:
             partner_ids = self.get_partner_ids()
@@ -42,7 +40,6 @@ class CareCenterBase(models.AbstractModel):
         """This is a hook to be overridden in subclasses"""
         return ('partner_id', '=', False)
 
-    @api.multi
     def mailserver_mode(self):
         """
         Model is being created / modified from mailserver cron job.

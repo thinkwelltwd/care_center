@@ -7,7 +7,6 @@ class Lead(models.Model):
     description = fields.Html('Notes')
     convertable = fields.Boolean(compute='_can_be_converted')
 
-    @api.multi
     def _can_be_converted(self):
         for lead in self:
             convertable = True
@@ -34,7 +33,6 @@ class Lead(models.Model):
         msg['body'] = None
         return super(Lead, self).message_new(msg, custom_values=custom_values)
 
-    @api.multi
     def message_update(self, msg_dict, update_vals=None):
         """
         Override to re-open lead if it was closed.

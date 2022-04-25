@@ -13,7 +13,6 @@ class ProjectTask(models.Model):
         ]
     )
 
-    @api.multi
     def toggle_active(self):
         """Reset priority when archiving task"""
         super(ProjectTask, self).toggle_active()

@@ -4,7 +4,6 @@ from odoo import api, models, fields
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    @api.multi
     def get_projects(self):
         self.ensure_one()
 

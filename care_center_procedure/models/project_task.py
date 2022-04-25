@@ -25,17 +25,14 @@ class ProjectTask(models.Model):
     procedure_count = fields.Integer(compute='_procedure_count')
     checklist_count = fields.Integer(compute='_checklist_count')
 
-    @api.multi
     def _procedure_count(self):
         for task in self:
             task.procedure_count = len(task.procedure_ids)
 
-    @api.multi
     def _checklist_count(self):
         for task in self:
             task.checklist_count = len(task.checklist_ids)
 
-    @api.multi
     def assign_procedure(self, procedure, sequence):
         """Assign a procedure to this Task / Ticket"""
         if sequence == 1:
@@ -62,7 +59,6 @@ class ProjectTask(models.Model):
                 'task_id': self.id,
             })
 
-    @api.multi
     def confirm_checklists_done(self):
         open_checklists = self.env['procedure.assignment'].search_count([
             ('task_id', '=', self.id),
@@ -71,12 +67,10 @@ class ProjectTask(models.Model):
         if open_checklists:
             raise ValidationError('Please close all open Checklists')
 
-    @api.multi
     def close_task(self):
         self.confirm_checklists_done()
         return super().close_task()
 
-    @api.multi
     def toggle_active(self):
         if self.active:
             self.confirm_checklists_done()

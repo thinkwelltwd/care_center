@@ -4,7 +4,6 @@ from odoo import api, models
 class AccountInvoice(models.Model):
     _inherit = "account.invoice"
 
-    @api.multi
     def unlink(self):
         """
         Reset all timesheet invoice statuses

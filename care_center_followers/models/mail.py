@@ -9,7 +9,6 @@ class MailThread(models.AbstractModel):
     _name = 'mail.thread'
     _inherit = 'mail.thread'
 
-    @api.multi
     def message_subscribe(self, partner_ids=None, channel_ids=None, subtype_ids=None):
         """
         Override this method, so that followers are disabled when calling
@@ -19,7 +18,6 @@ class MailThread(models.AbstractModel):
             return True
         return super().message_subscribe(partner_ids=partner_ids, channel_ids=channel_ids, subtype_ids=subtype_ids)
 
-    @api.multi
     def _message_auto_subscribe(self, *args, **kwargs):
         if self.env.context.get('disable_auto_subscribe', False):
             return True
@@ -49,7 +47,6 @@ class DisableFollowers(models.AbstractModel):
         disable_subscribe = Param.get_param(f'care_center_followers.{self._followers_key}', 'False')
         return {'disable_auto_subscribe': strtobool(disable_subscribe)}
 
-    @api.multi
     def create(self, vals):
         context = self.auto_followers_context()
         self = self.with_context(**context)

@@ -53,7 +53,6 @@ class TaskTimer(models.AbstractModel):
         help='Current user is working on this Ticket',
     )
 
-    @api.multi
     def get_hr_timesheet_id(self):
         """
         Always return HR Timesheet if one exists for the current Employee and Time period
@@ -95,7 +94,6 @@ class TaskTimer(models.AbstractModel):
             self.company_id.id,
         }).id
 
-    @api.multi
     def _update_timesheets(self):
         """
         If the Project or Partner changes,
@@ -149,7 +147,6 @@ class TaskTimer(models.AbstractModel):
 
         self.user_timer_status = 'stopped'
 
-    @api.multi
     def _pause_active_timers(self):
         """
         Only one timesheet may be active at once per user, so Pause
@@ -167,7 +164,6 @@ class TaskTimer(models.AbstractModel):
         ]):
             task.timer_pause()
 
-    @api.multi
     def move_or_pause(self, timesheet):
         """
         Check if user is currently active on another timesheet.
@@ -201,7 +197,6 @@ class TaskTimer(models.AbstractModel):
             'target': 'new'
         }
 
-    @api.multi
     def timer_start(self):
         self.ensure_one()
 
@@ -227,7 +222,6 @@ class TaskTimer(models.AbstractModel):
 
         return self._create_timesheet()
 
-    @api.multi
     def _handle_timesheet_reminder_activity(self, create=True):
         """
         Gets or Creates activity of type 'Sign Out' on the current task & current user
@@ -263,13 +257,11 @@ class TaskTimer(models.AbstractModel):
             'user_id': user_id,
         })
 
-    @api.multi
     def delete_timesheet_reminder_activity(self):
         activity = self._handle_timesheet_reminder_activity(create=False)
         if activity:
             activity.unlink()
 
-    @api.multi
     def _create_timesheet(
         self,
         time=0.0,
@@ -315,7 +307,6 @@ class TaskTimer(models.AbstractModel):
 
         return timesheet
 
-    @api.multi
     def has_active_timers(self, singleton=False, user_id=None):
         """
         Check for active timesheets before closing / deactivation.
@@ -374,7 +365,6 @@ class TaskTimer(models.AbstractModel):
         duration = (end - start).total_seconds() / 3600.0
         return timesheet.full_duration + duration
 
-    @api.multi
     def timer_pause(self):
         self.ensure_one()
         timesheet = self._get_timesheet(status='running')
@@ -391,7 +381,6 @@ class TaskTimer(models.AbstractModel):
         })
         return self._user_timer_status()
 
-    @api.multi
     def timer_resume(self):
         self.ensure_one()
         self._pause_active_timers()
@@ -407,7 +396,6 @@ class TaskTimer(models.AbstractModel):
         self._handle_timesheet_reminder_activity()
         return timesheet
 
-    @api.multi
     def timer_stop(self):
         """
         Wizard to close timesheet, but allow the user to
@@ -444,7 +432,6 @@ class TaskTimer(models.AbstractModel):
             'target': 'new',
         }
 
-    @api.multi
     def api_timer_stop(self, summary):
         """
         Close timesheet without wizard

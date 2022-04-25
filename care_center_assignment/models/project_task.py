@@ -20,12 +20,10 @@ class ProjectTask(models.Model):
         help='Assignment description to include in email templates.',
     )
 
-    @api.multi
     def _assignment_count(self):
         for task in self:
             task.assignment_count = len(task.assignment_ids)
 
-    @api.multi
     def _assignment_message(self):
         for task in self:
             if task.user_id:

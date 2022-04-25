@@ -27,7 +27,6 @@ class SaleOrder(models.Model):
     ]
     _followers_key = 'sale_followers'
 
-    @api.multi
     def action_confirm(self):
         self = self.with_context(**self.auto_followers_context())
         return super().action_confirm()

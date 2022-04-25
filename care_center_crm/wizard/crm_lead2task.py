@@ -78,7 +78,6 @@ class CrmLeadToTaskWizard(models.TransientModel):
             'res_id': task_id,
         })
 
-    @api.multi
     def action_lead_to_task(self):
         self.ensure_one()
         lead = self.get_lead()

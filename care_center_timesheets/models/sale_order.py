@@ -23,7 +23,6 @@ class SaleOrder(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
-    @api.multi
     def _prepare_invoice_line_details(self, line, desc_rule):
         details = []
         if desc_rule[0] == '1':
@@ -34,7 +33,6 @@ class SaleOrderLine(models.Model):
             details.append(line.name)
         return details
 
-    @api.multi
     def _prepare_invoice_line(self, qty):
         """
         Get Timesheet description(s) over to Invoice line

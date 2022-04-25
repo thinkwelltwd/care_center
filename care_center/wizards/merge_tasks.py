@@ -33,7 +33,6 @@ class MergeTasks(models.TransientModel):
     task_ids = fields.Many2many('project.task', string='Tasks')
     dst_task_id = fields.Many2one('project.task', string='Destination Task', required=True)
 
-    @api.multi
     def action_merge(self):
 
         self.merge_validation()

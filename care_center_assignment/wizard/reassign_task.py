@@ -152,7 +152,6 @@ class ReassignTaskWizard(models.TransientModel):
 
         self.email_template_id.send_mail(self.task_id.id)
 
-    @api.multi
     def reassign_user_team(self):
 
         team_id = self.team_id and self.team_id.id

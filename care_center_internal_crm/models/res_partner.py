@@ -4,7 +4,6 @@ from odoo import models, api
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    @api.multi
     def get_odoo_user(self):
         """
         Quick way to get Odoo res.user record for a res.partner,

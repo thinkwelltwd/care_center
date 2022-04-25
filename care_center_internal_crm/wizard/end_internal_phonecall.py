@@ -12,7 +12,6 @@ class EndInternalPhonecall(models.TransientModel):
         default=lambda self: self.env.context.get('phonecall_id'),
     )
 
-    @api.multi
     def end_internal_phonecall(self):
         """
         End phone call, close callee's timesheets and resume callee's previous timesheet

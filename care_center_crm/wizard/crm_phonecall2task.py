@@ -38,7 +38,6 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
             },
         }
 
-    @api.multi
     def action_phonecall_to_task(self):
         """
         Create a Task from Phonecall details

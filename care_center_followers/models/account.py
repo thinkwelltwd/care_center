@@ -9,7 +9,6 @@ class Invoice(models.Model):
     ]
     _followers_key = 'account_followers'
 
-    @api.multi
     def action_invoice_open(self):
         self = self.with_context(**self.auto_followers_context())
         return super().action_invoice_open()

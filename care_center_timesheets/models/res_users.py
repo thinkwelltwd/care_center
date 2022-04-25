@@ -11,7 +11,6 @@ class ResUsers(models.Model):
         string='Previous Running Timesheet',
     )
 
-    @api.multi
     def get_active_timesheet(self):
         """
         Return the active timesheet of this user
@@ -94,7 +93,6 @@ class ResUsers(models.Model):
 
         return res
 
-    @api.multi
     def get_hr_timesheet_id(self, company_id):
         """
         Always return HR Timesheet if one exists for the current Employee and Time period

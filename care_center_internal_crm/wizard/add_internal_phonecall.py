@@ -28,7 +28,6 @@ class AddInternalPhonecall(models.TransientModel):
         if self.env.uid == self.partner_id.get_odoo_user().id:
             raise UserError(f'You should not call yourself!')
 
-    @api.multi
     def place_internal_phonecall(self):
         """
         Create phone call and pause callee's current active timesheet

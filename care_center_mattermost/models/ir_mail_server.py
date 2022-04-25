@@ -39,7 +39,6 @@ class IrMailServer(models.Model):
 
         raise UserError(_("Mattermost Server is reachable!"))
 
-    @api.multi
     def test_smtp_connection(self):
         if self.server_type == 'mattermost':
             self.test_mattermost_conection()

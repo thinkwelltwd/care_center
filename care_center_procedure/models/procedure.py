@@ -58,7 +58,6 @@ class ProcedureProcedure(models.Model):
                 '%s is a checklist item and cannot be a parent procedure' % self.parent_id.name
             )
 
-    @api.multi
     def _compile_documentation(self):
         """Combine all checklists descriptions for a given Procedure"""
         for procedure in self:
@@ -74,7 +73,6 @@ class ProcedureProcedure(models.Model):
 
             procedure.documentation = ''.join(docs)
 
-    @api.multi
     def add_checklist(self):
         """Display modal form to add new checklists"""
 
@@ -161,13 +159,11 @@ class ProcedureAssignment(models.Model):
         ),
     ]
 
-    @api.multi
     def _compute_recolor(self):
         for record in self:
             if record.status == 'todo':
                 record.recolor = True
 
-    @api.multi
     def show_documentation(self):
         """
         Display modal form containing all documentation content
@@ -189,7 +185,6 @@ class ProcedureAssignment(models.Model):
             ],
         }
 
-    @api.multi
     def set_parent_procedure_status(self):
 
         procedure = self.procedure_id.parent_id
@@ -213,19 +208,16 @@ class ProcedureAssignment(models.Model):
         else:
             procedure_assignment.write({'status': 'done'})
 
-    @api.multi
     def change_status_done(self):
         for record in self:
             record.status = 'done'
             self.set_parent_procedure_status()
 
-    @api.multi
     def change_status_todo(self):
         for record in self:
             record.status = 'todo'
             self.set_parent_procedure_status()
 
-    @api.multi
     def change_status_cancelled(self):
         for record in self:
             record.status = 'cancelled'
@@ -266,7 +258,6 @@ class ProcedureAssignment(models.Model):
 
         self.task_id.write({'planned_hours': task_hours})
 
-    @api.multi
     def unlink(self):
         """
         Remove Checklists from Task.

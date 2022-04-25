@@ -71,7 +71,6 @@ class AccountAnalyticLine(models.Model):
 
         return super_call.create(vals)
 
-    @api.multi
     def write(self, values):
 
         locked_fields = LOCK_TS_FIELDS.intersection(values)
@@ -126,7 +125,6 @@ class AccountAnalyticLine(models.Model):
             }
         return {}
 
-    @api.multi
     def move_or_split(self):
         """
         Give opportunity to split time between two timesheets or move entire
@@ -153,7 +151,6 @@ class AccountAnalyticLine(models.Model):
             'target': 'new'
         }
 
-    @api.multi
     def pause_timer_if_running(self):
         """
         See if the timesheet was originally running and if so
@@ -165,7 +162,6 @@ class AccountAnalyticLine(models.Model):
 
         return False
 
-    @api.multi
     def match_user(self, user_id):
         """
         Check if user_id is related to this timesheet
@@ -176,13 +172,11 @@ class AccountAnalyticLine(models.Model):
             return False
         return self.user_id == user_id
 
-    @api.multi  # constrains fields copied from _get_sheet_affecting_fields (wasn't sure if possible to call method?)
     @api.constrains('date', 'employee_id', 'project_id', 'company_id')
     def check_has_timesheet_sheet(self):
         if self.project_id and not self.sheet_id:
             raise ValidationError('This timesheet must be attached to a sheet!')
 
-    @api.multi
     def _timesheet_get_sale_line(self):
         """
         Override from sale_timesheet_line_exclude to ensure that notready

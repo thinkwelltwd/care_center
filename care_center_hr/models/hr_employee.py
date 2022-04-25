@@ -5,7 +5,6 @@ class HrEmployee(models.Model):
     _inherit = "hr.employee"
     _description = "Employee"
 
-    @api.multi
     def _pause_active_timers(self):
         """
         Pause Active Timers
@@ -20,7 +19,6 @@ class HrEmployee(models.Model):
         ]):
             task.timer_pause()
 
-    @api.multi
     def attendance_action_change(self):
         """
         Pause active Timesheet when signing out

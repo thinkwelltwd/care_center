@@ -14,7 +14,6 @@ class AssignProcedureWizard(models.TransientModel):
     )
     sequence = fields.Integer('Sequence', default=1)
 
-    @api.multi
     def assign_procedure(self):
         task = self.env['project.task'].browse(self.env.context.get('active_id'))
         task.assign_procedure(

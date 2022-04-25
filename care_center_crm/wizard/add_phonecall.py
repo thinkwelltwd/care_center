@@ -28,7 +28,6 @@ class SetTaskOnPhoneCallWizard(models.TransientModel):
             },
         }
 
-    @api.multi
     def set_task_on_phonecall(self):
         """
         'write' method wants to return a view so, we use custom function
@@ -65,7 +64,6 @@ class SetLeadOnPhoneCallWizard(models.TransientModel):
             },
         }
 
-    @api.multi
     def set_lead_on_phonecall(self):
         """
         'write' method wants to return a view so, we use custom function

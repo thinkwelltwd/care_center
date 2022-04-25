@@ -60,12 +60,10 @@ class ProjectTask(models.Model):
 
         return super(ProjectTask, self).create(vals_list)
 
-    @api.multi
     def _subtask_count(self):
         for task in self:
             task.subtask_count = len(task.child_task_ids)
 
-    @api.multi
     def _task_active(self):
         for task in self:
             if not task.active:
@@ -129,7 +127,6 @@ class ProjectTask(models.Model):
 
         return task
 
-    @api.multi
     def message_update(self, msg, update_vals=None):
         """
         Override to re-open task if it was closed.
@@ -296,7 +293,6 @@ class ProjectTask(models.Model):
         return dict((task.id, aliases.get(task.project_id and task.project_id.id or 0, False))
                     for task in tasks)
 
-    @api.multi
     def confirm_subtasks_done(self):
         for subtask in self.child_task_ids:
             if not subtask.active or subtask.stage_id.fold:
@@ -316,14 +312,12 @@ class ProjectTask(models.Model):
                 self.confirm_subtasks_done()
             self.toggle_active()
 
-    @api.multi
     def write(self, values):
         """ on_change doesn't fire for stage_id clicks """
         if values.get('stage_id') and self.mailserver_mode():
             self._check_stage_id(values['stage_id'])
         return super(ProjectTask, self).write(values)
 
-    @api.multi
     def close_task(self):
         self.ensure_one()
         self.confirm_subtasks_done()
@@ -332,14 +326,12 @@ class ProjectTask(models.Model):
         if self.active:
             self.toggle_active()
 
-    @api.multi
     def reopen_ticket(self):
         self.ensure_one()
         self.stage_id = self.env['project.task.type'].search([('name', '=', 'In Progress')])
         self.active = True
         self.date_close = None
 
-    @api.multi
     def toggle_active(self):
         """ Inverse the value of the field ``active`` on the records in ``self``. """
 
@@ -352,7 +344,6 @@ class ProjectTask(models.Model):
 
         super(ProjectTask, self).toggle_active()
 
-    @api.multi
     def open_subtasks(self):
         self.ensure_one()
         form = self.env.ref('care_center.project_task_required_fields', False)

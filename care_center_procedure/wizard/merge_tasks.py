@@ -7,7 +7,6 @@ _logger = logging.getLogger(__name__)
 class MergeTasks(models.TransientModel):
     _inherit = 'merge.task.wizard'
 
-    @api.multi
     def action_merge(self):
         super(MergeTasks, self).action_merge()
         self.merge_procedures()
