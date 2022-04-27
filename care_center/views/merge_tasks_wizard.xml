@@ -38,8 +38,8 @@
   <act_window
       id="action_merge_tasks"
       name="Merge Tasks"
-      multi="True"
-      
+      binding_views="form"
+
       res_model="merge.task.wizard"
       binding_model="project.task"
       view_mode="form"
