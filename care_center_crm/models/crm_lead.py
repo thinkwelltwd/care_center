@@ -18,6 +18,8 @@ class Lead(models.Model):
                 convertable = False
             elif len(lead.order_ids):
                 convertable = False
+            else:
+                convertable = False
             lead.convertable = convertable
 
     @api.model

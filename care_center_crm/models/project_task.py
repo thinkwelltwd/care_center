@@ -33,6 +33,8 @@ class ProjectTask(models.Model):
             )
             if active_timesheets:
                 task.active_phonecall_id = active_timesheets.phonecall_id.id
+            else:
+                task.active_phonecall_id = ''
 
     def _can_be_converted(self):
         for task in self:
@@ -42,6 +44,8 @@ class ProjectTask(models.Model):
             elif len(task.timesheet_ids):
                 convertable = False
             elif task.stage_id.fold:
+                convertable = False
+            else:
                 convertable = False
             task.convertable = convertable
 
