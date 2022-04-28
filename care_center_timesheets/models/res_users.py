@@ -41,8 +41,8 @@ class ResUsers(models.Model):
             SELECT COUNT(*) FROM project_task
             WHERE active = True
             AND (user_id = %(user_id)s OR id IN (
-                    SELECT DISTINCT(task_id) 
-                    FROM account_analytic_line 
+                    SELECT DISTINCT(task_id)
+                    FROM account_analytic_line
                     WHERE user_id = %(user_id)s
                     AND task_id IS NOT NULL
                  )
@@ -58,11 +58,11 @@ class ResUsers(models.Model):
                 FROM account_analytic_line
                 INNER JOIN project_task
                 ON account_analytic_line.task_id=project_task.id
-                WHERE 
+                WHERE
                     account_analytic_line.user_id = %s AND
                     account_analytic_line.task_id IN (
-                        SELECT id FROM project_task 
-                        WHERE active = True 
+                        SELECT id FROM project_task
+                        WHERE active = True
                         AND stage_id IN (SELECT id FROM project_task_type WHERE fold=False)
                     );
             """
@@ -101,7 +101,7 @@ class ResUsers(models.Model):
         """
         self.ensure_one()
 
-        employee = self.env['hr.employee'].search([
+        employee = self.env['hr.employee.base'].search([
             ('user_id', '=', self.id),
         ], limit=1)
         if not employee:
