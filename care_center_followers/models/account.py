@@ -2,9 +2,9 @@ from odoo import api, models
 
 
 class Invoice(models.Model):
-    _name = 'account.invoice'
+    _name = 'account.move'
     _inherit = [
-        'account.invoice',
+        'account.move',
         'disable.followers',
     ]
     _followers_key = 'account_followers'
@@ -31,12 +31,11 @@ class PaymentOrder(models.Model):
     ]
     _followers_key = 'account_followers'
 
-
-class Voucher(models.Model):
-    _name = 'account.voucher'
-    _inherit = [
-        'account.voucher',
-        'disable.followers',
-    ]
-    _followers_key = 'account_followers'
-
+# account.invoice & account.voucher merged into account.move.
+#class Voucher(models.Model):
+#    _name = 'account.voucher'
+#    _inherit = [
+#        'account.voucher',
+#        'disable.followers',
+#    ]
+#    _followers_key = 'account_followers'
