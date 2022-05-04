@@ -10,7 +10,8 @@ class ProjectTask(models.Model):
             ("3", "Urgent"),
             ("4", "Crisis"),
             ("5", "Disaster"),
-        ]
+        ],
+        ondelete={'2': 'set null', '3': 'set null', '4': 'set null', '5': 'set null'}
     )
 
     def toggle_active(self):
