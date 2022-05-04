@@ -18,7 +18,7 @@
     'website': "http://www.thinkwelldesigns.com",
 
     'category': 'Sales',
-    'version': '13.0.1.0.0',
+    'version': '14.0.1.0.0',
     'conflicts': ['crm_phonecall_timesheet'],
     'depends': [
         'care_center',
