@@ -67,12 +67,12 @@
         </field>
     </record>
 
-    <act_window id="move_timesheet_wizard"
-            name="Move Time to New Task"
-            res_model="move_timesheet_to_task.wizard"
-            binding_model="project.task"
-            view_mode="form"
-            target="new"
-            />
+    <record id="move_timesheet_wizard" model="ir.actions.act_window">
+        <field name="name">Move Time to New Task</field>
+        <field name="res_model">move_timesheet_to_task.wizard</field>
+        <field name="binding_model_id" ref="project.task" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
 
 </odoo>

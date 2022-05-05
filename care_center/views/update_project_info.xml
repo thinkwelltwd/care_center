@@ -22,13 +22,13 @@
         </field>
     </record>
 
-    <act_window
-        id="update_project_info_wizard"
-        name="Update Project Info"
-        res_model="update_project_info.wizard"
-        binding_model="project.task"
-        view_mode="form"
-        context="{'default_current_task': active_id}"
-        target="new"
-    />
+    <record id="update_project_info_wizard" model="ir.actions.act_window">
+      <field name="name">Update Project Info</field>
+      <field name="res_model">update_project_info.wizard</field>
+      <field name="binding_model_id" ref="project.task" />
+      <field name="view_mode">form</field>
+      <field name="context">{'default_current_task': active_id}</field>
+      <field name="target">new</field>
+    </record>
+
 </odoo>

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <act_window id="create_task_from_phonecall_btn_action"
-                name="Create Task"
-                res_model="crm.phonecall2task.wizard"
-                binding_model="crm.phonecall"
-                view_mode="form"
-                target="new"/>
+    <record id="create_task_from_phonecall_btn_action" model="ir.actions.act_window">
+        <field name="name">Create Task</field>
+        <field name="res_model">crm.phonecall2task.wizard</field>
+        <field name="binding_model_id" ref="crm.phonecall" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
 
     <record model="ir.ui.view" id="task_lead_phone_filters">
         <field name="name">Filter Calls by Leads and Tasks</field>

@@ -1,19 +1,21 @@
 <?xml version="1.0"?>
 <odoo>
 
-    <act_window id="action_place_internal_phonecall"
-                name="Place Internal Phonecall"
-                res_model="add_internal_phonecall.wizard"
-                binding_model="project.task"
-                view_mode="form"
-                target="new"/>
+    <record id="action_place_internal_phonecall" model="ir.actions.act_window">
+        <field name="name">Place Internal Phonecall</field>
+        <field name="res_model">add_internal_phonecall.wizard</field>
+        <field name="binding_model_id" ref="project.task" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
 
-    <act_window id="action_end_internal_phonecall"
-                name="End Internal Phonecall"
-                res_model="end_internal_phonecall.wizard"
-                binding_model="project.task"
-                view_mode="form"
-                target="new"/>
+    <record id="action_end_internal_phonecall" model="ir.actions.act_window">
+        <field name="name">End Internal Phonecall</field>
+        <field name="res_model">end_internal_phonecall.wizard</field>
+        <field name="binding_model_id" ref="project.task" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
 
     <record model="ir.ui.view" id="care_center_task_internal_phonecalls">
         <field name="name">Care Center Task Internal Phone Calls</field>

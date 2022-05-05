@@ -19,13 +19,13 @@
         </field>
     </record>
 
-    <act_window id="action_add_task_to_phonecall"
-                name="Link to Phonecall"
-                res_model="set_task_on_phone.wizard"
-                binding_model="project.task"
-                view_mode="form"
-                target="new"
-                />
+    <record id="action_add_task_to_phonecall" model="ir.actions.act_window">
+        <field name="name">Link to Phonecall</field>
+        <field name="res_model">set_task_on_phone.wizard</field>
+        <field name="binding_model_id" ref="project.task" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
 
     <!-- Wizard to Link Phonecalls to Leads from Lead form -->
     <record id="add_lead_to_phonecall_wizard" model="ir.ui.view">
@@ -45,12 +45,12 @@
         </field>
     </record>
 
-    <act_window id="action_add_lead_to_phonecall"
-                name="Link to Phonecall"
-                res_model="set_lead_on_phone.wizard"
-                binding_model="crm.lead"
-                view_mode="form"
-                target="new"
-                />
+    <record id="action_add_lead_to_phonecall" model="ir.actions.act_window">
+        <field name="name">Link to Phonecall</field>
+        <field name="res_model">set_lead_on_phone.wizard</field>
+        <field name="binding_model_id ref="crm.lead" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
 
 </odoo>

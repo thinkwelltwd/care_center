@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <odoo>
-    <act_window id="convert_opportunity_to_task_btn_action"
-                name="Convert to Task"
-                res_model="crm.lead2task.wizard"
-                binding_model="crm.lead"
-                view_mode="form"
-                target="new"/>
+    <record id="convert_opportunity_to_task_btn_action" model="ir.actions.act_window">
+        <field name="name">Convert to Task</field>
+        <field name="res_model">crm.lead2task.wizard</field>
+        <field name="binding_model_id" ref="crm.lead" />
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
 
     <record model="ir.ui.view" id="convert_opportunity_to_task_button">
         <field name="name">Convert to Task</field>

@@ -35,15 +35,13 @@
       <field name="target">new</field>
   </record>
 
-  <act_window
-      id="action_merge_tasks"
-      name="Merge Tasks"
-      binding_views="form"
-
-      res_model="merge.task.wizard"
-      binding_model="project.task"
-      view_mode="form"
-      target="new"
-      />
+  <record id="action_merge_tasks" model="ir.actions.act_window">
+      <field name="name">Merge Tasks</field>
+      <field name="res_model">merge.task.wizard</field>
+      <field name="binding_model_id" ref="project.task" />
+      <field name="binding_views">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+  </record>
 
 </odoo>
