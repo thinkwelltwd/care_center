@@ -18,16 +18,14 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
     @api.onchange('project_id')
     def set_project_domain(self):
         phonecall = self.get_phonecall()
-        domain = []
-        if phonecall.partner_id:
-            domain.append(('partner_id', '=', phonecall.partner_id.id))
-        if phonecall.partner_id.parent_id:
-            domain.append(('partner_id', '=', phonecall.partner_id.parent_id.id))
-            domain.insert(0, '|')
 
         return {
             'domain': {
-                'project_id': domain,
+                'project_id': [
+                    '|',
+                    ('catchall', '=', True),
+                    ('partner_id', 'in', phonecall.get_partner_ids()),
+                ],
             },
         }
 
