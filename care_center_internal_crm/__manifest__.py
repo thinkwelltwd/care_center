@@ -20,6 +20,7 @@
     ],
 
     'data': [
+        'security/ir.model.access.csv',
         'data/utm_sources.xml',
         'views/project_task.xml',
         'views/add_internal_phonecall.xml',

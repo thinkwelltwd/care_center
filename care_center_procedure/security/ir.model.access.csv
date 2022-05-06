@@ -5,3 +5,5 @@ access_procedure_procedure_manager,access_procedure_procedure,model_procedure_pr
 access_procedure_assignment,access_procedure_assignment,model_procedure_assignment,,1,0,0,0
 access_procedure_assignment_user,access_procedure_assignment,model_procedure_assignment,,1,1,1,1,0
 access_procedure_assignment_manager,access_procedure_assignment,model_procedure_assignment,,1,1,1,1,1
+access_procedure_assign_procedure,assign.procedure.user,model_assign_procedure_wizard,,1,1,1,1
+access_procedure_merge_task,procedure.merge.task.user,model_merge_task.wizard,,1,1,1,1

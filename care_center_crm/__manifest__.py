@@ -26,6 +26,7 @@
     ],
 
     'data': [
+        'security/ir.model.access.csv',
         'views/crm_lead2task_wizard.xml',
         'views/crm_phonecall2task_wizard.xml',
         'views/crm_lead.xml',

@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_task_assignment,access_task_assignment,model_task_assignment,,1,1,1,1
+access_reassign_task_wizard,reassign.task.wizard.user,model_reassign_task_wizard,,1,1,1,1

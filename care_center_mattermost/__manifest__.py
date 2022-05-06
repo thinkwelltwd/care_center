@@ -18,6 +18,7 @@
     ],
 
     'data': [
+        'security/ir.model.access.csv',
         'views/ir_mail_server.xml',
         'views/res_partner.xml',
     ],

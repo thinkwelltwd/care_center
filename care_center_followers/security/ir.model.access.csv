@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_care_ctr_config,care.center.config.user,model_res_config_settings,,1,1,1,1
