@@ -58,7 +58,7 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
         else:
             email_from = None
 
-        task_id = Task.with_context(force_company=company_id).create({
+        task_id = Task.with_company(company_id).create({
             'name': phonecall_id.name,
             'project_id': self.project_id.id,
             'partner_id': partner_id.id,

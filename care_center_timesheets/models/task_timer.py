@@ -89,7 +89,7 @@ class TaskTimer(models.AbstractModel):
         if not manage_hr_time:
             return False
 
-        return TimesheetSheet.with_context(force_company=self.company_id.id).create({
+        return TimesheetSheet.with_company(self.company_id.id).create({
             'employee_id':
             employee.id,
             'company_id':
@@ -123,7 +123,7 @@ class TaskTimer(models.AbstractModel):
             # in project_timesheet_currency app doesn't crash
             for ts in task.timesheet_ids:
                 data['date'] = ts.date
-                ts.with_context(force_company=company_id).write(data)
+                ts.with_company(company_id).write(data)
 
     def _user_timer_status(self):
         self.ensure_one()
@@ -288,7 +288,7 @@ class TaskTimer(models.AbstractModel):
             factor = self.env['hr_timesheet_invoice.factor'].search([('factor', '=', 0.0)], limit=1)
         offset = float(Param.get_param('start_stop.starting_time_offset', default=0))
 
-        AccountLine = self.env['account.analytic.line'].with_context(force_company=company_id, sheet_create=True)
+        AccountLine = self.env['account.analytic.line'].with_company(company_id) # , sheet_create=True)
         timesheet = AccountLine.create({
             'name': name,
             'date_start': datetime.now() - timedelta(minutes=offset),
@@ -376,7 +376,7 @@ class TaskTimer(models.AbstractModel):
 
         current_total_time = self._get_current_total_time(timesheet)
         timesheet.save_as_last_running()
-        timesheet.with_context(force_company=self.company_id.id).write({
+        timesheet.with_company(self.company_id.id).write({
             'timer_status':
             'paused',
             'full_duration':
@@ -390,7 +390,7 @@ class TaskTimer(models.AbstractModel):
         timesheet = self._get_timesheet(status='paused')
         if not timesheet:
             return
-        timesheet.with_context(force_company=self.company_id.id).write({
+        timesheet.with_company(self.company_id.id).write({
             'timer_status':
             'running',
             'date_start':

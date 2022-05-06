@@ -85,7 +85,7 @@ class CrmLeadToTaskWizard(models.TransientModel):
             raise UserError('Lead must have a partner assigned to create Task')
 
         company_id = lead.partner_id.company_id.id
-        Task = self.env['project.task'].with_context(force_company=company_id)
+        Task = self.env['project.task'].with_company(company_id)
         task = Task.create({
             'name': lead.name,
             'description': lead.description,
