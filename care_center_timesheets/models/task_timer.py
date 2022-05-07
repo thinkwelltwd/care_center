@@ -53,6 +53,15 @@ class TaskTimer(models.AbstractModel):
         help='Current user is working on this Ticket',
     )
 
+    def get_user_id(self):
+        """
+        Lookup user_id value in decreasing order of importance.
+        `original_user_id` is set when a rest API call is made and
+        Model.sudo() is called, so the original user can be retrieved.
+        """
+        ctx = self.env.context
+        return ctx.get('original_user_id') or ctx.get('user_id') or self.env.uid
+
     @api.multi
     def get_hr_timesheet_id(self):
         """
@@ -61,9 +70,8 @@ class TaskTimer(models.AbstractModel):
         If no HR Timesheet exists, and manage_hr_timesheet is True, create it.
         """
         self.ensure_one()
-        user_id = self.env.context.get('user_id', self.env.uid)
         employee = self.env['hr.employee'].search([
-            ('user_id', '=', user_id),
+            ('user_id', '=', self.get_user_id()),
         ], limit=1)
         if not employee:
             raise UserError('%s is not linked to an Employee Record' % self.env.user.name)
@@ -127,7 +135,7 @@ class TaskTimer(models.AbstractModel):
 
     @api.one
     def _user_timer_status(self):
-        user_id = self.env.context.get('user_id', self.env.uid)
+        user_id = self.get_user_id()
         AccountAnalyticLine = self.env['account.analytic.line'].sudo()
         clocked_in_count = AccountAnalyticLine.search_count([
             ('timer_status', '=', 'running'),
@@ -155,11 +163,10 @@ class TaskTimer(models.AbstractModel):
         Only one timesheet may be active at once per user, so Pause
         other active timers when Starting / Resuming timesheet
         """
-        user_id = self.env.context.get('user_id', self.env.uid)
         AccountAnalyticLine = self.env['account.analytic.line'].sudo()
         user_clocked_in_task_ids = AccountAnalyticLine.search([
             ('timer_status', '=', 'running'),
-            ('user_id', '=', user_id),
+            ('user_id', '=', self.get_user_id()),
         ]).mapped('task_id.id')
 
         for task in self.env['project.task'].search([
@@ -212,8 +219,7 @@ class TaskTimer(models.AbstractModel):
         if self.timesheet_status_exists(status='paused'):
             return self.timer_resume()
 
-        user_id = self.env.context.get('user_id', self.env.uid)
-        user = self.env['res.users'].browse(user_id)
+        user = self.env['res.users'].browse(self.get_user_id())
         active_ts = user.get_active_timesheet()
 
         if active_ts:
@@ -236,7 +242,7 @@ class TaskTimer(models.AbstractModel):
         self.ensure_one()
 
         Activity = self.env['mail.activity']
-        user_id = self.env.context.get('user_id', self.env.uid)
+        user_id = self.get_user_id()
         activity_type_id = self.env['mail.activity.type'].search([('name', '=', 'Sign Out')]).mapped('id')
         res_model_id = self.env['ir.model'].search([('name', '=', 'Task')]).mapped('id')
 
@@ -279,7 +285,7 @@ class TaskTimer(models.AbstractModel):
         factor=False
     ):
         self.ensure_one()
-        user_id = self.env.context.get('user_id', self.env.uid)
+        user_id = self.get_user_id()
         company_id = self.company_id.id
 
         if not self.project_id.active or not self.project_id.analytic_account_id.active:
@@ -336,11 +342,10 @@ class TaskTimer(models.AbstractModel):
 
     def timesheet_status_exists(self, status):
         """Timesheets of specified status exist"""
-        user_id = self.env.context.get('user_id', self.env.uid)
         return self.sudo().timesheet_ids.search_count([
             ('timer_status', '=', status),
             ('task_id', '=', self.id),
-            ('user_id', '=', user_id),
+            ('user_id', '=', self.get_user_id()),
         ]) > 0
 
     def _get_timesheet(self, status):
@@ -348,11 +353,10 @@ class TaskTimer(models.AbstractModel):
         if not self.project_id:
             raise UserError(_('Please specify a project before closing Timesheet.'))
 
-        user_id = self.env.context.get('user_id', self.env.uid)
         timesheet = self.sudo().timesheet_ids.search([
             ('timer_status', '=', status),
             ('task_id', '=', self.id),
-            ('user_id', '=', user_id),
+            ('user_id', '=', self.get_user_id()),
         ])
 
         if len(timesheet) > 1:
