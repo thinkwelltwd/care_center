@@ -11,7 +11,7 @@
         * Create Tasks from Phonecalls.
         * Link Tasks to existing Phonecalls.
         * Add Timesheets to Phonecalls.
-    
+
     """,
 
     'author': "Dave Burkholder <dave@thinkwelldesigns.com>",
@@ -27,8 +27,9 @@
 
     'data': [
         'security/ir.model.access.csv',
-        'views/crm_lead2task_wizard.xml',
-        'views/crm_phonecall2task_wizard.xml',
+        # broken by removal of crm.partner.binding:
+        #'views/crm_lead2task_wizard.xml',
+        #'views/crm_phonecall2task_wizard.xml',
         'views/crm_lead.xml',
         'views/crm_phonecall.xml',
         'views/project_task.xml',

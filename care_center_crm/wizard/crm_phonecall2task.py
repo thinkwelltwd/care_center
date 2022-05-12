@@ -8,7 +8,8 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
 
     _name = "crm.phonecall2task.wizard"
     _description = 'Care Center CRM Phone Call To Task Wizard'
-    _inherit = 'crm.partner.binding'
+    # crm.partner.binding is removed in Odoo 14
+    #_inherit = 'crm.partner.binding'
 
     def _get_partner_id(self):
         return self.env['crm.phonecall'].browse(

@@ -10,7 +10,8 @@ class CrmLeadToTaskWizard(models.TransientModel):
 
     _name = "crm.lead2task.wizard"
     _description = 'Care Center CRM Lead To Task Wizard'
-    _inherit = 'crm.partner.binding'
+    # model crm.partner.binding is removed in Odoo 14
+    #_inherit = 'crm.partner.binding'
 
     partner_id = fields.Many2one('res.partner', string='Customer')
     project_id = fields.Many2one('project.project', string='Project')

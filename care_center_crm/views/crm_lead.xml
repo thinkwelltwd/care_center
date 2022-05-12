@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <odoo>
+<!--crm.partner.binding is removed. Must revisit.
     <record id="convert_opportunity_to_task_btn_action" model="ir.actions.act_window">
         <field name="name">Convert to Task</field>
         <field name="res_model">crm.lead2task.wizard</field>
@@ -29,5 +30,5 @@
             </xpath>
         </field>
     </record>
-
+-->
 </odoo>

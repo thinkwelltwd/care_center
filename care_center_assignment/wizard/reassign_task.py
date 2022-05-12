@@ -132,7 +132,7 @@ class ReassignTaskWizard(models.TransientModel):
         <p>{by} has assigned the <b>{task}</b> Task to {assignment} </p>
         <p><b>Summary: </b>{summary}</p>
         <p><b>Description: </b></p>
-        {description} 
+        {description}
         """.format(
             by=self.env.user.name,
             assignment=self.assignment(),
