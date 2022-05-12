@@ -1,3 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_mm_compose_mail,mattermost.compose.mail.user,model_mail_compose.message,,1,1,1,1
-
+access_mm_compose_mail,mattermost.compose.mail.user,model_mail_compose_message,,1,1,1,1
