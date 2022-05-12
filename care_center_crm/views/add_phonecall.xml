@@ -22,7 +22,7 @@
     <record id="action_add_task_to_phonecall" model="ir.actions.act_window">
         <field name="name">Link to Phonecall</field>
         <field name="res_model">set_task_on_phone.wizard</field>
-        <field name="binding_model_id" ref="project.task" />
+        <field name="binding_model_id" ref="model_project_task" />
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
@@ -48,7 +48,7 @@
     <record id="action_add_lead_to_phonecall" model="ir.actions.act_window">
         <field name="name">Link to Phonecall</field>
         <field name="res_model">set_lead_on_phone.wizard</field>
-        <field name="binding_model_id ref="crm.lead" />
+        <field name="binding_model_id" ref="model_crm_lead" />
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
