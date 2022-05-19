@@ -38,7 +38,7 @@
   <record id="action_merge_tasks" model="ir.actions.act_window">
       <field name="name">Merge Tasks</field>
       <field name="res_model">merge.task.wizard</field>
-      <field name="binding_model_id" ref="model_project_task" />
+      <field name="binding_model_id" ref="project.model_project_task" />
       <field name="binding_view_types">form</field>
       <field name="view_mode">form</field>
       <field name="target">new</field>

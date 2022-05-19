@@ -70,7 +70,8 @@
     <record id="move_timesheet_wizard" model="ir.actions.act_window">
         <field name="name">Move Time to New Task</field>
         <field name="res_model">move_timesheet_to_task.wizard</field>
-        <field name="binding_model_id" ref="model_project_task" />
+        <field name="binding_model_id" ref="project.model_project_task" />
+        <field name="binding_view_types">form</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>

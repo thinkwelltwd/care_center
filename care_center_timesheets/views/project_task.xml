@@ -12,9 +12,11 @@
             <field name="partner_id" position="attributes">
                 <attribute name="attrs">{'invisible': [('catchall', '=', True)]}</attribute>
             </field>
+            <!-- Commented out temporarily to get things working.
+                 Error: sale_line_id cannot be located in parent view
             <field name="sale_line_id" position="attributes">
                 <attribute name="attrs">{'required': [('partner_id', '!=', False)]}</attribute>
-            </field>
+            </field> -->
         </field>
     </record>
 

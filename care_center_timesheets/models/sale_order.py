@@ -69,11 +69,11 @@ class SaleOrderLine(models.Model):
 
         return res
 
-    @api.depends('invoice_lines.invoice_id.state', 'invoice_lines.quantity')
+    @api.depends('invoice_lines.move_id.state', 'invoice_lines.quantity')
     def _get_invoice_qty(self):
         """
-        Override superclass in /odoo/addons/sale/modules/sale.py (around line 1023) to round 'HALF-UP' on timesheet
-        lines to match _get_delivered_quantity_by_analytic() (same file around line 1294).
+        Override superclass in /odoo/addons/sale/models/sale.py (around line 1242) to round 'HALF-UP' on timesheet
+        lines to match _get_delivered_quantity_by_analytic() (same file around line 1522).
         """
         for line in self:
             if line.qty_delivered_method != 'timesheet':
@@ -82,12 +82,12 @@ class SaleOrderLine(models.Model):
 
             qty_invoiced = 0.0
             for invoice_line in line.invoice_lines:
-                if invoice_line.invoice_id.state != 'cancel':
+                if invoice_line.move_id.state != 'cancel':
                     line_rounded = invoice_line.uom_id._compute_quantity(
                         invoice_line.quantity, line.product_uom, rounding_method='HALF-UP'
                     )
-                    if invoice_line.invoice_id.type == 'out_invoice':
+                    if invoice_line.move_id.move_type == 'out_invoice':
                         qty_invoiced += line_rounded
-                    elif invoice_line.invoice_id.type == 'out_refund':
+                    elif invoice_line.move_id.move_type == 'out_refund':
                         qty_invoiced -= line_rounded
             line.qty_invoiced = qty_invoiced
