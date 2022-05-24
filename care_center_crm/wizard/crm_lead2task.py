@@ -59,19 +59,19 @@ class CrmLeadToTaskWizard(models.TransientModel):
         )
         return team and team.id
 
-    def move_phonecalls(self, task_id):
+    def move_phonecalls(self, lead_id, task_id):
         task_calls = self.env['crm.phonecall'].search([
-            ('opportunity_id', '=', self.id),
+            ('opportunity_id', '=', lead_id),
         ])
         task_calls.write({
             'opportunity_id': False,
             'task_id': task_id,
         })
 
-    def move_attachments(self, task_id):
+    def move_attachments(self, lead_id, task_id):
         attachments = self.env['ir.attachment'].search([
             ('res_model', '=', 'crm.lead'),
-            ('res_id', '=', self.id),
+            ('res_id', '=', lead_id),
         ])
         attachments.write({
             'res_model': 'project.task',
@@ -99,8 +99,8 @@ class CrmLeadToTaskWizard(models.TransientModel):
             'tag_ids': [(6, 0, self.get_tag_ids(lead=lead))]
         })
         lead.message_change_thread(task)
-        self.move_attachments(task_id=task.id)
-        self.move_phonecalls(task_id=task.id)
+        self.move_attachments(lead_id=lead.id, task_id=task.id)
+        self.move_phonecalls(lead_id=lead.id, task_id=task.id)
 
         lead.write({'active': False})
 
