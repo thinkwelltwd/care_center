@@ -8,7 +8,6 @@
                  />
             </function>
 
-            <!--Set noupdate to False-->
             <value eval="{'noupdate': False}" />
         </function>
 
