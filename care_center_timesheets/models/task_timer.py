@@ -63,7 +63,7 @@ class TaskTimer(models.AbstractModel):
         """
         self.ensure_one()
         user_id = self.env.context.get('user_id', self.env.uid)
-        employee = self.env['hr.employee.base'].search([
+        employee = self.env['hr.employee'].search([
             ('user_id', '=', user_id),
         ], limit=1)
         if not employee:

@@ -114,7 +114,7 @@ class AccountAnalyticLine(models.Model):
             fd = values.get('full_duration', 0.0) or self.full_duration
             user_id = values.get('user_id') or self.user_id.id or self._default_user()
             user = self.env['res.users'].browse([user_id])
-            emp = self.env['hr.employee.base'].search([('user_id', '=', user_id)], limit=1)
+            emp = self.env['hr.employee'].search([('user_id', '=', user_id)], limit=1)
             cost = emp and emp.timesheet_cost or 0.0
             uom = (emp or user).company_id.project_time_mode_id
             # Nominal employee cost = 1 * company project UoM (project_time_mode_id)

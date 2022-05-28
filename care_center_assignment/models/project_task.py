@@ -10,7 +10,7 @@ class ProjectTask(models.Model):
         'task.assignment',
         'task_id',
         string='Assignment History',
-        ondelete='cascade',
+        #ondelete='cascade',
         required=False,
     )
 

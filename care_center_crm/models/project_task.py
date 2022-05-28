@@ -62,7 +62,7 @@ class ProjectTask(models.Model):
         if not self.tag_ids:
             return []
         tag_names = self.tag_ids.mapped('name')
-        return self.env['crm.lead.tag'].search([('name', 'in', tag_names)]).mapped('id')
+        return self.env['crm.tag'].search([('name', 'in', tag_names)]).mapped('id')
 
     def get_team_id(self):
         """

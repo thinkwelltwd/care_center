@@ -119,7 +119,7 @@ class CrmPhonecall(models.Model):
 
         if not self.tag_ids and self.task_id.tag_ids:
             tag_names = self.task_id.tag_ids.mapped('name')
-            self.tag_ids = self.env['crm.lead.tag'].search([('name', 'in', tag_names)])
+            self.tag_ids = self.env['crm.tag'].search([('name', 'in', tag_names)])
 
     @api.onchange('opportunity_id')
     def _set_opportunity_team(self):
