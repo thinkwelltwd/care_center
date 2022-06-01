@@ -15,15 +15,15 @@
     'version': '14.0.1.0.0',
 
     'depends': [
-        'sms_frame',
+        #'sms_frame',
         'care_center',
         'care_center_contacts',
     ],
 
     'data': [
-        'views/sms_frame.xml',
-        'views/care_center.xml',
-        'views/contacts.xml',
+        #'views/sms_frame.xml',
+        #'views/care_center.xml',
+        #'views/contacts.xml',
         'views/project_task.xml',
     ],
 }

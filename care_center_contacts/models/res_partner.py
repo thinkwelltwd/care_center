@@ -9,5 +9,4 @@ class ResPartner(models.Model):
         'extra.contactinfo',
         'partner_id',
         string='Extra Contact Info',
-        ondelete='cascade',
     )
