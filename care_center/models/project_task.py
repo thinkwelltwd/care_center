@@ -129,25 +129,18 @@ class ProjectTask(models.Model):
 
     def message_update(self, msg, update_vals=None):
         """
-        Override to re-open task if it was closed.
-        Set stage to Customer Replied if current
-        stage is folded or Waiting on Customer
+        Override to re-open task if it was closed
+        and set stage to Customer Replied
         """
         update_vals = dict(update_vals or {})
         if not self.active:
             update_vals['active'] = True
 
-        Stage = self.env['project.task.type']
-        waiting_stage = Stage.search([
-            ('name', '=', 'Waiting on Customer'),
+        replied_stage = self.env['project.task.type'].search([
+            ('name', '=', 'Customer Replied'),
         ], limit=1).mapped('id')
-
-        if self.stage_id.fold or waiting_stage and self.stage_id.id == waiting_stage[0]:
-            replied_stage = Stage.search([
-                ('name', '=', 'Customer Replied'),
-            ], limit=1).mapped('id')
-            if replied_stage:
-                update_vals['stage_id'] = replied_stage[0]
+        if replied_stage:
+            update_vals['stage_id'] = replied_stage[0]
 
         return super(ProjectTask, self).message_update(msg, update_vals=update_vals)
 

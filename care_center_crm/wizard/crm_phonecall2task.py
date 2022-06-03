@@ -11,31 +11,22 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
     # crm.partner.binding is removed in Odoo 14
     #_inherit = 'crm.partner.binding'
 
-    def _get_partner_id(self):
-        return self.env['crm.phonecall'].browse(
-            self.env.context.get('active_id')
-        ).partner_id
-
     def _get_project_id(self):
-        return self.env['crm.phonecall'].browse(
-            self.env.context.get('active_id')
-        ).project_id
+        return self.get_phonecall().project_id
 
-    partner_id = fields.Many2one('res.partner', string='Customer', default=_get_partner_id)
     project_id = fields.Many2one('project.project', string='Project', default=_get_project_id)
 
-    @api.onchange('partner_id')
+    @api.onchange('project_id')
     def set_project_domain(self):
-        domain = []
-        if self.partner_id:
-            domain.append(('partner_id', '=', self.partner_id.id))
-        if self.partner_id.parent_id:
-            domain.append(('partner_id', '=', self.partner_id.parent_id.id))
-            domain.insert(0, '|')
+        phonecall = self.get_phonecall()
 
         return {
             'domain': {
-                'project_id': domain,
+                'project_id': [
+                    '|',
+                    ('catchall', '=', True),
+                    ('partner_id', 'in', phonecall.get_partner_ids()),
+                ],
             },
         }
 
@@ -47,9 +38,7 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
         Task = self.env['project.task']
         ProjectTags = self.env['project.tags']
 
-        phonecall_id = self.env['crm.phonecall'].browse(
-            self.env.context.get('active_id')
-        )
+        phonecall_id = self.get_phonecall()
 
         tags = ProjectTags.search([('name', 'in', [tag.name for tag in phonecall_id.tag_ids])])
         partner_id = phonecall_id.partner_id
@@ -85,3 +74,6 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
             'type': 'ir.actions.act_window',
             'res_id': task_id.id,
         }
+
+    def get_phonecall(self):
+        return self.env['crm.phonecall'].browse(self.env.context.get('active_id'))

@@ -117,7 +117,10 @@ class ProjectTask(models.Model):
         else:
             name = 'Ticket Reply'
 
-        template = self.env['mail.template'].search([('name', 'like', name)], limit=1)
+        template = self.env['mail.template'].search([
+            ('name', 'like', name),
+            ('model', '=', 'project.task'),
+        ], limit=1)
         ctx = {
             'default_model': 'project.task',
             'default_res_id': self.id,
