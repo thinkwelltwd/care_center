@@ -37,24 +37,17 @@ class Lead(models.Model):
 
     def message_update(self, msg_dict, update_vals=None):
         """
-        Override to re-open lead if it was closed.
-        Set stage to Customer Replied if current
-        stage is folded or Waiting for response
+        Override to re-open lead if it was closed
+        and set stage to Customer Replied
         """
         update_vals = dict(update_vals or {})
         if not self.active:
             update_vals['active'] = True
 
-        Stage = self.env['crm.stage']
-        waiting_stage = Stage.search([
-            ('name', '=', 'Waiting for response'),
+        replied_stage = self.env['crm.stage'].search([
+            ('name', '=', 'Customer Replied'),
         ], limit=1).mapped('id')
-
-        if self.stage_id.fold or waiting_stage and self.stage_id.id == waiting_stage[0]:
-            replied_stage = Stage.search([
-                ('name', '=', 'Customer Replied'),
-            ], limit=1).mapped('id')
-            if replied_stage:
-                update_vals['stage_id'] = replied_stage[0]
+        if replied_stage:
+            update_vals['stage_id'] = replied_stage[0]
 
         return super(Lead, self).message_update(msg_dict, update_vals=update_vals)

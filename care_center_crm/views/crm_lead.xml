@@ -23,7 +23,6 @@
                         icon="fa-reply"
                         widget="statinfo"
                         attrs="{'invisible': [('convertable', '=', False)]}"
-                        context="{'default_partner_id': partner_id, 'default_lead_id': active_id}"
                         string="Convert to Task"/>
             </xpath>
         </field>
