@@ -101,7 +101,7 @@ class ResUsers(models.Model):
         """
         self.ensure_one()
 
-        employee = self.env['hr.employee.base'].search([
+        employee = self.env['hr.employee'].search([
             ('user_id', '=', self.id),
         ], limit=1)
         if not employee:

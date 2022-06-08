@@ -3,6 +3,7 @@ from odoo import models, api
 
 class HrEmployee(models.Model):
     _inherit = "hr.employee.base"
+    _name = "hr.employee"
     _description = "Employee"
 
     def _pause_active_timers(self):

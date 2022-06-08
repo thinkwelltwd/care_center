@@ -5,14 +5,15 @@
         Override template to add in Timer entries
     -->
     <t t-name="mail.systray.ActivityMenu.Previews">
+        <t t-set="activities" t-value="widget._activities"/>
         <t t-if="_.isEmpty(activities)">
             <div class="dropdown-item-text text-center o_no_activity">
                 <span>No activities planned.</span>
             </div>
         </t>
         <t t-foreach="activities" t-as="activity">
-            <div class="o_mail_preview" t-att-data-res_model="activity.model" t-att-data-model_name="activity.name" data-filter='my' t-att-data-activity_type="activity.type">
-                <div class="o_mail_preview_image o_mail_preview_app">
+            <div class="o_mail_preview o_systray_activity" t-att-data-res_model="activity.model" t-att-data-model_name="activity.name" t-att-data-domain="activity.domain" data-filter='my'>
+                <div t-if="activity.icon" class="o_mail_preview_image o_mail_preview_app">
                     <img t-att-src="activity.icon" alt="Activity"/>
                 </div>
                 <div class="o_preview_info">
@@ -27,7 +28,8 @@
                                     t-att-class="'o_mail_activity_action btn btn-link fa ' + action.icon"
                                     t-att-data-action_xmlid="action.action_xmlid"
                                     t-att-data-res_model="activity.model"
-                                    t-att-data-model_name="activity.name">
+                                    t-att-data-model_name="activity.name"
+                                    t-att-data-domain="activity.domain">
                                 </button>
                             </t>
                         </div>

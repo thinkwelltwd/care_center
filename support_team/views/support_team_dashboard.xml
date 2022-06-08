@@ -42,7 +42,7 @@
             <field name="arch" type="xml">
                 <data>
 
-                    <xpath expr="//div[hasclass('col-4','o_kanban_primary_left')]" position="inside">
+                    <xpath expr="//div[hasclass('o_kanban_primary_left')]" position="inside">
                         <button string="Tasks" class="btn btn-primary" name="%(action_view_task)d" type="action">Tasks</button>
                     </xpath>
 
