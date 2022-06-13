@@ -2,7 +2,7 @@ from odoo import models, api
 
 
 class HrEmployee(models.Model):
-    _inherit = "hr.employee.base"
+    _inherit = "hr.employee"
     _name = "hr.employee"
     _description = "Employee"
 
