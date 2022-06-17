@@ -39,11 +39,9 @@
       id="action_merge_tasks"
       name="Merge Tasks"
       binding_views="form"
-
       res_model="merge.task.wizard"
       binding_model="project.task"
       view_mode="form"
-      target="new"
-      />
+      target="new"/>
 
 </odoo>

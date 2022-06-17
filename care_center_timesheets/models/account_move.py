@@ -1,7 +1,7 @@
 from odoo import api, models
 
 
-class AccountInvoice(models.Model):
+class AccountMove(models.Model):
     _inherit = "account.move"
 
     def unlink(self):

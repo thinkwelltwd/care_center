@@ -9,18 +9,7 @@ class Lead(models.Model):
 
     def _can_be_converted(self):
         for lead in self:
-            convertable = True
-            if not lead.active:
-                convertable = False
-            elif lead.stage_id.fold:
-                convertable = False
-            elif lead.probability == 100:
-                convertable = False
-            elif len(lead.order_ids):
-                convertable = False
-            else:
-                convertable = False
-            lead.convertable = convertable
+            lead.convertable = lead.active and not lead.stage_id.fold and lead.probability != 100 and not len(lead.order_ids)
 
     @api.model
     def message_new(self, msg, custom_values=None):
