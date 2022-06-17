@@ -22,7 +22,7 @@
         <field name="arch" type="xml">
 
             <field name="project_id" position="after">
-                <field name="parent_task_id"/>
+                <field name="parent_task_id" string="Parent Task"/>
             </field>
 
             <xpath expr="//group/filter[@name='project']" position="before">
@@ -67,7 +67,7 @@
             </field>
 
             <field name="project_id" position="after">
-                <field name="parent_task_id" options="{'no_quick_create': True}" domain="[('project_id', '=', project_id)]"/>
+                <field name="parent_task_id" string="Parent Task" options="{'no_quick_create': True}" domain="[('project_id', '=', project_id)]"/>
             </field>
 
             <field name="project_id" position="attributes">

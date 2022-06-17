@@ -37,6 +37,7 @@ class DisableFollowers(models.AbstractModel):
     Base model to disable auto-subscribing followers
     """
     _name = 'disable.followers'
+    _description = 'Disable Followers'
     _followers_key = ''
 
     def auto_followers_context(self):
