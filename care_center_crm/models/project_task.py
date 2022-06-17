@@ -14,7 +14,7 @@ class ProjectTask(models.Model):
     )
     phonecall_count = fields.Integer(
         compute='_phonecall_count',
-        string="Phonecalls",
+        string="Phonecall Count",
     )
     convertable = fields.Boolean(compute='_can_be_converted')
     active_phonecall_id = fields.Many2one(
