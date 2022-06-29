@@ -18,6 +18,7 @@
         'account',
         'sale',
         'care_center',
+        'purchase',
     ],
 
     'data': [
