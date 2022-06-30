@@ -184,6 +184,6 @@ class AccountAnalyticLine(models.Model):
         """
         self.ensure_one()
         if self.invoice_status == 'notready':
-            return False
+            return self.env['sale.order.line']
 
         return super()._timesheet_get_sale_line()
