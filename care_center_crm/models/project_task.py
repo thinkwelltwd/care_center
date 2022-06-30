@@ -31,7 +31,7 @@ class ProjectTask(models.Model):
                            and ts.user_id.id == self.env.uid
                            and ts.timer_status == 'running'
             )
-            task.active_phonecall_id = active_timesheets and active_timesheets.phonecall_id.id
+            task.active_phonecall_id = active_timesheets and active_timesheets.phonecall_id.id or False
 
     def _can_be_converted(self):
         for task in self:
