@@ -14,7 +14,7 @@ class ProjectTask(models.Model):
     )
     phonecall_count = fields.Integer(
         compute='_phonecall_count',
-        string="Phonecalls",
+        string="Phonecall Count",
     )
     convertable = fields.Boolean(compute='_can_be_converted')
     active_phonecall_id = fields.Many2one(
@@ -31,23 +31,11 @@ class ProjectTask(models.Model):
                            and ts.user_id.id == self.env.uid
                            and ts.timer_status == 'running'
             )
-            if active_timesheets:
-                task.active_phonecall_id = active_timesheets.phonecall_id.id
-            else:
-                task.active_phonecall_id = ''
+            task.active_phonecall_id = active_timesheets and active_timesheets.phonecall_id.id or False
 
     def _can_be_converted(self):
         for task in self:
-            convertable = True
-            if not task.active:
-                convertable = False
-            elif len(task.timesheet_ids):
-                convertable = False
-            elif task.stage_id.fold:
-                convertable = False
-            else:
-                convertable = False
-            task.convertable = convertable
+            task.convertable = task.active and not len(task.timesheet_ids) and not task.stage_id.fold
 
     def _phonecall_count(self):
         for task in self:

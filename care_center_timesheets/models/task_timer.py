@@ -30,13 +30,11 @@ class TaskDurationFields(models.AbstractModel):
 
     @api.depends('full_duration')
     def _round_full_duration(self):
-        self.ensure_one()
         for rec in self:
             rec.full_duration_rounded = round(rec.full_duration, 2)
 
     @api.depends('full_duration_rounded')
     def _get_billable_time(self):
-        self.ensure_one()
         for rec in self:
             factored_duration = get_factored_duration(
                 hours=rec.full_duration_rounded,
@@ -126,7 +124,6 @@ class TaskTimer(models.AbstractModel):
                 ts.with_company(company_id).write(data)
 
     def _user_timer_status(self):
-        self.ensure_one()
         for rec in self:
             user_id = rec.env.context.get('user_id', rec.env.uid)
             AccountAnalyticLine = rec.env['account.analytic.line'].sudo()

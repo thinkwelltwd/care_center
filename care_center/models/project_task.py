@@ -22,7 +22,7 @@ class ProjectTask(models.Model):
 
     parent_task_id = fields.Many2one(
         'project.task',
-        string='Parent Task',
+        string='Parent',
         ondelete='cascade',
         required=False,
     )

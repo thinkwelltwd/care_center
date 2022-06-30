@@ -62,9 +62,8 @@ class ProcedureProcedure(models.Model):
         """Combine all checklists descriptions for a given Procedure"""
         for procedure in self:
             if procedure.parent_id:
+                procedure.documentation = False
                 continue
-            else:
-                procedure.documentation = ''
 
             docs = ['<h3>Procedure: %s</h3> %s' % (procedure.name, procedure.description)]
             checklists = self.env['procedure.procedure'].search([
@@ -163,10 +162,7 @@ class ProcedureAssignment(models.Model):
 
     def _compute_recolor(self):
         for record in self:
-            if record.status == 'todo':
-                record.recolor = True
-            else:
-                record.recolor = False
+            record.recolor = record.status == 'todo'
 
     def show_documentation(self):
         """
