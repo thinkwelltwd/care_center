@@ -226,8 +226,11 @@ class ProjectTask(models.Model):
 
     @api.onchange('partner_id')
     def _onchange_partner_id(self):
-        res = super()._onchange_partner_id()
-        result = res or {}
+        # TODO: super()._onchange_partner_id() no longer exists.
+        # formerly the call to it here returned a domain.
+        # result = super()._onchange_partner_id() or {}
+        self.email_from = self.partner_id.email
+        result = {}
 
         if self.partner_id:
             partner_ids = self.get_partner_ids()
