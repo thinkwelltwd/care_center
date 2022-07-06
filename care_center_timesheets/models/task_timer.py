@@ -285,7 +285,7 @@ class TaskTimer(models.AbstractModel):
             factor = self.env['hr_timesheet_invoice.factor'].search([('factor', '=', 0.0)], limit=1)
         offset = float(Param.get_param('start_stop.starting_time_offset', default=0))
 
-        AccountLine = self.env['account.analytic.line'].with_company(company_id) # , sheet_create=True)
+        AccountLine = self.env['account.analytic.line'].with_context(sheet_create=True).with_company(company_id)
         timesheet = AccountLine.create({
             'name': name,
             'date_start': datetime.now() - timedelta(minutes=offset),
