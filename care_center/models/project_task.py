@@ -323,7 +323,7 @@ class ProjectTask(models.Model):
         self.ensure_one()
         self.stage_id = self.env['project.task.type'].search([('name', '=', 'In Progress')])
         self.active = True
-        self.date_close = None
+        self.date_end = None
 
     def toggle_active(self):
         """ Inverse the value of the field ``active`` on the records in ``self``. """
@@ -331,9 +331,9 @@ class ProjectTask(models.Model):
         for record in self:
             if record.active:
                 self.confirm_subtasks_done()
-                self.date_close = fields.Datetime.now()
+                self.date_end = fields.Datetime.now()
             else:
-                self.date_close = None
+                self.date_end = None
 
         super(ProjectTask, self).toggle_active()
 
