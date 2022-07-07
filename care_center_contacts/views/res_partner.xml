@@ -9,7 +9,7 @@
             <notebook position="inside">
                 <page string="Extra Contact Info" attrs="{'invisible': [('is_company', '=', True)]}">
                     <field name="contact_info_ids"
-                        context="{'default_partner_id': active_id}"/>
+                           context="{'default_partner_id': active_id}"/>
                 </page>
             </notebook>
         </field>
