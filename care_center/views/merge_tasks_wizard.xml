@@ -28,14 +28,7 @@
         </field>
     </record>
 
-    <record id="merge_tasks_action" model="ir.actions.act_window">
-        <field name="name">Merge Tasks</field>
-        <field name="res_model">merge.task.wizard</field>
-        <field name="view_mode">form</field>
-        <field name="view_id" ref="merge_tasks_form"/>
-        <field name="target">new</field>
-    </record>
-
+<!--    TODO this doesn't work-->
     <record id="action_merge_tasks" model="ir.actions.act_window">
         <field name="name">Merge Tasks</field>
         <field name="res_model">merge.task.wizard</field>
