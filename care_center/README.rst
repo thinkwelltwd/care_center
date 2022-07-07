@@ -6,10 +6,10 @@
 Care Center
 ===========
 
-Support ticket system for Odoo 10. Loosely inspired by features in osTicket and
-Odoo 10 Enterprise Edition. Intended to be compatible with OCA modules.
+Support ticket system for Odoo 14. Loosely inspired by features in osTicket and
+Odoo 14 Enterprise Edition. Intended to be compatible with OCA modules.
 
-V 12.0 branch not tested. Your mileage will vary!
+V 14.0 branch not tested. Your mileage will vary!
 -------------------------------------------------
 
 Usage

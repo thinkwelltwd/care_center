@@ -1,4 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_care_ctr_res_config,care.ctr.res.config.user,model_res_config_settings,,1,1,1,1
-access_care_ctr_merge_task,care.ctr.merge.task.user,model_merge_task_wizard,,1,1,1,1
-access_update_project_info_wizard,access_update_project_info_wizard,model_update_project_info_wizard,base.group_user,1,1,1,1
+access_merge_task_wizard,access_merge_task_wizard,model_merge_task_wizard,,1,1,1,0
+access_update_project_info_wizard,access_update_project_info_wizard,model_update_project_info_wizard,,1,1,1,0
