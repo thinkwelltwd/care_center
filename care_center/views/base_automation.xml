@@ -6,7 +6,7 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">ir.actions.server</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('model_id','=', 'Task')]</field>
+        <field name="domain">[('model_id.model','=', 'project.task')]</field>
         <field name="context" eval="{'default_model_id': ref('project.model_project_task'), 'default_kind': 'on_create', 'key': 'server_action'}"/>
         <field name="view_id" ref="base.view_server_action_tree"/>
         <field name="search_view_id" ref="base.view_server_action_search"/>
@@ -28,7 +28,7 @@
         <field name="name">Ticket Rules</field>
         <field name="res_model">base.automation</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('model_id','=', 'Task')]</field>
+        <field name="domain">[('model_id.model','=', 'project.task')]</field>
         <field name="context" eval="{'default_model_id': ref('project.model_project_task')}"/>
         <field name="view_id" ref="base_automation.view_base_automation_tree"/>
         <field name="help" type="html">
