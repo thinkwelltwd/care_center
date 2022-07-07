@@ -59,7 +59,7 @@ class ReassignTaskWizard(models.TransientModel):
         required=False,
         domain=[('model_id.model', '=', 'project.task')],
         help="When template is specified, an email will be sent "
-        "to all followers of the task being re-assigned.",
+             "to all followers of the task being re-assigned.",
     )
 
     @api.constrains('assigned_to', 'team_id')
@@ -127,7 +127,7 @@ class ReassignTaskWizard(models.TransientModel):
             team=self.team_id.name,
         )
 
-    def get_body(self,):
+    def get_body(self):
         return """
         <p>{by} has assigned the <b>{task}</b> Task to {assignment} </p>
         <p><b>Summary: </b>{summary}</p>

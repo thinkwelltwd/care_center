@@ -1,4 +1,4 @@
-from odoo import api, models, fields
+from odoo import models, fields
 
 
 class ProjectTask(models.Model):
@@ -10,7 +10,6 @@ class ProjectTask(models.Model):
         'task.assignment',
         'task_id',
         string='Assignment History',
-        #ondelete='cascade',
         required=False,
     )
 

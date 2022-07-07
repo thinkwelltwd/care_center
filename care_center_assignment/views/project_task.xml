@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <record id="project_task_assignment" model="ir.ui.view">
@@ -23,20 +22,20 @@
 
             <!-- Change these fields only via Reassign button -->
             <field name="user_id" position="attributes">
-               <attribute name="readonly">1</attribute>
+                <attribute name="readonly">1</attribute>
             </field>
             <field name="team_id" position="attributes">
-               <attribute name="readonly">1</attribute>
+                <attribute name="readonly">1</attribute>
             </field>
 
             <notebook position="inside">
                 <page string="Assignments" attrs="{'invisible': [('assignment_count', '=', 0)]}">
                     <field name="assignment_ids">
-                      <tree string="Assignment History" editable="bottom">
-                          <field name="name"/>
-                          <field name="assigned_by"/>
-                          <field name="assigned_to"/>
-                          <field name="team_id"/>
+                        <tree string="Assignment History" editable="bottom">
+                            <field name="name"/>
+                            <field name="assigned_by"/>
+                            <field name="assigned_to"/>
+                            <field name="team_id"/>
                         </tree>
                     </field>
                 </page>
