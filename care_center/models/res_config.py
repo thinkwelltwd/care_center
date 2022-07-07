@@ -1,4 +1,4 @@
-from odoo import api, models, fields
+from odoo import models, fields
 
 
 class ResConfigSettings(models.TransientModel):
@@ -9,5 +9,5 @@ class ResConfigSettings(models.TransientModel):
         default=False,
         config_parameter='care_center.alias_name_prefix',
         help='Prepend catchall email alias as prefix to project alias name. \n'
-        'i.e. support+project-name',
+             'i.e. support+project-name',
     )

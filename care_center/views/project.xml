@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <record id="view_config_settings_form_alias_name_sheet" model="ir.ui.view">

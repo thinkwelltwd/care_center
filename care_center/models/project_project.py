@@ -14,7 +14,7 @@ class ProjectProject(models.Model):
         override to extend the logic.
         """
         if self.partner_id:
-            return set([self.partner_id.commercial_partner_id.id, self.partner_id.id])
+            return {self.partner_id.commercial_partner_id.id, self.partner_id.id}
         return set()
 
     @api.model

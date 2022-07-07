@@ -1,8 +1,9 @@
 import email
+import logging
 from email.message import Message
 
-from odoo import models, api, _
-import logging
+from odoo import models, api
+
 _logger = logging.getLogger(__name__)
 
 

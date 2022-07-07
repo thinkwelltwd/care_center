@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-from odoo import models, fields, api, _
+from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
 
@@ -20,26 +20,14 @@ class ProjectTask(models.Model):
             ('partner_id', 'in', self.get_partner_ids()),
         ])
 
-    parent_task_id = fields.Many2one(
-        'project.task',
-        string='Parent',
-        ondelete='cascade',
-        required=False,
-    )
-    child_task_ids = fields.One2many(
-        'project.task',
-        'parent_task_id',
-        string='Sub Tasks',
-    )
     medium_id = fields.Many2one(
         'utm.medium',
         'Medium',
         help="This is the method of delivery. "
-        "Ex: Email / Phonecall / API / Website",
+             "Ex: Email / Phonecall / API / Website",
     )
     description = fields.Html('Private Note')
     task_active = fields.Boolean(compute='_task_active')
-    subtask_count = fields.Integer(compute='_subtask_count')
 
     # Compute these properties so they can serve as domains in xml views
     # active even on Edit mode when partner_id field hasn't been changed
@@ -59,10 +47,6 @@ class ProjectTask(models.Model):
                     values['user_id'] = False
 
         return super(ProjectTask, self).create(vals_list)
-
-    def _subtask_count(self):
-        for task in self:
-            task.subtask_count = len(task.child_task_ids)
 
     def _task_active(self):
         for task in self:
@@ -287,7 +271,7 @@ class ProjectTask(models.Model):
                     for task in tasks)
 
     def confirm_subtasks_done(self):
-        for subtask in self.child_task_ids:
+        for subtask in self._get_all_subtasks():
             if not subtask.active or subtask.stage_id.fold:
                 continue
 
@@ -301,7 +285,7 @@ class ProjectTask(models.Model):
         """
         stage = self.env['project.task.type'].browse(stage_id)
         if stage and stage.fold:
-            if self.child_task_ids:
+            if self.child_ids:
                 self.confirm_subtasks_done()
             self.toggle_active()
 
@@ -336,32 +320,6 @@ class ProjectTask(models.Model):
                 self.date_end = None
 
         super(ProjectTask, self).toggle_active()
-
-    def open_subtasks(self):
-        self.ensure_one()
-        form = self.env.ref('care_center.project_task_required_fields', False)
-        tree = self.env.ref('care_center.care_center_task_tree', False)
-
-        parent_task_id = self.parent_task_id and self.parent_task_id.id or self.id
-        context = {
-            'default_partner_id': self.partner_id.id,
-            'default_parent_task_id': parent_task_id,
-            'default_project_id': self.project_id and self.project_id.id,
-        }
-
-        return {
-            'name': 'Subtasks',
-            'view_mode': 'tree,form',
-            'views': [(tree.id, 'tree'), (form.id, 'form')],
-            'view_id': tree.id,
-            'res_model': 'project.task',
-            'context': context,
-            'type': 'ir.actions.act_window',
-            'nodestroy': True,
-            'target': 'current',
-            'res_id': False,
-            'domain': [('parent_task_id', '=', parent_task_id)],
-        }
 
 
 class ProjectTaskType(models.Model):

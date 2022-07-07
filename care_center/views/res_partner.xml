@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <!--  Copy from default action to demote kanban view priority -->
@@ -19,9 +18,9 @@
         <field name="arch" type="xml">
             <div name="button_box" position="inside">
                 <button class="oe_stat_button" type="action" name="%(project_task_action_from_partner)d"
-                    context="{'search_default_partner_id': active_id, 'default_partner_id': active_id}"
-                    icon="fa-tasks">
-                    <field  string="Tasks" name="task_count" widget="statinfo"/>
+                        context="{'search_default_partner_id': active_id, 'default_partner_id': active_id}"
+                        icon="fa-tasks">
+                    <field string="Tasks" name="task_count" widget="statinfo"/>
                 </button>
             </div>
         </field>

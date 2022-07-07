@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <record id="action_incoming_email_server_tree" model="ir.actions.act_window">
@@ -12,7 +11,8 @@
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
                 Click here to define a new incoming email address.
-            </p><p>
+            </p>
+            <p>
                 Tickets will be automatically created from incoming email messages.
             </p>
         </field>
@@ -24,12 +24,13 @@
         <field name="view_mode">form,tree</field>
         <field name="domain">[('model_id', 'in', ( 'Task', 'Phonecall'))]</field>
         <field name="context" eval="{'default_model_id': ref('project.model_project_task')}"/>
-        <field name="view_id" ref="mail.email_template_tree" />
+        <field name="view_id" ref="mail.email_template_tree"/>
         <field name="search_view_id" ref="mail.view_email_template_search"/>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
                 Canned responses to Tickets.
-            </p><p>
+            </p>
+            <p>
                 Save time and standardize communications with email templates.
             </p>
         </field>

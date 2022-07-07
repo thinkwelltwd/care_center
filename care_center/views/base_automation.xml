@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <record id="action_ticket_action" model="ir.actions.act_window">
@@ -7,19 +6,20 @@
         <field name="res_model">ir.actions.server</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('model_id.model','=', 'project.task')]</field>
-        <field name="context" eval="{'default_model_id': ref('project.model_project_task'), 'default_kind': 'on_create', 'key': 'server_action'}"/>
+        <field name="context"
+               eval="{'default_model_id': ref('project.model_project_task'), 'default_kind': 'on_create', 'key': 'server_action'}"/>
         <field name="view_id" ref="base.view_server_action_tree"/>
         <field name="search_view_id" ref="base.view_server_action_search"/>
         <field name="help" type="html">
-          <p class="oe_view_nocontent_create">
-            Apply Actions to Tickets.
-          </p>
-          <p>
-              For example, specify the Support Team based on the Ticket Tag.
-          </p>
-          <p>
-              Actions may be applied from the More menu, or called from Ticket Rules.
-          </p>
+            <p class="oe_view_nocontent_create">
+                Apply Actions to Tickets.
+            </p>
+            <p>
+                For example, specify the Support Team based on the Ticket Tag.
+            </p>
+            <p>
+                Actions may be applied from the More menu, or called from Ticket Rules.
+            </p>
         </field>
     </record>
 
@@ -32,12 +32,13 @@
         <field name="context" eval="{'default_model_id': ref('project.model_project_task')}"/>
         <field name="view_id" ref="base_automation.view_base_automation_tree"/>
         <field name="help" type="html">
-          <p class="oe_view_nocontent_create">
-            Apply Rules to Tickets.
-          </p><p>
-            Ticket Rules group one or more Actions together to process
-            Tickets base on filter conditions and predefined Ticket data.
-          </p>
+            <p class="oe_view_nocontent_create">
+                Apply Rules to Tickets.
+            </p>
+            <p>
+                Ticket Rules group one or more Actions together to process
+                Tickets base on filter conditions and predefined Ticket data.
+            </p>
 
         </field>
     </record>

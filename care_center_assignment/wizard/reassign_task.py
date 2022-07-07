@@ -57,7 +57,7 @@ class ReassignTaskWizard(models.TransientModel):
         'mail.template',
         string='Email Template',
         required=False,
-        domain=[('model_id.name', '=', 'Task')],
+        domain=[('model_id.model', '=', 'project.task')],
         help="When template is specified, an email will be sent "
         "to all followers of the task being re-assigned.",
     )
@@ -172,7 +172,7 @@ class ReassignTaskWizard(models.TransientModel):
             stats['team_id'] = self.team_id.id
 
         if self.reassign_subtasks:
-            for subtask in self.task_id.child_task_ids:
+            for subtask in self.task_id._get_all_subtasks():
                 subtask.with_context({'tracking_disable': True}).write(stats)
 
         stats['assignment_ids'] = [(4, assignment.id, None)]

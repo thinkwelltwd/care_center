@@ -1,8 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <data>
 
-    <record model="utm.medium" id="utm_medium_api">
-        <field name="name">API</field>
-    </record>
+        <record model="utm.medium" id="utm_medium_api">
+            <field name="name">API</field>
+        </record>
 
+    </data>
 </odoo>
+ 

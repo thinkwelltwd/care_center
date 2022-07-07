@@ -1,47 +1,48 @@
 <odoo>
-  <record id="merge_tasks_form" model="ir.ui.view">
-      <field name="name">merge.tasks.form</field>
-      <field name="model">merge.task.wizard</field>
-      <field name="arch" type="xml">
-          <form string="Merge Tasks">
 
-              <group string="Destination Task">
-                  <field name="dst_task_id" class="oe_inline"/>
-              </group>
-              <group string="Select Tasks">
-                  <field name="task_ids" nolabel="1">
-                      <tree>
-                          <field name="create_date"/>
-                          <field name="name"/>
-                          <field name="project_id"/>
-                          <field name="tag_ids"/>
-                          <field name="id"/>
-                      </tree>
-                  </field>
-              </group>
-              <footer>
-                  <button name="action_merge" type="object" string="Merge" class="btn-primary"/>
-                  <button string="Cancel" class="btn-default" special="cancel"/>
-              </footer>
-          </form>
-      </field>
-  </record>
+    <record id="merge_tasks_form" model="ir.ui.view">
+        <field name="name">merge.tasks.form</field>
+        <field name="model">merge.task.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Merge Tasks">
 
-  <record id="merge_tasks_action" model="ir.actions.act_window">
-      <field name="name">Merge Tasks</field>
-      <field name="res_model">merge.task.wizard</field>
-      <field name="view_mode">form</field>
-      <field name="view_id" ref="merge_tasks_form"/>
-      <field name="target">new</field>
-  </record>
+                <group string="Destination Task">
+                    <field name="dst_task_id" class="oe_inline"/>
+                </group>
+                <group string="Select Tasks">
+                    <field name="task_ids" nolabel="1">
+                        <tree>
+                            <field name="create_date"/>
+                            <field name="name"/>
+                            <field name="project_id"/>
+                            <field name="tag_ids"/>
+                            <field name="id"/>
+                        </tree>
+                    </field>
+                </group>
+                <footer>
+                    <button name="action_merge" type="object" string="Merge" class="btn-primary"/>
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
 
-  <record id="action_merge_tasks" model="ir.actions.act_window">
-      <field name="name">Merge Tasks</field>
-      <field name="res_model">merge.task.wizard</field>
-      <field name="binding_model_id" ref="project.model_project_task" />
-      <field name="binding_view_types">form</field>
-      <field name="view_mode">form</field>
-      <field name="target">new</field>
-  </record>
+    <record id="merge_tasks_action" model="ir.actions.act_window">
+        <field name="name">Merge Tasks</field>
+        <field name="res_model">merge.task.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="merge_tasks_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <record id="action_merge_tasks" model="ir.actions.act_window">
+        <field name="name">Merge Tasks</field>
+        <field name="res_model">merge.task.wizard</field>
+        <field name="binding_model_id" ref="project.model_project_task"/>
+        <field name="binding_view_types">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
 
 </odoo>

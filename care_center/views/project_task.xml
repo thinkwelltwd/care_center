@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <record id="care_center_task_tree" model="ir.ui.view">
@@ -7,9 +6,14 @@
         <field name="inherit_id" ref="project.view_task_tree2"/>
         <field name="arch" type="xml">
 
-            <field name="name" position="after">
-                <field name="parent_task_id" invisible="1"/>
-                <field name="partner_id"/>
+            <field name="partner_id" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </field>
+            <field name="user_id" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </field>
+            <field name="company_id" position="attributes">
+                <attribute name="readonly">1</attribute>
             </field>
 
         </field>
@@ -18,15 +22,11 @@
     <record model="ir.ui.view" id="care_center_parent_task_search">
         <field name="name">Parent Task Search</field>
         <field name="model">project.task</field>
-        <field name="inherit_id" ref="project.view_task_search_form" />
+        <field name="inherit_id" ref="project.view_task_search_form"/>
         <field name="arch" type="xml">
 
-            <field name="project_id" position="after">
-                <field name="parent_task_id" string="Parent Task"/>
-            </field>
-
             <xpath expr="//group/filter[@name='project']" position="before">
-                <filter string="Parent Task" name="group_parent_task_id" context="{'group_by':'parent_task_id'}"/>
+                <filter string="Parent Task" name="group_parent_id" context="{'group_by':'parent_id'}"/>
             </xpath>
 
         </field>
@@ -35,16 +35,18 @@
     <record model="ir.ui.view" id="project_task_search">
         <field name="name">Search Project Tickets</field>
         <field name="model">project.task</field>
-        <field name="inherit_id" ref="project.view_task_search_form" />
+        <field name="inherit_id" ref="project.view_task_search_form"/>
         <field name="arch" type="xml">
 
             <xpath expr="//filter[@name='message_needaction']" position="before">
-                <filter string="Sub Tasks" name="sub_task_filter" domain="[('parent_task_id', '!=', False)]"/>
+                <filter string="Sub Tasks" name="sub_task_filter" domain="[('parent_id', '!=', False)]"/>
                 <separator/>
-                <filter string="Due Today" name="due_today" domain="[('stage_id', '!=', 'Done'), ('date_deadline', '&lt;=', datetime.date.today().strftime('%Y-%m-%d'))]"/>
-                <filter string="Due This Week" name="due_this_week" domain="[('stage_id', '!=', 'Done'), ('date_deadline', '&lt;=', (datetime.date.today() + datetime.timedelta(7)).strftime('%Y-%m-%d'))]"/>
-                <filter string="No Deadline" name="due_this_week" domain="[('stage_id', '!=', 'Done'), ('date_deadline', '=', False)]"/>
-
+                <filter string="Due Today" name="due_today"
+                        domain="[('stage_id', '!=', 'Done'), ('date_deadline', '&lt;=', datetime.date.today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Due This Week" name="due_this_week"
+                        domain="[('stage_id', '!=', 'Done'), ('date_deadline', '&lt;=', (datetime.date.today() + datetime.timedelta(7)).strftime('%Y-%m-%d'))]"/>
+                <filter string="No Deadline" name="due_this_week"
+                        domain="[('stage_id', '!=', 'Done'), ('date_deadline', '=', False)]"/>
                 <separator/>
             </xpath>
 
@@ -54,35 +56,28 @@
     <record model="ir.ui.view" id="project_task_required_fields">
         <field name="name">Project Tickets Required Fields</field>
         <field name="model">project.task</field>
-        <field name="inherit_id" ref="project.view_task_form2" />
+        <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
 
-            <field name="partner_id" position="replace">
+            <field name="partner_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="sequence" position="after">
                 <field name="medium_id" options="{'no_create': True, 'no_open': True}"/>
             </field>
-
             <field name="project_id" position="before">
-                <field name="partner_id" options="{'no_quick_create': True}" required="True"/>
+                <field name="partner_id" widget="res_partner_many2one" class="o_task_customer_field"
+                       options="{'no_quick_create': True}" required="1"/>
                 <field name="available_project_ids" invisible="1"/>
             </field>
-
-            <field name="project_id" position="after">
-                <field name="parent_task_id" string="Parent Task" options="{'no_quick_create': True}" domain="[('project_id', '=', project_id)]"/>
+            <field name="parent_id" position="attributes">
+                <attribute name="options">{'no_create': True}</attribute>
+                <attribute name="domain">[('parent_id', '=', False), ('project_id', '=', project_id)]</attribute>
             </field>
-
             <field name="project_id" position="attributes">
-               <attribute name="required">True</attribute>
-               <attribute name="no_quick_create">True</attribute>
-               <attribute name="domain">[('id' , 'in', available_project_ids)]</attribute>
+                <attribute name="domain">[('id' , 'in', available_project_ids), ('company_id', '=', company_id)]
+                </attribute>
             </field>
-
-            <xpath expr="//div[@name='button_box']" position="inside">
-                <button class="oe_inline oe_stat_button" type="object"
-                    name="open_subtasks"
-                    icon="fa-tasks">
-                    <field string="Sub Tasks" name="subtask_count" widget="statinfo"/>
-                </button>
-            </xpath>
 
         </field>
     </record>
