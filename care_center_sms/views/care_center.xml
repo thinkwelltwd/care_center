@@ -1,9 +1,0 @@
-<odoo>
-
-    <menuitem name="SMS Messages"
-              id="care_center_sms_message_menu"
-              parent="care_center.menu_crm_phonecall_logs"
-              action="cc_sms_message_action"
-              sequence="10"/>
-
-</odoo>
