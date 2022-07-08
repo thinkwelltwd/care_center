@@ -1,10 +1,9 @@
-<?xml version="1.0"?>
 <odoo>
 
     <record id="action_place_internal_phonecall" model="ir.actions.act_window">
         <field name="name">Place Internal Phonecall</field>
         <field name="res_model">add_internal_phonecall.wizard</field>
-        <field name="binding_model_id" ref="project.model_project_task" />
+        <field name="binding_model_id" ref="project.model_project_task"/>
         <field name="binding_view_types">form</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
@@ -13,7 +12,7 @@
     <record id="action_end_internal_phonecall" model="ir.actions.act_window">
         <field name="name">End Internal Phonecall</field>
         <field name="res_model">end_internal_phonecall.wizard</field>
-        <field name="binding_model_id" ref="project.model_project_task" />
+        <field name="binding_model_id" ref="project.model_project_task"/>
         <field name="binding_view_types">form</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>

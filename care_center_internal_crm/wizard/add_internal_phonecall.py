@@ -73,7 +73,7 @@ class AddInternalPhonecall(models.TransientModel):
         callee_active_ts = callee_user_id.sudo().get_active_timesheet()
         if callee_active_ts:
             if callee_active_ts.task_id == self.task_id:
-                callee_active_ts.write({'phonecall_id': phonecall.id})
+                callee_active_ts.phonecall_id = phonecall.id
                 return callee_active_ts
             else:
                 callee_active_ts.task_id.sudo().with_context(

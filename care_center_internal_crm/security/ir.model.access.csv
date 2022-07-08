@@ -1,3 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_care_internal_phonecall_add,care.center.internal.phonecall.add,model_add_internal_phonecall_wizard,,1,1,1,1
-access_care_internal_phonecall_end,care.center.internal.phonecall.end,model_end_internal_phonecall_wizard,,1,1,1,1
+access_add_internal_phonecall_wizard,access_add_internal_phonecall_wizard,model_add_internal_phonecall_wizard,,1,1,1,0
+access_end_internal_phonecall_wizard,access_end_internal_phonecall_wizard,model_end_internal_phonecall_wizard,,1,1,1,0

@@ -1,24 +1,14 @@
 {
-    'name': "care_center_internal_crm",
-
-    'summary': """
-        Streamline internal company communications between employees.
-        """,
-
-    'description': """
-    Handle timesheets and phone logs for inter-company communication on Tasks.
-    """,
-
+    'name': "Care Center Internal CRM",
+    'summary': """Streamline internal company communications between employees.""",
+    'description': """Handle timesheets and phone logs for inter-company communication on Tasks.""",
     'author': "Dave Burkholder <dave@thinkwelldesigns.com>",
     'website': "http://www.thinkwelldesigns.com",
-
     'category': 'Sales',
     'version': '14.0.1.0.0',
-
     'depends': [
         'care_center_timesheets',
     ],
-
     'data': [
         'security/ir.model.access.csv',
         'data/utm_sources.xml',

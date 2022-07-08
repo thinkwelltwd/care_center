@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <record id="add_internal_phonecall_wizard" model="ir.ui.view">
         <field name="name">Add Internal Phonecall Wizard</field>
         <field name="model">add_internal_phonecall.wizard</field>
         <field name="arch" type="xml">
-           <form string="Place Internal Phone Call" create="false" edit="false">
+            <form string="Place Internal Phone Call" create="false" edit="false">
                 <group>
                     <field name="partner_id"/>
                     <field name="task_id" invisible="1"/>
@@ -14,7 +13,7 @@
                     <button string="Save" type="object" name="place_internal_phonecall" class="oe_highlight"/>
                     <button string="Cancel" special="cancel" class="oe_link"/>
                 </footer>
-           </form>
+            </form>
         </field>
     </record>
 
