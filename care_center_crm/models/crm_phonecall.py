@@ -1,6 +1,6 @@
 from odoo import _, api, fields, models
-from odoo.fields import DATE_LENGTH
 from odoo.exceptions import UserError
+from odoo.fields import DATE_LENGTH
 
 
 class CrmPhonecall(models.Model):
@@ -200,3 +200,9 @@ class CrmPhonecall(models.Model):
                 else:
                     call.duration = (end_date - start_date).total_seconds() / 60.0
         return True
+
+    def get_values_schedule_another_phonecall(self, vals):
+        res = super().get_values_schedule_another_phonecall(vals)
+        res['task_id'] = vals.get('task_id')
+        res['project_id'] = vals.get('project_id')
+        return res

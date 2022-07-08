@@ -2,14 +2,8 @@ from odoo import api, fields, models
 
 
 class CrmPhonecallToTaskWizard(models.TransientModel):
-    """
-    Convert a Phone Call into a Project Task.
-    """
-
     _name = "crm.phonecall2task.wizard"
     _description = 'Care Center CRM Phone Call To Task Wizard'
-    # crm.partner.binding is removed in Odoo 14
-    #_inherit = 'crm.partner.binding'
 
     def _get_project_id(self):
         return self.get_phonecall().project_id
@@ -55,24 +49,21 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
             'description': phonecall_id.description,
             'email_from': email_from,
             'priority': phonecall_id.priority,
-            'phone': phonecall_id.partner_phone or False,
+            'partner_phone': phonecall_id.partner_phone or False,
             'company_id': company_id,
             'tag_ids': [(6, 0, [tag.id for tag in tags])],
         })
-        vals = {
-            'task_id': task_id.id,
-            'state': 'done',
-        }
-        phonecall_id.write(vals)
+        phonecall_id.task_id = task_id.id
+        phonecall_id.state = 'done'
 
         return {
-            'name': 'Task created',
+            'name': task_id.name,
             'view_type': 'form',
             'view_mode': 'form',
-            'view_id': self.env.ref('project.view_task_form2').id,
             'res_model': 'project.task',
             'type': 'ir.actions.act_window',
             'res_id': task_id.id,
+            'target': 'current',
         }
 
     def get_phonecall(self):

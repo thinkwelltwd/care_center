@@ -7,11 +7,8 @@ class CrmLeadToTaskWizard(models.TransientModel):
     Convert a Lead into a Project Task and
     move the Mail Thread and Attachments.
     """
-
     _name = "crm.lead2task.wizard"
     _description = 'Care Center CRM Lead To Task Wizard'
-    # model crm.partner.binding is removed in Odoo 14
-    #_inherit = 'crm.partner.binding'
 
     project_id = fields.Many2one('project.project', string='Project')
 
@@ -64,20 +61,16 @@ class CrmLeadToTaskWizard(models.TransientModel):
         task_calls = self.env['crm.phonecall'].search([
             ('opportunity_id', '=', lead_id),
         ])
-        task_calls.write({
-            'opportunity_id': False,
-            'task_id': task_id,
-        })
+        task_calls.opportunity_id = False
+        task_calls.task_id = task_id
 
     def move_attachments(self, lead_id, task_id):
         attachments = self.env['ir.attachment'].search([
             ('res_model', '=', 'crm.lead'),
             ('res_id', '=', lead_id),
         ])
-        attachments.write({
-            'res_model': 'project.task',
-            'res_id': task_id,
-        })
+        attachments.res_model = 'project.task'
+        attachments.res_id = task_id
 
     def action_lead_to_task(self):
         self.ensure_one()
@@ -87,7 +80,7 @@ class CrmLeadToTaskWizard(models.TransientModel):
 
         company_id = lead.partner_id.company_id.id
         Task = self.env['project.task'].with_company(company_id)
-        task = Task.create({
+        task_id = Task.create({
             'name': lead.name,
             'description': lead.description,
             'project_id': self.project_id.id,
@@ -98,20 +91,19 @@ class CrmLeadToTaskWizard(models.TransientModel):
             'company_id': company_id,
             'tag_ids': [(6, 0, self.get_tag_ids(lead=lead))]
         })
-        lead.message_change_thread(task)
-        self.move_attachments(lead_id=lead.id, task_id=task.id)
-        self.move_phonecalls(lead_id=lead.id, task_id=task.id)
+        lead.message_change_thread(task_id)
+        self.move_attachments(lead_id=lead.id, task_id=task_id.id)
+        self.move_phonecalls(lead_id=lead.id, task_id=task_id.id)
 
-        lead.write({'active': False})
-
+        lead.active = False
         return {
-            'name': 'Task created',
+            'name': task_id.name,
             'view_type': 'form',
             'view_mode': 'form',
-            'view_id': self.env.ref('project.view_task_form2').id,
             'res_model': 'project.task',
             'type': 'ir.actions.act_window',
-            'res_id': task.id,
+            'res_id': task_id.id,
+            'target': 'current',
         }
 
     def get_lead(self):

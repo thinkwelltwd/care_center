@@ -1,9 +1,6 @@
 {
-    'name': "care_center_crm",
-
-    'summary': """
-        Extend CRM features for Care Center.""",
-
+    'name': "Care Center CRM",
+    'summary': """Extend CRM features for Care Center.""",
     'description': """
     Add smart buttons to enable easy conversion to other record types.
         * Convert Tasks to Opportunities.
@@ -11,12 +8,9 @@
         * Create Tasks from Phonecalls.
         * Link Tasks to existing Phonecalls.
         * Add Timesheets to Phonecalls.
-
     """,
-
     'author': "Dave Burkholder <dave@thinkwelldesigns.com>",
     'website': "http://www.thinkwelldesigns.com",
-
     'category': 'Sales',
     'version': '14.0.1.0.0',
     'conflicts': ['crm_phonecall_timesheet'],
@@ -24,12 +18,10 @@
         'care_center',
         'sale_crm',
     ],
-
     'data': [
         'security/ir.model.access.csv',
-        # broken by removal of crm.partner.binding:
-        #'views/crm_lead2task_wizard.xml',
-        #'views/crm_phonecall2task_wizard.xml',
+        'views/crm_lead2task_wizard.xml',
+        'views/crm_phonecall2task_wizard.xml',
         'views/crm_lead.xml',
         'views/crm_phonecall.xml',
         'views/project_task.xml',

@@ -1,31 +1,32 @@
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class CrmPhonecall2phonecall(models.TransientModel):
     _inherit = 'crm.phonecall2phonecall'
 
+    def _get_task_id(self):
+        return self.env['crm.phonecall'].browse(
+            self.env.context.get('active_id')
+        ).task_id.id
+
+    def _get_project_id(self):
+        return self.env['crm.phonecall'].browse(
+            self.env.context.get('active_id')
+        ).project_id.id
+
     task_id = fields.Many2one(
-        comodel_name='project.task',
+        'project.task',
         string='Task',
-        index=True,
+        default=_get_task_id,
     )
     project_id = fields.Many2one(
-        comodel_name='project.project',
+        'project.project',
         string='Project',
-        index=True,
+        default=_get_project_id,
     )
 
-    @api.model
-    def default_get(self, fields):
-        res = super(CrmPhonecall2phonecall, self).default_get(fields)
-        call = self.env['crm.phonecall'].browse(self.env.context.get('active_id'))
-        if not call:
-            return res
-
-        if call.task_id:
-            res['task_id'] = call.task_id.id
-
-        if call.project_id:
-            res['project_id'] = call.project_id.id
-
-        return res
+    def get_vals_action_schedule(self):
+        vals = super().get_vals_action_schedule()
+        vals['task_id'] = self.task_id.id or False
+        vals['project_id'] = self.project_id.id or False
+        return vals

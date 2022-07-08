@@ -1,6 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_set_phone_task,set.task.phone.user,model_set_task_on_phone_wizard,,1,1,1,1
-access_set_phone_lead,set.lead.phone.user,model_set_lead_on_phone_wizard,,1,1,1,1
-access_crm_lead2task_wizard,crm.lead2task.user,model_crm_lead2task_wizard,,1,1,1,1
-access_crm_phonecall2task_wizard,crm.phonecall2task.user,model_crm_phonecall2task_wizard,,1,1,1,1
-access_crm_phonecall2phonecall,crm.phonecall2phonecall.user,model_crm_phonecall2phonecall,,1,1,1,1
+access_set_task_on_phone_wizard,access_set_task_on_phone_wizard,model_set_task_on_phone_wizard,,1,1,1,0
+access_set_lead_on_phone_wizard,access_set_lead_on_phone_wizard,model_set_lead_on_phone_wizard,,1,1,1,0
+access_crm_lead2task_wizard,access_crm_lead2task_wizard,model_crm_lead2task_wizard,,1,1,1,0
+access_crm_phonecall2task_wizard,access_crm_phonecall2task_wizard,model_crm_phonecall2task_wizard,,1,1,1,0
+access_crm_phonecall2phonecall,access_crm_phonecall2phonecall,model_crm_phonecall2phonecall,,1,1,1,0

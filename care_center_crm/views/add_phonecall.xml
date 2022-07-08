@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <!-- Wizard to Link Phonecalls to Tasks from Task form -->
@@ -6,7 +5,7 @@
         <field name="name">Add Task to Phonecall Wizard</field>
         <field name="model">set_task_on_phone.wizard</field>
         <field name="arch" type="xml">
-           <form string="Link Phone call to Task" create="false" edit="false">
+            <form string="Link Phone call to Task" create="false" edit="false">
                 <group>
                     <field name="task_id" options="{'no_create': True}"/>
                     <field name="phonecall_id" options="{'no_create': True}"/>
@@ -15,14 +14,14 @@
                     <button string="Save" type="object" name="set_task_on_phonecall" class="oe_highlight"/>
                     <button string="Cancel" special="cancel" class="oe_link"/>
                 </footer>
-           </form>
+            </form>
         </field>
     </record>
 
     <record id="action_add_task_to_phonecall" model="ir.actions.act_window">
         <field name="name">Link to Phonecall</field>
         <field name="res_model">set_task_on_phone.wizard</field>
-        <field name="binding_model_id" ref="project.model_project_task" />
+        <field name="binding_model_id" ref="project.model_project_task"/>
         <field name="binding_view_types">form</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
@@ -33,7 +32,7 @@
         <field name="name">Add Lead to Phonecall Wizard</field>
         <field name="model">set_lead_on_phone.wizard</field>
         <field name="arch" type="xml">
-           <form string="Link Phone call to Lead" create="false" edit="false">
+            <form string="Link Phone call to Lead" create="false" edit="false">
                 <group>
                     <field name="lead_id" options="{'no_create': True}"/>
                     <field name="phonecall_id" options="{'no_create': True}"/>
@@ -42,14 +41,14 @@
                     <button string="Save" type="object" name="set_lead_on_phonecall" class="oe_highlight"/>
                     <button string="Cancel" special="cancel" class="oe_link"/>
                 </footer>
-           </form>
+            </form>
         </field>
     </record>
 
     <record id="action_add_lead_to_phonecall" model="ir.actions.act_window">
         <field name="name">Link to Phonecall</field>
         <field name="res_model">set_lead_on_phone.wizard</field>
-        <field name="binding_model_id" ref="crm.model_crm_lead" />
+        <field name="binding_model_id" ref="crm.model_crm_lead"/>
         <field name="binding_view_types">form</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>

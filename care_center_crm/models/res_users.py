@@ -26,6 +26,7 @@ class ResUsers(models.Model):
                 AND state IN ('open', 'pending')
             GROUP BY states;
         """
+        self.env['crm.phonecall'].flush()
         self.env.cr.execute(query, {
             'today': fields.Date.context_today(self),
             'user_id': self.env.uid,

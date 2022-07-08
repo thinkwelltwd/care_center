@@ -6,10 +6,11 @@ class SetTaskOnPhoneCallWizard(models.TransientModel):
     _inherit = 'care_center.base'
     _description = 'Set Task on Phone Call'
 
-    def _get_task_id(self):
-        return self.env['project.task'].browse(self.env.context.get('active_id'))
-
-    task_id = fields.Many2one('project.task', string='Task', default=_get_task_id)
+    task_id = fields.Many2one(
+        'project.task',
+        string='Task',
+        default=lambda self: self.env.context.get('active_id'),
+    )
     phonecall_id = fields.Many2one('crm.phonecall', string='Phone call')
 
     @api.onchange('task_id')
@@ -29,12 +30,7 @@ class SetTaskOnPhoneCallWizard(models.TransientModel):
         }
 
     def set_task_on_phonecall(self):
-        """
-        'write' method wants to return a view so, we use custom function
-        so that we can just go back to current Ticket/Task page
-        """
-        self.phonecall_id.write({'task_id': self.task_id.id})
-        return True
+        self.phonecall_id.task_id = self.task_id.id
 
 
 class SetLeadOnPhoneCallWizard(models.TransientModel):
@@ -42,10 +38,11 @@ class SetLeadOnPhoneCallWizard(models.TransientModel):
     _inherit = 'care_center.base'
     _description = 'Set Lead on Phone Call'
 
-    def _get_lead_id(self):
-        return self.env['crm.lead'].browse(self.env.context.get('active_id'))
-
-    lead_id = fields.Many2one('crm.lead', string='Lead/Opportunity', default=_get_lead_id)
+    lead_id = fields.Many2one(
+        'crm.lead',
+        string='Lead/Opportunity',
+        default=lambda self: self.env.context.get('active_id'),
+    )
     phonecall_id = fields.Many2one('crm.phonecall', string='Phone call')
 
     @api.onchange('lead_id')
@@ -65,9 +62,4 @@ class SetLeadOnPhoneCallWizard(models.TransientModel):
         }
 
     def set_lead_on_phonecall(self):
-        """
-        'write' method wants to return a view so, we use custom function
-        so that we can just go back to current Ticket/Task page
-        """
-        self.phonecall_id.write({'opportunity_id': self.lead_id.id})
-        return True
+        self.phonecall_id.opportunity_id = self.lead_id.id

@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <odoo>
 
     <record model="ir.ui.view" id="care_center_task_phonecalls">

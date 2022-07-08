@@ -1,10 +1,9 @@
-<?xml version="1.0"?>
 <odoo>
-<!--crm.partner.binding is removed. Must revisit.
+
     <record id="convert_opportunity_to_task_btn_action" model="ir.actions.act_window">
         <field name="name">Convert to Task</field>
         <field name="res_model">crm.lead2task.wizard</field>
-        <field name="binding_model_id" ref="model_crm_lead" />
+        <field name="binding_model_id" ref="model_crm_lead"/>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
@@ -12,7 +11,7 @@
     <record model="ir.ui.view" id="convert_opportunity_to_task_button">
         <field name="name">Convert to Task</field>
         <field name="model">crm.lead</field>
-        <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
         <field name="arch" type="xml">
             <field name="day_open" position="before">
                 <field name="convertable" invisible="1"/>
@@ -29,5 +28,5 @@
             </xpath>
         </field>
     </record>
--->
+
 </odoo>
