@@ -1,5 +1,6 @@
-from odoo import api, models
 from distutils.util import strtobool
+
+from odoo import models
 
 
 class MailThread(models.AbstractModel):

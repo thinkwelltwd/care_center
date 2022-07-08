@@ -1,4 +1,4 @@
-from odoo import api, models
+from odoo import models
 
 
 class Invoice(models.Model):
@@ -9,9 +9,9 @@ class Invoice(models.Model):
     ]
     _followers_key = 'account_followers'
 
-    def action_invoice_open(self):
+    def action_post(self):
         self = self.with_context(**self.auto_followers_context())
-        return super().action_invoice_open()
+        return super().action_post()
 
 
 class Payment(models.Model):
@@ -30,12 +30,3 @@ class PaymentOrder(models.Model):
         'disable.followers',
     ]
     _followers_key = 'account_followers'
-
-# account.invoice & account.voucher merged into account.move.
-#class Voucher(models.Model):
-#    _name = 'account.voucher'
-#    _inherit = [
-#        'account.voucher',
-#        'disable.followers',
-#    ]
-#    _followers_key = 'account_followers'
