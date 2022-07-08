@@ -32,6 +32,6 @@ class ProjectProject(models.Model):
 
         if project.alias_name and name_prefix == 'True':
             if not project.alias_name.startswith(email_prefix):
-                project.write({'alias_name': '%s+%s' % (email_prefix, project.alias_name)})
+                project.alias_name = f'{email_prefix}+{project.alias_name}'
 
         return project

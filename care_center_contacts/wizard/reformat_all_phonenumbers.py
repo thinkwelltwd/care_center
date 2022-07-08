@@ -12,6 +12,6 @@ class ReformatAllPhonenumbers(models.TransientModel):
         for number in extra_numbers:
             new_phone = number.phone_format(number.name)
             if number.name != new_phone:
-                number.write({'name': new_phone})
+                number.name = new_phone
 
         return res

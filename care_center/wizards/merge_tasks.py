@@ -75,15 +75,13 @@ class MergeTasks(models.TransientModel):
                 names.append(name.name)
                 descriptions.append(name.description)
 
-        self.dst_task_id.write({
-            'name': ', '.join([str(name) for name in names]),
-            'description': ', '.join([str(desc) for desc in descriptions]),
-        })
+        self.dst_task_id.name = ', '.join([str(name) for name in names])
+        self.dst_task_id.description = ', '.join([str(desc) for desc in descriptions])
 
     def transfer_messages(self):
         for task in self.task_ids:
             for message in task.message_ids:
-                message.write({'res_id': self.dst_task_id.id})
+                message.res_id = self.dst_task_id.id
 
     def transfer_time(self):
         planned_hours = self.dst_task_id.planned_hours
@@ -94,9 +92,9 @@ class MergeTasks(models.TransientModel):
 
             planned_hours += task.planned_hours
             for timesheet in task.timesheet_ids:
-                timesheet.write({'task_id': self.dst_task_id.id})
+                timesheet.task_id = self.dst_task_id.id
 
-        self.dst_task_id.write({'planned_hours': planned_hours})
+        self.dst_task_id.planned_hours = planned_hours
 
     def transfer_tags(self):
         for task in self.task_ids:
@@ -122,5 +120,5 @@ class MergeTasks(models.TransientModel):
             url = '%s/web#id=%s&amp;view_type=form&amp;model=project.task' % (base_url, dst_task)
             task.message_post(body="This task has been merged into: %s" % url)
 
-        self.task_ids.write({'active': False})
-        self.dst_task_id.write({'active': True})
+        self.task_ids.active = False
+        self.dst_task_id.active = True

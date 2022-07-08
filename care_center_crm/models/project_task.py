@@ -76,20 +76,16 @@ class ProjectTask(models.Model):
         task_calls = self.env['crm.phonecall'].search([
             ('task_id', '=', self.id),
         ])
-        task_calls.write({
-            'task_id': False,
-            'opportunity_id': opportunity_id,
-        })
+        task_calls.task_id = False
+        task_calls.opportunity_id = opportunity_id
 
     def move_attachments(self, opportunity_id):
         attachments = self.env['ir.attachment'].search([
             ('res_model', '=', 'project.task'),
             ('res_id', '=', self.id),
         ])
-        attachments.write({
-            'res_model': 'crm.lead',
-            'res_id': opportunity_id,
-        })
+        attachments.res_model = 'crm.lead'
+        attachments.res_id = opportunity_id
 
     def convert_to_opportunity(self):
         """
@@ -122,7 +118,7 @@ class ProjectTask(models.Model):
         self.move_phonecalls(opportunity_id=opportunity.id)
         self.move_attachments(opportunity_id=opportunity.id)
         self.message_change_thread(opportunity)
-        self.write({'active': False})
+        self.active = False
 
         return {
             'name': 'Convert Task to Opportunity',

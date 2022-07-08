@@ -107,7 +107,7 @@ class ProjectTask(models.Model):
 
         # Task company_id should match Partner's company_id!
         if task.partner_id and task.partner_id != task.company_id:
-            task.write({'company_id': task.partner_id.company_id.id})
+            task.company_id = task.partner_id.company_id.id
 
         return task
 
