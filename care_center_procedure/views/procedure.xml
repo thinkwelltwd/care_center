@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <!-- Checklist form view -->
@@ -48,13 +47,8 @@
                     <button name="add_checklist" string="Add Checklist" type="object" invisible="context.get('hide_checklist',False)"/>
                 </header>
                 <sheet>
-                    <!-- boolean_button to toggle active is now redundant.
-                    <div class="oe_button_box" name="button_box">
-                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
-                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
-                        </button>
-                    </div>
-                  -->
+                    <widget name="web_ribbon" text="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <field name="active" invisible="1" />
 
                     <group name="procedure_info" string="Procedure Info" colspan="4" col="4">
                         <field name="name"/>

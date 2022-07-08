@@ -1,4 +1,4 @@
-from odoo import api, fields, models, _
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -39,7 +39,7 @@ class ProcedureProcedure(models.Model):
         'Documentation',
         compute='_compile_documentation',
         help='Documentation for this Checklist, or the combined '
-        'documentation for all the Checklists of this Procedure.',
+             'documentation for all the Checklists of this Procedure.',
     )
 
     @api.model
@@ -204,9 +204,9 @@ class ProcedureAssignment(models.Model):
 
         if unfinished_checklist:
             if procedure_assignment.status != 'working':
-                procedure_assignment.write({'status': 'working'})
+                procedure_assignment.status = 'working'
         else:
-            procedure_assignment.write({'status': 'done'})
+            procedure_assignment.status = 'done'
 
     def change_status_done(self):
         for record in self:
@@ -229,7 +229,7 @@ class ProcedureAssignment(models.Model):
 
         if assignment.procedure_id.planned_hours and assignment.task_id:
             hours = assignment.task_id.planned_hours + assignment.procedure_id.planned_hours
-            assignment.task_id.write({'planned_hours': hours})
+            assignment.task_id.planned_hours = hours
 
         return assignment
 
@@ -256,7 +256,7 @@ class ProcedureAssignment(models.Model):
         if task_hours < 0:
             task_hours = 0.0
 
-        self.task_id.write({'planned_hours': task_hours})
+        self.task_id.planned_hours = task_hours
 
     def unlink(self):
         """

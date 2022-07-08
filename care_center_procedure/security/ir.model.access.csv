@@ -1,9 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_procedure_procedure,access_procedure_procedure,model_procedure_procedure,,1,0,0,0
-access_procedure_procedure_user,access_procedure_procedure,model_procedure_procedure,,1,1,1,1,0
-access_procedure_procedure_manager,access_procedure_procedure,model_procedure_procedure,,1,1,1,1,1
-access_procedure_assignment,access_procedure_assignment,model_procedure_assignment,,1,0,0,0
-access_procedure_assignment_user,access_procedure_assignment,model_procedure_assignment,,1,1,1,1,0
-access_procedure_assignment_manager,access_procedure_assignment,model_procedure_assignment,,1,1,1,1,1
-access_procedure_assign_procedure,assign.procedure.user,model_assign_procedure_wizard,,1,1,1,1
-access_procedure_merge_task,procedure.merge.task.user,model_merge_task_wizard,,1,1,1,1
+access_procedure_procedure,access_procedure_procedure,model_procedure_procedure,,1,1,1,1
+access_procedure_assignment,access_procedure_assignment,model_procedure_assignment,,1,1,1,1
+access_assign_procedure_wizard,access_procedure_assign_wizard,model_assign_procedure_wizard,,1,1,1,0
+access_merge_task_wizard,access_merge_task_wizard,model_merge_task_wizard,,1,1,1,0

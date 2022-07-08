@@ -1,5 +1,6 @@
-from odoo import models, api
 import logging
+
+from odoo import models
 
 _logger = logging.getLogger(__name__)
 
@@ -27,7 +28,6 @@ class MergeTasks(models.TransientModel):
 
                 ProcedureAssignment.search([
                     ('task_id', '=', task.id),
-                ]).write({
-                    'task_id': self.dst_task_id.id,
-                })
+                ]).task_id = self.dst_task_id.id
+
                 dst_procedures.append(procedure_assignment.procedure_id)
