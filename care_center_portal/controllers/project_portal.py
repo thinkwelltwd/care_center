@@ -1,13 +1,13 @@
 from collections import OrderedDict
 from operator import itemgetter
 
+from odoo.addons.portal.controllers.portal import pager as portal_pager
+from odoo.addons.project.controllers.portal import CustomerPortal as CP
+
 from odoo import http, tools, _
 from odoo.http import request
-from odoo.tools import groupby as groupbyelem
 from odoo.osv.expression import OR
-
-from odoo.addons.project.controllers.portal import CustomerPortal as CP
-from odoo.addons.portal.controllers.portal import pager as portal_pager
+from odoo.tools import groupby as groupbyelem
 
 
 class CustomerPortal(CP):
@@ -36,9 +36,7 @@ class CustomerPortal(CP):
         auth="user",
         website=True,
     )
-    def list_projects(
-        self, page=1, date_begin=None, date_end=None, sortby=None, partner_id=None, **kw
-    ):
+    def list_projects(self, page=1, date_begin=None, date_end=None, sortby=None, partner_id=None, **kw):
         """
         Override 'portal_my_projects' (not calling super) in addons/project/controllers/portal.py.  Needed to be done
         for supporting other companies projects for tasks (tasks are related/based off projects) not related to logged
@@ -103,8 +101,7 @@ class CustomerPortal(CP):
             'pager': pager,
             'searchbar_sortings': searchbar_sortings,
             'sortby': sortby,
-            'partner':
-            partner,  # pass partner so when going from other companies records it shows the right company.
+            'partner': partner,  # pass partner so when going from other companies records it shows the right company.
         })
         return request.render("project.portal_my_projects", values)
 
@@ -145,17 +142,17 @@ class CustomerPortal(CP):
         website=True,
     )
     def list_tasks(
-        self,
-        page=1,
-        date_begin=None,
-        date_end=None,
-        sortby=None,
-        filterby=None,
-        search=None,
-        search_in='content',
-        groupby='project',
-        partner_id=None,
-        **kw
+            self,
+            page=1,
+            date_begin=None,
+            date_end=None,
+            sortby=None,
+            filterby=None,
+            search=None,
+            search_in='content',
+            groupby='project',
+            partner_id=None,
+            **kw
     ):
         """
         Override 'portal_my_tasks' (not calling super) in addons/project/controllers/portal.py.  Needed to be done for
@@ -188,10 +185,10 @@ class CustomerPortal(CP):
         searchbar_filters = {
             'all': {
                 'label':
-                _('All'),
+                    _('All'),
                 # Revamped domain to be based off passed in partner_id
                 'domain':
-                [('project_id.message_partner_ids', 'child_of', partner.commercial_partner_id.id)]
+                    [('project_id.message_partner_ids', 'child_of', partner.commercial_partner_id.id)]
             },
         }
         searchbar_inputs = {
@@ -337,8 +334,7 @@ class CustomerPortal(CP):
             'groupby': groupby,
             'searchbar_filters': OrderedDict(sorted(searchbar_filters.items())),
             'filterby': filterby,
-            'partner':
-            partner,  # pass partner so when going from other companies records it shows the right company.
+            'partner': partner,  # pass partner so when going from other companies records it shows the right company.
         })
         return request.render("project.portal_my_tasks", values)
 
@@ -496,13 +492,13 @@ class CustomerPortal(CP):
                 error[field_name] = 'invalid'
 
     def _form_validate(
-        self,
-        data,
-        fields,
-        check_mandatory=True,
-        check_email=True,
-        check_numeric=True,
-        check_punc=False
+            self,
+            data,
+            fields,
+            check_mandatory=True,
+            check_email=True,
+            check_numeric=True,
+            check_punc=False
     ):
         """
         Check all form data is correct

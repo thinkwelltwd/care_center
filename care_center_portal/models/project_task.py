@@ -1,4 +1,4 @@
-from odoo import fields, models, api
+from odoo import models
 
 
 class ProjectTask(models.Model):

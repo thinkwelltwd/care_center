@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <template id="portal_layout_links" name="Task Links" inherit_id="project.portal_layout" priority="10">
 
-        <xpath expr="//li[@t-attf-class=&quot;breadcrumb-item #{'active ' if not task else ''}&quot;]" position="attributes">
+        <xpath expr="//li[@t-attf-class=&quot;breadcrumb-item #{'active ' if not task else ''}&quot;]"
+               position="attributes">
             <attribute name="t-if" add="or page_name == 'ticket_create'" separator=" "/>
         </xpath>
 
@@ -22,19 +22,22 @@
         </t>
     </template>
 
-     <template id="create_edit_alerts" name="Task Portal Create/Edit Alerts">
+    <template id="create_edit_alerts" name="Task Portal Create/Edit Alerts">
 
         <div class="alert alert-success text-center rounded-0 fade show d-print-none mb-0" role="alert"
-                 t-if="request.params.get('status') == 'create_success'">
-            <t t-esc="record_string"/> created successfully!
+             t-if="request.params.get('status') == 'create_success'">
+            <t t-esc="record_string"/>
+            created successfully!
         </div>
         <div class="alert alert-success text-center rounded-0 fade show d-print-none mb-0" role="alert"
              t-if="request.params.get('status') == 'edit_success'">
             Edits saved successfully!
         </div>
-        <div t-if="error_message" class="alert alert-danger text-center rounded-0 fade show d-print-none mb-0" role="alert">
+        <div t-if="error_message" class="alert alert-danger text-center rounded-0 fade show d-print-none mb-0"
+             role="alert">
             <t t-foreach="error_message" t-as="err">
-                <t t-esc="err"/><br />
+                <t t-esc="err"/>
+                <br/>
             </t>
         </div>
 
@@ -83,7 +86,8 @@
             <div class="col-12 col-md-6 mb-1">
                 <t t-call="care_center_portal.select_field_edit" id="project_id">
                     <t t-set="field_name" t-value="'project_id'"/>
-                    <t t-set="field" t-value="request.env['project.project'].sudo().browse(int(request.params.get('filterby'))) if request.params.get('filterby') else ''"/>
+                    <t t-set="field"
+                       t-value="request.env['project.project'].sudo().browse(int(request.params.get('filterby'))) if request.params.get('filterby') else ''"/>
                     <t t-set="string" t-value="'Project'"/>
                     <t t-set="error_value" t-value="project_id"/>
                     <t t-set="relational" t-value="1"/>
@@ -107,7 +111,8 @@
         </div>
 
         <!--    Invisible input for needed value       -->
-        <input id="partner_id" name="partner_id" type="hidden" class="form-control" t-att-value="partner.id or request.env.user.partner_id.id" required="required"/>
+        <input id="partner_id" name="partner_id" type="hidden" class="form-control"
+               t-att-value="partner.id or request.env.user.partner_id.id" required="required"/>
 
     </template>
 
@@ -123,7 +128,8 @@
                     </h5>
                 </t>
                 <t t-set="card_body">
-                    <t t-set="action_url" t-value="((partner and '/my/companies/' + str(partner.id) + '/tasks') or default_url) + '/create'"/>
+                    <t t-set="action_url"
+                       t-value="((partner and '/my/companies/' + str(partner.id) + '/tasks') or default_url) + '/create'"/>
                     <form t-att-action="action_url" method="post" id="task-create">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <t t-call="care_center_portal.portal_create_task_fields"/>
@@ -135,13 +141,17 @@
 
     <template id="portal_my_tasks" inherit_id="project.portal_my_tasks">
         <a t-attf-href="/my/task/#{task.id}?{{ keep_query() }}" position="attributes">
-            <attribute name="t-attf-href">{{ ((partner and partner.get_portal_url(record=task) or task.get_portal_url())) + ('&amp;' + keep_query())}}</attribute>
+            <attribute name="t-attf-href">{{ ((partner and partner.get_portal_url(record=task) or
+                task.get_portal_url())) + ('&amp;' + keep_query())}}
+            </attribute>
         </a>
     </template>
 
     <template id="list_projects" inherit_id="project.portal_my_projects">
         <a t-attf-href="/my/project/#{project.id}?{{ keep_query() }}" position="attributes">
-            <attribute name="t-attf-href">{{ ((partner and partner.get_portal_url(record=project) or project.get_portal_url())) + ('&amp;' + keep_query())}}</attribute>
+            <attribute name="t-attf-href">{{ ((partner and partner.get_portal_url(record=project) or
+                project.get_portal_url())) + ('&amp;' + keep_query())}}
+            </attribute>
         </a>
     </template>
 

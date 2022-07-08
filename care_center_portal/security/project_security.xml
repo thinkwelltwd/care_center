@@ -1,14 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <data>
         <function name="write" model="ir.model.data">
             <function name="search" model="ir.model.data">
                 <value
-                    eval="[('module', '=', 'project'), ('name', 'in', ('project_project_rule_portal', 'project_task_rule_portal'))]"
-                 />
+                        eval="[('module', '=', 'project'), ('name', 'in', ('project_project_rule_portal', 'project_task_rule_portal'))]"
+                />
             </function>
 
-            <value eval="{'noupdate': False}" />
+            <value eval="{'noupdate': False}"/>
         </function>
 
         <!--   Change Project Domain for Portal Users    -->
@@ -18,7 +17,9 @@
 
         <!--   Change Task Domain for Portal Users    -->
         <record model="ir.rule" id="project.project_task_rule_portal">
-            <field name="domain_force">[('project_id.partner_id', 'child_of', user.partner_id.get_companies().ids)]</field>
+            <field name="domain_force">[('project_id.partner_id', 'child_of', user.partner_id.get_companies().ids)]
+            </field>
         </record>
+
     </data>
 </odoo>
