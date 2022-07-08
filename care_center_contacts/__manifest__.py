@@ -1,5 +1,5 @@
 {
-    'name': "Care Center Contact",
+    'name': "Care Center Contacts",
     'summary': """Extend Contacts features for Care Center.""",
     'author': "Dave Burkholder <dave@thinkwelldesigns.com>",
     'website': "http://www.thinkwelldesigns.com",

@@ -28,8 +28,10 @@ class PhoneCommon(models.AbstractModel):
         extra_contactinfo.name ILIKE %s
         LIMIT 1;
         """
-        self._cr.execute(sql, ('%{}'.format(end_number_to_match),))
-        result = self._cr.fetchall()
+        self.env['res.partner'].flush(['display_name'])
+        self.env['extra.contactinfo'].flush(['partner_id', 'type', 'name'])
+        self.env.cr.execute(sql, ('%{}'.format(end_number_to_match),))
+        result = self.env.cr.fetchall()
 
         if not result:
             return False
