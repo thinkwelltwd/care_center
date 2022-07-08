@@ -4,7 +4,7 @@
         <field name="name">Tickets From Incoming Emails</field>
         <field name="res_model">fetchmail.server</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('model_id.model','=', 'project.task')]</field>
+        <field name="domain">[('object_id.model','=', 'project.task')]</field>
         <field name="context" eval="{'default_object_id': ref('project.model_project_task')}"/>
         <field name="view_id" ref="fetchmail.view_email_server_tree"/>
         <field name="search_view_id" ref="fetchmail.view_email_server_search"/>
@@ -22,7 +22,7 @@
         <field name="name">Templates</field>
         <field name="res_model">mail.template</field>
         <field name="view_mode">form,tree</field>
-        <field name="domain">[('model_id', 'in', ( 'Task', 'Phonecall'))]</field>
+        <field name="domain">[('model_id.model', 'in', ('project.task', 'crm.phonecall'))]</field>
         <field name="context" eval="{'default_model_id': ref('project.model_project_task')}"/>
         <field name="view_id" ref="mail.email_template_tree"/>
         <field name="search_view_id" ref="mail.view_email_template_search"/>
