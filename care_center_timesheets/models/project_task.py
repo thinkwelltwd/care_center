@@ -29,7 +29,6 @@ class ProjectTaskType(models.Model):
 
 
 class ProjectTask(models.Model):
-
     _name = 'project.task'
     _description = 'Care Center Timesheets Project Task'
     _inherit = ['task.timer', 'project.task']
@@ -70,7 +69,7 @@ class ProjectTask(models.Model):
         will remain `notready` until marked Ready to Invoice
         """
         new_timesheets = self.timesheet_ids.filtered(lambda ts: ts.invoice_status == 'notready')
-        new_timesheets.write({'invoice_status': 'ready'})
+        new_timesheets.invoice_status = 'ready'
 
         invoiceable = self.timesheet_ids.filtered(
             lambda ts: not ts.exclude_from_sale_order and ts.invoice_status != 'invoiced'
@@ -78,7 +77,7 @@ class ProjectTask(models.Model):
 
         for timesheet in invoiceable:
             so_line = timesheet._timesheet_get_sale_line()
-            timesheet.write({'so_line': so_line.id})
+            timesheet.so_line = so_line.id
 
     def timesheet_factor_unconfirmed(self):
         """
@@ -168,7 +167,7 @@ class ProjectTask(models.Model):
             limit=1,
         )
         if done_stage:
-            self.write({'stage_id': done_stage.id})
+            self.stage_id = done_stage.id
 
     @api.model
     def add_planned_expected_difference(self):
@@ -185,11 +184,11 @@ class ProjectTask(models.Model):
 
         billable_timesheets = self.timesheet_ids.filtered(
             lambda ts: not ts.exclude_from_sale_order
-            and not ts.timesheet_invoice_id
+                       and not ts.timesheet_invoice_id
         )
         if billable_timesheets:
             timesheet = billable_timesheets[0]
-            timesheet.write({'unit_amount': timesheet.unit_amount + self.remaining_hours})
+            timesheet.unit_amount = timesheet.unit_amount + self.remaining_hours
             return
 
         self.with_context(sheet_create=True).write({
@@ -222,7 +221,7 @@ class ProjectTask(models.Model):
 
         self.timesheet_ids.filtered(
             lambda ts: not ts.exclude_from_sale_order and not ts.timesheet_invoice_id
-        ).write({'so_line': self.sale_line_id.id})
+        ).so_line = self.sale_line_id.id
 
     @api.onchange('partner_id')
     def _onchange_partner_id(self):

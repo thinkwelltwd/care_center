@@ -1,6 +1,6 @@
-from ..utils import get_factored_duration
 from odoo import fields, models, api
 from odoo.exceptions import UserError, ValidationError
+from ..utils import get_factored_duration
 
 # Fields that cannot be changed after
 # timesheet line is invoiced.
@@ -32,9 +32,9 @@ class AccountAnalyticLine(models.Model):
         copy=False,
         string='Invoice Status',
         help="Not Ready = Timesheets won't appear in Sales Order \n"
-        "Ready = Timesheets will appear in Sales Order \n"
-        "Invoiced = No changes can be made to Duration \n"
-        "Not Invoiceable = Timesheet cannot be invoiced \n",
+             "Ready = Timesheets will appear in Sales Order \n"
+             "Invoiced = No changes can be made to Duration \n"
+             "Not Invoiceable = Timesheet cannot be invoiced \n",
     )
 
     timer_status = fields.Selection(
@@ -91,7 +91,7 @@ class AccountAnalyticLine(models.Model):
         in preparation to switching to another task timesheet.
         """
         if self.id != self.user_id.previous_running_timesheet.id:
-            self.user_id.write({'previous_running_timesheet': self.id})
+            self.user_id.previous_running_timesheet = self.id
 
     @api.model
     def clear_if_previously_running_timesheet(self):
@@ -100,7 +100,7 @@ class AccountAnalyticLine(models.Model):
         if this timesheet was the previous active one.
         """
         if self.id == self.user_id.previous_running_timesheet.id:
-            self.user_id.write({'previous_running_timesheet': False})
+            self.user_id.previous_running_timesheet = False
 
     def _get_timesheet_cost(self, values):
         """

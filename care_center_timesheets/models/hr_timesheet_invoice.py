@@ -2,7 +2,6 @@ from odoo import fields, models
 
 
 class HrTimesheetInvoiceFactor(models.Model):
-
     _name = "hr_timesheet_invoice.factor"
     _description = "Invoice Rate"
     _order = 'factor,name'

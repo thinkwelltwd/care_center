@@ -29,7 +29,7 @@ class PhoneCommon(models.AbstractModel):
         LIMIT 1;
         """
         self.env['res.partner'].flush(['display_name'])
-        self.env['extra.contactinfo'].flush(['partner_id', 'type', 'name'])
+        self.env['extra.contactinfo'].flush()
         self.env.cr.execute(sql, ('%{}'.format(end_number_to_match),))
         result = self.env.cr.fetchall()
 

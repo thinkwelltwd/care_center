@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
 from ..utils import get_factored_duration
@@ -122,9 +123,7 @@ class MoveTimesheet(models.TransientModel):
         if not resume_timer and self.timesheet_id.timer_status in ('running', 'paused'):
             resume_timer = True
 
-        destination_timesheet.write({
-            'full_duration': updated_time,
-        })
+        destination_timesheet.full_duration = updated_time
 
         self.origin_task_id.delete_timesheet_reminder_activity()
         self.destination_task_id._handle_timesheet_reminder_activity()
@@ -144,10 +143,8 @@ class MoveTimesheet(models.TransientModel):
         start = fields.Datetime.to_datetime(self.timesheet_id.date_start)
         session_duration = (end - start).total_seconds()
 
-        self.timesheet_id.write({
-            'date_start': start - timedelta(seconds=session_duration),
-            'timer_status': 'paused',
-        })
+        self.timesheet_id.date_start = start - timedelta(seconds=session_duration)
+        self.timesheet_id.timer_status = 'paused'
 
 
 class MoveTimesheetOrSplit(models.TransientModel):
@@ -259,10 +256,8 @@ class SplitTimesheet(models.TransientModel):
             hours=updated_time,
             invoice_factor=self.timesheet_id.factor,
         )
-        self.timesheet_id.write({
-            'full_duration': updated_time,
-            'unit_amount': unit_amount,
-        })
+        self.timesheet_id.full_duration = updated_time
+        self.timesheet_id.unit_amount = unit_amount
 
         return True
 
@@ -289,9 +284,7 @@ class SplitTimesheet(models.TransientModel):
         resume_timer = destination_timesheet.pause_timer_if_running()
 
         updated_time = destination_timesheet.full_duration + self.time_to_move
-        destination_timesheet.write({
-            "full_duration": updated_time,
-        })
+        destination_timesheet.full_duration = updated_time
 
         if resume_timer:
             self.destination_task_id.timer_resume()

@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-
 from ..utils import get_factored_duration
 
 
@@ -88,10 +87,8 @@ class TaskTimer(models.AbstractModel):
             return False
 
         return TimesheetSheet.with_company(self.company_id.id).create({
-            'employee_id':
-            employee.id,
-            'company_id':
-            self.company_id.id,
+            'employee_id': employee.id,
+            'company_id': self.company_id.id,
         }).id
 
     def _update_timesheets(self):
@@ -263,12 +260,12 @@ class TaskTimer(models.AbstractModel):
             activity.unlink()
 
     def _create_timesheet(
-        self,
-        time=0.0,
-        timer_status='running',
-        name='Work In Progress',
-        unit_amount=False,
-        factor=False
+            self,
+            time=0.0,
+            timer_status='running',
+            name='Work In Progress',
+            unit_amount=False,
+            factor=False
     ):
         self.ensure_one()
         user_id = self.env.context.get('user_id', self.env.uid)
@@ -374,10 +371,8 @@ class TaskTimer(models.AbstractModel):
         current_total_time = self._get_current_total_time(timesheet)
         timesheet.save_as_last_running()
         timesheet.with_company(self.company_id.id).write({
-            'timer_status':
-            'paused',
-            'full_duration':
-            current_total_time,
+            'timer_status': 'paused',
+            'full_duration': current_total_time,
         })
         return self._user_timer_status()
 
@@ -388,10 +383,8 @@ class TaskTimer(models.AbstractModel):
         if not timesheet:
             return
         timesheet.with_company(self.company_id.id).write({
-            'timer_status':
-            'running',
-            'date_start':
-            fields.Datetime.now(),
+            'timer_status': 'running',
+            'date_start': fields.Datetime.now(),
         })
         self._handle_timesheet_reminder_activity()
         return timesheet

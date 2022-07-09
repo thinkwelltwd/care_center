@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <record id="project_view_form_cf_settings" model="ir.ui.view">
@@ -41,13 +40,15 @@
     <record model="ir.ui.view" id="project_task_search">
         <field name="name">Search Tasks With Work In Progress</field>
         <field name="model">project.task</field>
-        <field name="inherit_id" ref="project.view_task_search_form" />
+        <field name="inherit_id" ref="project.view_task_search_form"/>
         <field name="arch" type="xml">
 
             <xpath expr="//filter[@name='unassigned']" position="after">
                 <separator/>
-                <filter string="Work In Progress" name="work_in_progress" domain="[('timesheet_ids.timer_status', 'in', ('running', 'paused'))]"/>
-                <filter string="My Timers" name="agent_timers" domain="[('timesheet_ids.user_id', '=', uid), ('stage_id.fold', '=', False)]"/>
+                <filter string="Work In Progress" name="work_in_progress"
+                        domain="[('timesheet_ids.timer_status', 'in', ('running', 'paused'))]"/>
+                <filter string="My Timers" name="agent_timers"
+                        domain="[('timesheet_ids.user_id', '=', uid), ('stage_id.fold', '=', False)]"/>
                 <separator/>
             </xpath>
 
@@ -57,15 +58,25 @@
     <record model="ir.ui.view" id="care_center_timesheets_task_form">
         <field name="name">Care Center Task Timesheets</field>
         <field name="model">project.task</field>
-        <field name="inherit_id" ref="project.view_task_form2" />
+        <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
 
             <xpath expr="//div[@name='button_box']" position="inside">
-                <button name="timer_start" string="Start Timer" type="object" attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', 'in', ('running', 'paused'))]}" class="oe_inline oe_stat_button" icon="fa-play"/>
-                <button name="timer_resume" string="Resume Timer" type="object" attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', '!=', 'paused')]}" class="oe_inline oe_stat_button" icon="fa-play-circle"/>
-                <button name="timer_pause" string="Pause Timer" type="object" attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', '!=', 'running')]}" class="oe_inline oe_stat_button" icon="fa-pause"/>
-                <button name="timer_stop" string="Stop Timer" type="object" attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', 'in', ('paused', 'stopped'))]}" class="oe_stat_button oe_inline" icon="fa-stop-circle"/>
-                <button name="close_task" string="Close Ticket" type="object" attrs="{'invisible': ['|', ('has_active_timesheets', '=', True), ('active', '=', False)]}" class="oe_stat_button oe_inline" icon="fa-stop"/>
+                <button name="timer_start" string="Start Timer" type="object"
+                        attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', 'in', ('running', 'paused'))]}"
+                        class="oe_inline oe_stat_button" icon="fa-play"/>
+                <button name="timer_resume" string="Resume Timer" type="object"
+                        attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', '!=', 'paused')]}"
+                        class="oe_inline oe_stat_button" icon="fa-play-circle"/>
+                <button name="timer_pause" string="Pause Timer" type="object"
+                        attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', '!=', 'running')]}"
+                        class="oe_inline oe_stat_button" icon="fa-pause"/>
+                <button name="timer_stop" string="Stop Timer" type="object"
+                        attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', 'in', ('paused', 'stopped'))]}"
+                        class="oe_stat_button oe_inline" icon="fa-stop-circle"/>
+                <button name="close_task" string="Close Ticket" type="object"
+                        attrs="{'invisible': ['|', ('has_active_timesheets', '=', True), ('active', '=', False)]}"
+                        class="oe_stat_button oe_inline" icon="fa-stop"/>
 
             </xpath>
 
@@ -77,8 +88,10 @@
             </field>
 
             <field name="timesheet_ids" position="replace">
-                <field name="timesheet_ids" colspan="4" nolabel="1" context="{'default_user_id' : uid, 'default_project_id': project_id}" groups="base.group_user">
-                    <tree string="Timesheet Activities" editable="top" decoration-danger="invoice_status == 'notready'" decoration-success="invoice_status == 'ready'">
+                <field name="timesheet_ids" colspan="4" nolabel="1"
+                       context="{'default_user_id' : uid, 'default_project_id': project_id}" groups="base.group_user">
+                    <tree string="Timesheet Activities" editable="top" decoration-danger="invoice_status == 'notready'"
+                          decoration-success="invoice_status == 'ready'">
                         <field name="date"/>
                         <field name="user_id" required="1" options="{'no_create': True}"/>
                         <field name="name"/>
@@ -87,8 +100,10 @@
                         <field name="unit_amount" string="Duration" widget="float_time" readonly="0"/>
                         <field name="project_id" invisible="1" required="0"/>
                         <field name="invoice_status" string="Invoice Status" invisible="0"/>
-                        <field name="exclude_from_sale_order" />
-                        <button string="Split or Move Timesheet" icon="fa-code-fork" name="move_or_split" type="object" attrs="{'invisible':[('invoice_status', '=', 'invoiced')]}" modifiers="{}" options="{}"/>
+                        <field name="exclude_from_sale_order"/>
+                        <button string="Split or Move Timesheet" icon="fa-code-fork" name="move_or_split" type="object"
+                                attrs="{'invisible':[('invoice_status', '=', 'invoiced')]}" modifiers="{}"
+                                options="{}"/>
                     </tree>
                 </field>
             </field>
@@ -96,7 +111,7 @@
             <field name="stage_id" position="before">
                 <field name="task_active" invisible="1"/>
                 <button name="reopen_ticket" string="Reopen Ticket" type="object" class="oe_highlight"
-                    attrs="{'invisible': [('task_active', '=', True)]}"/>
+                        attrs="{'invisible': [('task_active', '=', True)]}"/>
                 <button name="email_customer" string="Email Customer" type="object"/>
                 <button name="close_task" string="Reply and Close" type="object" class="oe_highlight"
                         context="{'email_customer': True, 'closing_task': True}"
@@ -111,26 +126,38 @@
     <record id="project_task_timer_buttons_kanban_view" model="ir.ui.view">
         <field name="name">Task Timer Buttons</field>
         <field name="model">project.task</field>
-        <field name="inherit_id" ref="project.view_task_kanban" />
+        <field name="inherit_id" ref="project.view_task_kanban"/>
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('oe_kanban_content')]//div[1]" position="after">
 
                 <field name="user_timer_status" invisible="1"/>
 
-                <button string="Start Timer" name="timer_start" type="object" attrs="{'invisible': ['|', ('active', '=', False), ('user_timer_status', 'in', ('running', 'paused'))]}" class="btn btn-primary btn-sm">
-                        <span class="fa fa-play"/> Start
+                <button string="Start Timer" name="timer_start" type="object"
+                        attrs="{'invisible': ['|', ('active', '=', False), ('user_timer_status', 'in', ('running', 'paused'))]}"
+                        class="btn btn-primary btn-sm">
+                    <span class="fa fa-play"/>
+                    Start
                 </button>
 
-                <button string="Resume Timer" name="timer_resume" type="object" attrs="{'invisible': ['|', ('active', '=', False), ('user_timer_status', '!=', 'paused')]}" class="btn btn-success btn-sm">
-                        <span class="fa fa-play-circle"/> Resume
+                <button string="Resume Timer" name="timer_resume" type="object"
+                        attrs="{'invisible': ['|', ('active', '=', False), ('user_timer_status', '!=', 'paused')]}"
+                        class="btn btn-success btn-sm">
+                    <span class="fa fa-play-circle"/>
+                    Resume
                 </button>
 
-                <button string="Pause Timer" name="timer_pause" type="object" attrs="{'invisible': ['|', ('active', '=', False), ('user_timer_status', '!=', 'running')]}" class="btn btn-warning btn-sm">
-                        <span class="fa fa-pause"/> Pause
+                <button string="Pause Timer" name="timer_pause" type="object"
+                        attrs="{'invisible': ['|', ('active', '=', False), ('user_timer_status', '!=', 'running')]}"
+                        class="btn btn-warning btn-sm">
+                    <span class="fa fa-pause"/>
+                    Pause
                 </button>
 
-                <button string="Stop Timer" name="timer_stop" type="object" attrs="{'invisible': ['|', ('active', '=', False), ('user_timer_status', 'in', ('paused', 'stopped'))]}" class="btn btn-danger btn-sm">
-                        <span class="fa fa-stop-circle"/> Stop
+                <button string="Stop Timer" name="timer_stop" type="object"
+                        attrs="{'invisible': ['|', ('active', '=', False), ('user_timer_status', 'in', ('paused', 'stopped'))]}"
+                        class="btn btn-danger btn-sm">
+                    <span class="fa fa-stop-circle"/>
+                    Stop
                 </button>
 
             </xpath>

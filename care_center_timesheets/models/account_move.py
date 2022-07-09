@@ -1,4 +1,4 @@
-from odoo import api, models
+from odoo import models
 
 
 class AccountMove(models.Model):
@@ -16,6 +16,6 @@ class AccountMove(models.Model):
         ])
 
         res = super().unlink()
-        timesheets.write({'invoice_status': 'ready'})
+        timesheets.invoice_status = 'ready'
 
         return res

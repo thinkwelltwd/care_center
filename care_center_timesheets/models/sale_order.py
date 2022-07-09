@@ -65,7 +65,7 @@ class SaleOrderLine(models.Model):
                 (not config['test_enable'] or self.env.context.get('test_timesheet_description')):
             res['name'] += "\n" + ("\n".join([str(x) or '' for x in note]))
 
-        timesheets.write({'invoice_status': 'invoiced'})
+        timesheets.invoice_status = 'invoiced'
 
         return res
 

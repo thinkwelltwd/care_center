@@ -1,24 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <record id="move_timesheet_or_pause" model="ir.ui.view">
         <field name="name">Pause or Move Timesheet to This Task</field>
         <field name="model">move_timesheet_or_pause.wizard</field>
         <field name="arch" type="xml">
-           <form string="Move or Pause Current Timesheet"
-                 create="false" edit="false">
+            <form string="Move or Pause Current Timesheet"
+                  create="false" edit="false">
                 <group col="4">
-                    <field name="origin_task_id" readonly="1" />
-                    <field name="destination_task_id" readonly="1" />
-                    <field name="timesheet_id" readonly="1" />
+                    <field name="origin_task_id" readonly="1"/>
+                    <field name="destination_task_id" readonly="1"/>
+                    <field name="timesheet_id" readonly="1"/>
 
-                    <field name="ts_action" />
+                    <field name="ts_action"/>
                 </group>
                 <footer>
                     <button string="Save" type="object" name="process_time" class="oe_highlight"/>
                     <button string="Cancel" special="cancel" class="oe_link"/>
                 </footer>
-           </form>
+            </form>
         </field>
     </record>
 
@@ -26,26 +25,29 @@
         <field name="name">Split or Move Timesheet to This Task</field>
         <field name="model">move_timesheet_or_split.wizard</field>
         <field name="arch" type="xml">
-           <form string="Move or Split Current Timesheet"
-                 create="false" edit="false">
-               <group>
-                   <group>
-                        <field name="origin_task_id" readonly="1" />
-                        <field name="timesheet_id" readonly="1" />
+            <form string="Move or Split Current Timesheet"
+                  create="false" edit="false">
+                <group>
+                    <group>
+                        <field name="origin_task_id" readonly="1"/>
+                        <field name="timesheet_id" readonly="1"/>
                     </group>
                     <group>
-                        <field name="destination_task_id" required="1" domain="['&amp;', '|',('user_id', '=', uid), ('timesheet_ids.user_id', '=', uid), ('id', '!=', origin_task_id)]"/>
-                        <field name="ts_action" />
-                        <field name="time_to_move" widget="float_time" attrs="{'invisible':[('ts_action', '!=', 'split')]}"/>
+                        <field name="destination_task_id" required="1"
+                               domain="['&amp;', '|',('user_id', '=', uid), ('timesheet_ids.user_id', '=', uid), ('id', '!=', origin_task_id)]"/>
+                        <field name="ts_action"/>
+                        <field name="time_to_move" widget="float_time"
+                               attrs="{'invisible':[('ts_action', '!=', 'split')]}"/>
                         <field name="needs_description" invisible="1"/>
-                        <field name="description" attrs="{'invisible':['|', ('needs_description', '==', False), ('ts_action', '!=', 'split')]}"/>
+                        <field name="description"
+                               attrs="{'invisible':['|', ('needs_description', '==', False), ('ts_action', '!=', 'split')]}"/>
                     </group>
-               </group>
+                </group>
                 <footer>
                     <button string="Save" type="object" name="process_time" class="oe_highlight"/>
                     <button string="Cancel" special="cancel" class="oe_link"/>
                 </footer>
-           </form>
+            </form>
         </field>
     </record>
 
@@ -53,24 +55,25 @@
         <field name="name">Move Time to New Task</field>
         <field name="model">move_timesheet_to_task.wizard</field>
         <field name="arch" type="xml">
-           <form string="Move Timesheet" create="false" edit="false">
+            <form string="Move Timesheet" create="false" edit="false">
                 <group>
-                    <field name="origin_task_id" invisible="1" />
+                    <field name="origin_task_id" invisible="1"/>
                     <field name="destination_task_id" options="{'no_create': True}"/>
-                    <field name="timesheet_id" options="{'no_create': True}" domain="[('task_id', '=', origin_task_id)]"/>
+                    <field name="timesheet_id" options="{'no_create': True}"
+                           domain="[('task_id', '=', origin_task_id)]"/>
                 </group>
                 <footer>
                     <button string="Save" type="object" name="process_time" class="oe_highlight"/>
                     <button string="Cancel" special="cancel" class="oe_link"/>
                 </footer>
-           </form>
+            </form>
         </field>
     </record>
 
     <record id="move_timesheet_wizard" model="ir.actions.act_window">
         <field name="name">Move Time to New Task</field>
         <field name="res_model">move_timesheet_to_task.wizard</field>
-        <field name="binding_model_id" ref="project.model_project_task" />
+        <field name="binding_model_id" ref="project.model_project_task"/>
         <field name="binding_view_types">form</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>

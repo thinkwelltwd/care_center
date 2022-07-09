@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
-
 <odoo>
 
     <record id="task_timesheets_report" model="ir.actions.report">
-      <field name="name">Task Timesheets</field>
-      <field name="model">project.task</field>
-      <field name="report_name">care_center_timesheets.project_task_template</field>
-  		<field name="report_type">qweb-pdf</field>
+        <field name="name">Task Timesheets</field>
+        <field name="model">project.task</field>
+        <field name="report_name">care_center_timesheets.project_task_template</field>
+        <field name="report_file">care_center_timesheets.project_task_template</field>
+        <field name="print_report_name">'Timesheets for %s-%s' % (object.code, object.name)</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="binding_model_id" ref="model_project_task"/>
+        <field name="binding_type">report</field>
     </record>
 
 </odoo>

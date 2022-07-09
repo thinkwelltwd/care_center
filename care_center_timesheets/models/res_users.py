@@ -1,6 +1,5 @@
 from odoo import api, fields, models, modules, _
 from odoo.exceptions import UserError
-from odoo.tools import date_utils
 
 
 class ResUsers(models.Model):
@@ -36,6 +35,9 @@ class ResUsers(models.Model):
     @api.model
     def systray_get_activities(self):
         res = super(ResUsers, self).systray_get_activities()
+
+        self.env['project.task'].flush()
+        self.env['account.analytic.line'].flush()
 
         my_tasks_sql = """
             SELECT COUNT(*) FROM project_task

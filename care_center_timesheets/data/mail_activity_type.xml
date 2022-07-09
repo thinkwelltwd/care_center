@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<!--    <data noupdate="1">-->
-        <record id="task_activity_data_signout" model="mail.activity.type">
-            <field name="name">Sign Out</field>
-            <field name="icon">fa-tasks</field>
-            <field name="sequence">3</field>
-        </record>
+    <record id="task_activity_data_signout" model="mail.activity.type">
+        <field name="name">Sign Out</field>
+        <field name="icon">fa-tasks</field>
+        <field name="sequence">3</field>
+    </record>
 </odoo>

@@ -1,9 +1,10 @@
+import logging
 from datetime import timedelta
-from ..utils import get_factored_duration, round_timedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
-import logging
+from ..utils import get_factored_duration, round_timedelta
+
 _logger = logging.getLogger(__name__)
 
 
@@ -120,11 +121,6 @@ class TimesheetTimerWizard(models.TransientModel):
         return duration
 
     def save_timesheet(self):
-        """
-        'write' method wants to return a view so, we use custom function
-        so that we can just go back to current Ticket/Task page
-        """
-
         # re-call stats because we didn't persist the wizard
         company_id = self.timesheet_id.company_id.id
         data = self.timesheet_stats()

@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <record id="timesheet_timer_wizard" model="ir.ui.view">
         <field name="name">Timesheet Timer Wizard</field>
         <field name="model">timesheet_timer.wizard</field>
         <field name="arch" type="xml">
-           <form string="Work Description" create="false" edit="false">
+            <form string="Work Description" create="false" edit="false">
                 <group>
                     <field name="name" placeholder="Briefly describe work performed" required="1"/>
                 </group>
@@ -26,7 +25,7 @@
                     <button string="Save" type="object" name="save_timesheet" class="oe_highlight"/>
                     <button string="Cancel" special="cancel" class="oe_link"/>
                 </footer>
-           </form>
+            </form>
         </field>
     </record>
 
