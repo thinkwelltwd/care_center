@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <record id="support_team_config_action" model="ir.actions.act_window">
@@ -11,7 +10,8 @@
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
                 Click here to define a new support team.
-            </p><p>
+            </p>
+            <p>
                 Use support team to organize your support staff or
                 departments into separate teams. Each team will work in
                 its own list of Tasks / Tickets.
@@ -21,10 +21,10 @@
 
     <!-- Add to Project configuration menu -->
     <menuitem name="Support Teams"
-        id="support_team_config"
-        parent="project.menu_project_config"
-        action="support_team_config_action"
-        groups="group_support_manager"/>
+              id="support_team_config"
+              parent="project.menu_project_config"
+              action="support_team_config_action"
+              groups="group_support_manager"/>
 
     <!-- Support Teams Dashboard Action -->
     <record id="crm_team_supportteams_dashboard" model="ir.actions.act_window">
@@ -37,7 +37,8 @@
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
                 Click here to define a new support team.
-            </p><p>
+            </p>
+            <p>
                 Use support team to organize your support staff or
                 departments into separate teams. Each team will work in
                 its own list of Tasks / Tickets.

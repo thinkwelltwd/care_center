@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
     <record model="ir.ui.view" id="task_team_form_view">
@@ -25,7 +24,8 @@
 
             <xpath expr="//filter[@name='my_tasks']" position="before">
                 <separator/>
-               <filter string="Assigned To My Team(s)" name="my_team_tasks" domain="[('team_id.member_ids','in',uid)]"/>
+                <filter string="Assigned To My Team(s)" name="my_team_tasks"
+                        domain="[('team_id.member_ids','in',uid)]"/>
             </xpath>
 
             <xpath expr="//group/filter[@name='user']" position="after">

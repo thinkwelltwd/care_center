@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <record id="view_project_form_team" model="ir.ui.view">
@@ -11,6 +10,6 @@
                 <field name="team_id" required="1" options="{'no_quick_create': True}"/>
             </field>
         </field>
-   </record>
+    </record>
 
 </odoo>

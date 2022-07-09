@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <record model="ir.ui.view" id="filter_phonecalls_by_team">
@@ -8,7 +7,8 @@
         <field name="arch" type="xml">
 
             <filter name="my_team" position="replace">
-               <filter string="Assigned To My Team(s)" name="my_team" domain="['|', ('team_id.member_ids', '=', uid), ('user_id', '=', uid)]"/>
+                <filter string="Assigned To My Team(s)" name="my_team"
+                        domain="['|', ('team_id.member_ids', '=', uid), ('user_id', '=', uid)]"/>
             </filter>
 
         </field>

@@ -1,13 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <templates>
+
     <t t-extend="sales_team.SalesDashboard">
         <t t-jquery='td[title="My Pipeline"]' t-operation='after'>
             <td class="o_main" title="My Tasks" rowspan="2">
                 <a href="#" class="o_dashboard_action" name="project.action_view_task">
-                    <span class="fa fa-tasks fa-3x"/><br/>
+                    <span class="fa fa-tasks fa-3x"/>
+                    <br/>
                     My Tasks
                 </a>
             </td>
         </t>
     </t>
+
 </templates>
