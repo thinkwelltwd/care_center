@@ -23,15 +23,11 @@ class MergeTasks(models.TransientModel):
     _name = 'merge.task.wizard'
     _description = 'Merge Tasks'
 
-    @api.model
-    def default_get(self, fields):
-        res = super(MergeTasks, self).default_get(fields)
-        active_ids = self.env.context.get('active_ids')
-        if self.env.context.get('active_model') == 'project.task' and active_ids:
-            res['task_ids'] = active_ids
-        return res
-
-    task_ids = fields.Many2many('project.task', string='Tasks')
+    task_ids = fields.Many2many(
+        'project.task',
+        string='Tasks',
+        default=lambda self: self.env.context.get('active_ids'),
+    )
     dst_task_id = fields.Many2one('project.task', string='Destination Task', required=True)
 
     def action_merge(self):
