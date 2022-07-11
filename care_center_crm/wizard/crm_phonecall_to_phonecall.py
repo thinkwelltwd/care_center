@@ -23,7 +23,7 @@ class CrmPhonecall2phonecall(models.TransientModel):
         'project.project',
         string='Project',
         default=_get_project_id,
-    )
+    )  # TODO put a domain on here
 
     def get_vals_action_schedule(self):
         vals = super().get_vals_action_schedule()
