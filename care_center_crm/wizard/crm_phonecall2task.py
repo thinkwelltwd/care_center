@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+import json
 
 
 class CrmPhonecallToTaskWizard(models.TransientModel):
@@ -14,20 +15,22 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
         return self.get_phonecall().project_id
 
     project_id = fields.Many2one('project.project', string='Project', default=_get_project_id)
+    project_domain = fields.Char(
+        compute='_compute_project_domain',
+        readonly=True,
+        store=False,
+    )
 
-    @api.onchange('project_id')
-    def set_project_domain(self):
-        phonecall = self.get_phonecall()
-
-        return {
-            'domain': {
-                'project_id': [
-                    '|',
-                    ('catchall', '=', True),
-                    ('partner_id', 'in', phonecall.get_partner_ids()),
-                ],
-            },
-        }
+    @api.multi
+    @api.depends('project_id')
+    def _compute_project_domain(self):
+        for rec in self:
+            phonecall = rec.get_phonecall()
+            rec.project_domain = json_dumps([
+                '|',
+                ('catchall', '=', True),
+                ('partner_id', 'in', phonecall.get_partner_ids()),
+            ])
 
     @api.multi
     def action_phonecall_to_task(self):
