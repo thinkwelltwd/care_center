@@ -1,5 +1,6 @@
 from odoo import api, models, fields
 from odoo.exceptions import UserError, ValidationError
+import json
 
 
 class Project(models.Model):
@@ -37,6 +38,11 @@ class ProjectTask(models.Model):
     has_active_timesheets = fields.Boolean(
         string='Active Timesheets',
         compute='_has_active_timesheets',
+    )
+    project_domain = fields.Char(
+        compute='_compute_project_domain',
+        readonly=True,
+        store=False,
     )
 
     @api.multi
@@ -229,19 +235,20 @@ class ProjectTask(models.Model):
             lambda ts: not ts.exclude_from_sale_order and not ts.timesheet_invoice_id
         ).write({'so_line': self.sale_line_id.id})
 
-    @api.onchange('partner_id')
-    def _onchange_partner_id(self):
-        res = super()._onchange_partner_id()
-        result = res or {}
+    @api.multi
+    @api.depends('partner_id')
+    def _compute_project_domain(self):
+        for rec in self:
+            result = super()._onchange_partner_id() or {}
 
-        if self.partner_id:
-            partner_ids = self.get_partner_ids()
-            project_domain = self.project_id.get_partner_domain(partner_ids)
+            if rec.partner_id:
+                partner_ids = rec.get_partner_ids()
+                project_domain1 = rec.project_id.get_partner_domain(partner_ids)
 
-            existing_domain = result.get('domain')
-            if existing_domain:
-                existing_domain['project_id'] = project_domain
-            else:
-                result['domain'] = {'project_id': project_domain}
+                existing_domain = result.get('domain')
+                if existing_domain:
+                    existing_domain['project_id'] = project_domain1
+                else:
+                    result['domain'] = {'project_id': project_domain1}
 
-        return result
+            rec.project_domain = json_dumps(result)

@@ -15,6 +15,7 @@
         'hr_timesheet_sheet',
         'care_center',
         'web',
+        'web_domain_field',
     ],
 
     'data': [
