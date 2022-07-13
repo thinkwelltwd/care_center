@@ -52,22 +52,24 @@ class SetLeadOnPhoneCallWizard(models.TransientModel):
 
     lead_id = fields.Many2one('crm.lead', string='Lead/Opportunity', default=_get_lead_id)
     phonecall_id = fields.Many2one('crm.phonecall', string='Phone call')
+    phonecall_domain = fields.Char(
+        compute='_compute_phonecall_domain',
+        readonly=True,
+        store=False,
+    )
 
-    @api.onchange('lead_id')
-    def set_phonecall_domain(self):
-        domain = [
-            ('opportunity_id', '=', False),
-            ('task_id', '=', False),
-        ]
-        if self.lead_id:
-            partner_ids = self.get_partner_ids(field=self.lead_id.partner_id)
-            domain.append(('partner_id', 'in', partner_ids))
-
-        return {
-            'domain': {
-                'phonecall_id': domain,
-            },
-        }
+    @api.multi
+    @api.depends('lead_id')
+    def _compute_phonecall_domain(self):
+        for rec in self:
+            domain = [
+                ('opportunity_id', '=', False),
+                ('task_id', '=', False),
+            ]
+            if rec.lead_id:
+                partner_ids = rec.get_partner_ids(field=self.lead_id.partner_id)
+                domain.append(('partner_id', 'in', partner_ids))
+            rec.phonecall_domain = json_dumps(domain)
 
     @api.multi
     def set_lead_on_phonecall(self):
