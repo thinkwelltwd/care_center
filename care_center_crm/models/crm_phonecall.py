@@ -1,6 +1,7 @@
 from odoo import _, api, fields, models
 from odoo.fields import DATE_LENGTH
 from odoo.exceptions import UserError
+import json
 
 
 class CrmPhonecall(models.Model):
@@ -53,50 +54,53 @@ class CrmPhonecall(models.Model):
     available_project_ids = fields.Many2many('project.project', compute='_available_project_ids')
 
     description = fields.Html('Description')
+    partner_id_domain = fields.Char(
+        compute='_compute_partner_id_domain',
+        readonly=True,
+        store=False,
+    )
 
-    @api.onchange('partner_id')
-    def _update_partner_id_domain(self):
+    @api.multi
+    @api.depends('partner_id')
+    def _compute_partner_id_domain(self):
         """
         Filter Tasks by Partner, including all
         Tasks of Partner Parent or Children
         """
-        partner = self.partner_id
-        task = self.task_id
-        opportunity = self.opportunity_id
-        project = self.project_id
+        for rec in self:
+            partner = rec.partner_id
+            task = rec.task_id
+            opportunity = rec.opportunity_id
+            project = rec.project_id
 
-        if not partner:
-            return {
-                'domain': {
-                    'task_id': [],
-                    'opportunity_id': [],
-                    'project_id': [],
-                }
-            }
+            if not partner:
+                rec.partner_id_domain = json_dumps([
+                    ('task_id': []),
+                    ('opportunity_id': []),
+                    ('project_id': []),
+                ])
+                continue
 
-        partner_ids = self.get_partner_ids()
-        domain = self.get_partner_domain(partner_ids)
+            partner_ids = rec.get_partner_ids()
+            domain = rec.get_partner_domain(partner_ids)
 
-        # Reset fields ONLY if the partner doesn't match! Otherwise, will always
-        # clear partner_id field, due onchange methods on task_id / opportunity_id
-        if task and task.partner_id and task.partner_id.id not in partner_ids:
-            self.task_id = False
-        if opportunity and opportunity.partner_id and opportunity.partner_id.id not in partner_ids:
-            self.opportunity_id = False
-        if project and not project.catchall and project.partner_id and project.partner_id.id not in partner_ids:
-            self.project_id = False
+            # Reset fields ONLY if the partner doesn't match! Otherwise, will always
+            # clear partner_id field, due onchange methods on task_id / opportunity_id
+            if task and task.partner_id and task.partner_id.id not in partner_ids:
+                rec.task_id = False
+            if opportunity and opportunity.partner_id and opportunity.partner_id.id not in partner_ids:
+                rec.opportunity_id = False
+            if project and not project.catchall and project.partner_id and project.partner_id.id not in partner_ids:
+                rec.project_id = False
 
-        return {
-            'domain': {
-                'task_id': domain,
-                'opportunity_id': domain,
-                'project_id': [
-                    '|',
-                    ('catchall', '=', True),
-                    ('partner_id', 'in', partner_ids),
-                ],
-            },
-        }
+            rec.partner_id_domain = json_dumps([
+                    ('task_id': domain),
+                    ('opportunity_id': domain),
+                    ('project_id': [
+                        '|',
+                        ('catchall', '=', True),
+                        ('partner_id', 'in', partner_ids)),
+                    ])
 
     @api.onchange('task_id')
     def _set_details_from_task(self):
