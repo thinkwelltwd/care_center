@@ -8,7 +8,8 @@
         <field name="arch" type="xml">
             <form string="Convert to Task">
                 <group>
-                    <field name="project_id"/>
+                    <field name="project_domain" invisible="1"/>
+                    <field name="project_id" domain="project_domain"/>
                 </group>
                 <footer>
                     <button type="object" name="action_lead_to_task" string="Create Task" class="btn-primary"/>
