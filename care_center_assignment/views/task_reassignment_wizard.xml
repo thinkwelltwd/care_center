@@ -13,8 +13,10 @@
                            context="{'default_type_team':'support'}"
                            attrs="{'invisible': [('reassign_to','!=', 'team')], 'required': [('reassign_to','=', 'team')]}"/>
                     <newline />
+                    <field name="assigned_to_domain" invisible="1"/>
                     <field name="assigned_to" options="{'no_create': True}"
-                           attrs="{'required': [('reassign_to','=', 'user')]}"/>
+                           attrs="{'required': [('reassign_to','=', 'user')]}"
+                           domain="assigned_to_domain"/>
                     <field name="send_notifications"/>
                     <newline />
                     <field name="name"/>
