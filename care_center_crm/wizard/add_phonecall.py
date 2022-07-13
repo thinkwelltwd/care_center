@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+import json
 
 
 class SetTaskOnPhoneCallWizard(models.TransientModel):
@@ -11,22 +12,25 @@ class SetTaskOnPhoneCallWizard(models.TransientModel):
 
     task_id = fields.Many2one('project.task', string='Task', default=_get_task_id)
     phonecall_id = fields.Many2one('crm.phonecall', string='Phone call')
+    phonecall_domain = fields.Char(
+        compute='_compute_phonecall_domain',
+        readonly=True,
+        store=False,
+    )
 
-    @api.onchange('task_id')
-    def set_phonecall_domain(self):
-        domain = [
-            ('opportunity_id', '=', False),
-            ('task_id', '=', False),
-        ]
-        if self.task_id:
-            partner_ids = self.get_partner_ids(field=self.task_id.partner_id)
-            domain.append(('partner_id', 'in', partner_ids))
+    @api.multi
+    @api.depends('task_id')
+    def _compute_phonecall_domain(self):
+        for rec in self:
+            domain = [
+                ('opportunity_id', '=', False),
+                ('task_id', '=', False),
+            ]
+            if rec.task_id:
+                partner_ids = rec.get_partner_ids(field=rec.task_id.partner_id)
+                domain.append(('partner_id', 'in', partner_ids))
 
-        return {
-            'domain': {
-                'phonecall_id': domain,
-            },
-        }
+            rec.phonecall_domain = json_dumps(domain)
 
     @api.multi
     def set_task_on_phonecall(self):

@@ -9,7 +9,9 @@
            <form string="Link Phone call to Task" create="false" edit="false">
                 <group>
                     <field name="task_id" options="{'no_create': True}"/>
-                    <field name="phonecall_id" options="{'no_create': True}"/>
+                    <field name="phonecall_domain" invisible="1"/>
+                    <field name="phonecall_id" options="{'no_create': True}"
+                      domain="phonecall_domain"/>
                 </group>
                 <footer>
                     <button string="Save" type="object" name="set_task_on_phonecall" class="oe_highlight"/>
