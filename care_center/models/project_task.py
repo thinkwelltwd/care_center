@@ -153,7 +153,7 @@ class ProjectTask(models.Model):
         Create a Ticket via API call. Should be callable with the same signature as
         python's sending emails.
 
-        @param dict msg: dictionary of message variables 
+        @param dict msg: dictionary of message variables
        :rtype: int
        :return: the id of the new Ticket
         """
