@@ -54,15 +54,25 @@ class CrmPhonecall(models.Model):
     available_project_ids = fields.Many2many('project.project', compute='_available_project_ids')
 
     description = fields.Html('Description')
-    partner_id_domain = fields.Char(
-        compute='_compute_partner_id_domain',
+    task_domain = fields.Char(
+        compute='_compute_partner_related_domains',
+        readonly=True,
+        store=False,
+    )
+    opportunity_domain = fields.Char(
+        compute='_compute_partner_related_domains',
+        readonly=True,
+        store=False,
+    )
+    project_domain = fields.Char(
+        compute='_compute_partner_related_domains',
         readonly=True,
         store=False,
     )
 
     @api.multi
     @api.depends('partner_id')
-    def _compute_partner_id_domain(self):
+    def _compute_partner_related_domains(self):
         """
         Filter Tasks by Partner, including all
         Tasks of Partner Parent or Children
@@ -74,11 +84,9 @@ class CrmPhonecall(models.Model):
             project = rec.project_id
 
             if not partner:
-                rec.partner_id_domain = json_dumps([
-                    ('task_id': []),
-                    ('opportunity_id': []),
-                    ('project_id': []),
-                ])
+                rec.task_domain = {}
+                rec.opportunity_domain = {}
+                rec.project_domain = {}
                 continue
 
             partner_ids = rec.get_partner_ids()
@@ -93,14 +101,13 @@ class CrmPhonecall(models.Model):
             if project and not project.catchall and project.partner_id and project.partner_id.id not in partner_ids:
                 rec.project_id = False
 
-            rec.partner_id_domain = json_dumps([
-                    ('task_id': domain),
-                    ('opportunity_id': domain),
-                    ('project_id': [
-                        '|',
-                        ('catchall', '=', True),
-                        ('partner_id', 'in', partner_ids)),
-                    ])
+            rec.task_domain = json_dumps(domain)
+            rec.opportunity_domain = json_dumps(domain)
+            rec.project_domain = json_dumps([
+                '|',
+                ('catchall', '=', True),
+                ('partner_id', 'in', partner_ids),
+            ])
 
     @api.onchange('task_id')
     def _set_details_from_task(self):
