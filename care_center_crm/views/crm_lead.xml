@@ -4,6 +4,7 @@
         <field name="name">Convert to Task</field>
         <field name="res_model">crm.lead2task.wizard</field>
         <field name="binding_model_id" ref="model_crm_lead"/>
+        <field name="binding_view_types">form</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>

@@ -23,7 +23,6 @@
 
     <record id="action_assign_procedure_wizard" model="ir.actions.act_window">
         <field name="name">Assign Procedure action</field>
-        <field name="type">ir.actions.act_window</field>
         <field name="res_model">assign_procedure.wizard</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="assign_procedure_wizard"/>

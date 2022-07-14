@@ -4,6 +4,7 @@
         <field name="name">Create Task</field>
         <field name="res_model">crm.phonecall2task.wizard</field>
         <field name="binding_model_id" ref="model_crm_phonecall"/>
+        <field name="binding_view_types">form</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>

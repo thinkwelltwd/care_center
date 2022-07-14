@@ -2,7 +2,6 @@
 
     <record id="action_ticket_action" model="ir.actions.act_window">
         <field name="name">Ticket Actions</field>
-        <field name="type">ir.actions.act_window</field>
         <field name="res_model">ir.actions.server</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('model_id.model','=', 'project.task')]</field>

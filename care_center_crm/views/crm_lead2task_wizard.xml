@@ -1,6 +1,5 @@
 <odoo>
 
-    <!-- view of the Wizard Form -->
     <record id="view_crm_lead2task_wizard" model="ir.ui.view">
         <field name="name">crm.lead2task.wizard.form</field>
         <field name="model">crm.lead2task.wizard</field>
@@ -15,13 +14,6 @@
                 </footer>
             </form>
         </field>
-    </record>
-
-    <record id="convert_lead2task_wizard_action" model="ir.actions.act_window">
-        <field name="name">Convert to Task</field>
-        <field name="res_model">crm.lead2task.wizard</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
     </record>
 
 </odoo>
