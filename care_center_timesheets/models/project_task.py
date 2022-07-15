@@ -39,8 +39,8 @@ class ProjectTask(models.Model):
         string='Active Timesheets',
         compute='_has_active_timesheets',
     )
-    project_domain = fields.Char(
-        compute='_compute_project_domain',
+    project_id_domain = fields.Char(
+        compute='_compute_project_id_domain',
         readonly=True,
         store=False,
     )
@@ -237,7 +237,7 @@ class ProjectTask(models.Model):
 
     @api.multi
     @api.depends('partner_id')
-    def _compute_project_domain(self):
+    def _compute_project_id_domain(self):
         for rec in self:
             result = super()._onchange_partner_id() or {}
 
@@ -251,4 +251,4 @@ class ProjectTask(models.Model):
                 else:
                     result['domain'] = {'project_id': project_domain1}
 
-            rec.project_domain = json_dumps(result)
+            rec.project_id_domain = json_dumps(result)

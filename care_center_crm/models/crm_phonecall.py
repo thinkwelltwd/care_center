@@ -54,17 +54,17 @@ class CrmPhonecall(models.Model):
     available_project_ids = fields.Many2many('project.project', compute='_available_project_ids')
 
     description = fields.Html('Description')
-    task_domain = fields.Char(
+    task_id_domain = fields.Char(
         compute='_compute_partner_related_domains',
         readonly=True,
         store=False,
     )
-    opportunity_domain = fields.Char(
+    opportunity_id_domain = fields.Char(
         compute='_compute_partner_related_domains',
         readonly=True,
         store=False,
     )
-    project_domain = fields.Char(
+    project_id_domain = fields.Char(
         compute='_compute_partner_related_domains',
         readonly=True,
         store=False,
@@ -84,9 +84,9 @@ class CrmPhonecall(models.Model):
             project = rec.project_id
 
             if not partner:
-                rec.task_domain = {}
-                rec.opportunity_domain = {}
-                rec.project_domain = {}
+                rec.task_id_domain = {}
+                rec.opportunity_id_domain = {}
+                rec.project_id_domain = {}
                 continue
 
             partner_ids = rec.get_partner_ids()
@@ -101,9 +101,9 @@ class CrmPhonecall(models.Model):
             if project and not project.catchall and project.partner_id and project.partner_id.id not in partner_ids:
                 rec.project_id = False
 
-            rec.task_domain = json_dumps(domain)
-            rec.opportunity_domain = json_dumps(domain)
-            rec.project_domain = json_dumps([
+            rec.task_id_domain = json_dumps(domain)
+            rec.opportunity_id_domain = json_dumps(domain)
+            rec.project_id_domain = json_dumps([
                 '|',
                 ('catchall', '=', True),
                 ('partner_id', 'in', partner_ids),

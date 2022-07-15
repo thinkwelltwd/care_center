@@ -12,15 +12,15 @@ class SetTaskOnPhoneCallWizard(models.TransientModel):
 
     task_id = fields.Many2one('project.task', string='Task', default=_get_task_id)
     phonecall_id = fields.Many2one('crm.phonecall', string='Phone call')
-    phonecall_domain = fields.Char(
-        compute='_compute_phonecall_domain',
+    phonecall_id_domain = fields.Char(
+        compute='_compute_phonecall_id_domain',
         readonly=True,
         store=False,
     )
 
     @api.multi
     @api.depends('task_id')
-    def _compute_phonecall_domain(self):
+    def _compute_phonecall_id_domain(self):
         for rec in self:
             domain = [
                 ('opportunity_id', '=', False),
@@ -30,7 +30,7 @@ class SetTaskOnPhoneCallWizard(models.TransientModel):
                 partner_ids = rec.get_partner_ids(field=rec.task_id.partner_id)
                 domain.append(('partner_id', 'in', partner_ids))
 
-            rec.phonecall_domain = json_dumps(domain)
+            rec.phonecall_id_domain = json_dumps(domain)
 
     @api.multi
     def set_task_on_phonecall(self):
@@ -52,15 +52,15 @@ class SetLeadOnPhoneCallWizard(models.TransientModel):
 
     lead_id = fields.Many2one('crm.lead', string='Lead/Opportunity', default=_get_lead_id)
     phonecall_id = fields.Many2one('crm.phonecall', string='Phone call')
-    phonecall_domain = fields.Char(
-        compute='_compute_phonecall_domain',
+    phonecall_id_domain = fields.Char(
+        compute='_compute_phonecall_id_domain',
         readonly=True,
         store=False,
     )
 
     @api.multi
     @api.depends('lead_id')
-    def _compute_phonecall_domain(self):
+    def _compute_phonecall_id_domain(self):
         for rec in self:
             domain = [
                 ('opportunity_id', '=', False),
@@ -69,7 +69,7 @@ class SetLeadOnPhoneCallWizard(models.TransientModel):
             if rec.lead_id:
                 partner_ids = rec.get_partner_ids(field=self.lead_id.partner_id)
                 domain.append(('partner_id', 'in', partner_ids))
-            rec.phonecall_domain = json_dumps(domain)
+            rec.phonecall_id_domain = json_dumps(domain)
 
     @api.multi
     def set_lead_on_phonecall(self):

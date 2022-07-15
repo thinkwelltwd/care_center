@@ -15,18 +15,18 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
         return self.get_phonecall().project_id
 
     project_id = fields.Many2one('project.project', string='Project', default=_get_project_id)
-    project_domain = fields.Char(
-        compute='_compute_project_domain',
+    project_id_domain = fields.Char(
+        compute='_compute_project_id_domain',
         readonly=True,
         store=False,
     )
 
     @api.multi
     @api.depends('project_id')
-    def _compute_project_domain(self):
+    def _compute_project_id_domain(self):
         for rec in self:
             phonecall = rec.get_phonecall()
-            rec.project_domain = json_dumps([
+            rec.project_id_domain = json_dumps([
                 '|',
                 ('catchall', '=', True),
                 ('partner_id', 'in', phonecall.get_partner_ids()),

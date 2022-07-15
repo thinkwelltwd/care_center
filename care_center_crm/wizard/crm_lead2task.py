@@ -14,15 +14,15 @@ class CrmLeadToTaskWizard(models.TransientModel):
     _inherit = 'crm.partner.binding'
 
     project_id = fields.Many2one('project.project', string='Project')
-    project_domain = fields.Char(
-        compute='_compute_project_domain',
+    project_id_domain = fields.Char(
+        compute='_compute_project_id_domain',
         readonly=True,
         store=False,
     )
 
     @api.multi
     @api.depends('project_id')
-    def _compute_project_domain(self):
+    def _compute_project_id_domain(self):
         for rec in self:
             lead = rec.get_lead()
             domain = []
@@ -31,7 +31,7 @@ class CrmLeadToTaskWizard(models.TransientModel):
             if lead.partner_id.parent_id:
                 domain.append(('partner_id', '=', lead.partner_id.parent_id.id))
                 domain.insert(0, '|')
-            rec.project_domain = json_dumps(domain)
+            rec.project_id_domain = json_dumps(domain)
 
     def get_tag_ids(self, lead):
         """
