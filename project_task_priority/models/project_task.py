@@ -11,7 +11,12 @@ class ProjectTask(models.Model):
             ("4", "Crisis"),
             ("5", "Disaster"),
         ],
-        ondelete={'2': 'set null', '3': 'set null', '4': 'set null', '5': 'set null'}
+        ondelete={
+            '2': lambda p: p.write({'priority': '1'}),
+            '3': lambda p: p.write({'priority': '1'}),
+            '4': lambda p: p.write({'priority': '1'}),
+            '5': lambda p: p.write({'priority': '1'}),
+        }
     )
 
     def toggle_active(self):

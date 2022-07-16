@@ -10,5 +10,4 @@
         'views/project_task.xml',
     ],
     "installable": True,
-    "uninstall_hook": "uninstall_hook"
 }
