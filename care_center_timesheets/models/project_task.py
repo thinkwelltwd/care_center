@@ -69,7 +69,7 @@ class ProjectTask(models.Model):
         will remain `notready` until marked Ready to Invoice
         """
         new_timesheets = self.timesheet_ids.filtered(lambda ts: ts.invoice_status == 'notready')
-        new_timesheets.invoice_status = 'ready'
+        new_timesheets.write({'invoice_status': 'ready'})
 
         invoiceable = self.timesheet_ids.filtered(
             lambda ts: not ts.exclude_from_sale_order and ts.invoice_status != 'invoiced'
@@ -221,7 +221,7 @@ class ProjectTask(models.Model):
 
         self.timesheet_ids.filtered(
             lambda ts: not ts.exclude_from_sale_order and not ts.timesheet_invoice_id
-        ).so_line = self.sale_line_id.id
+        ).write({'so_line': self.sale_line_id.id})
 
     @api.onchange('partner_id')
     def _onchange_partner_id(self):

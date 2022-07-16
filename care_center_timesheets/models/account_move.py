@@ -16,6 +16,6 @@ class AccountMove(models.Model):
         ])
 
         res = super().unlink()
-        timesheets.invoice_status = 'ready'
+        timesheets.write({'invoice_status': 'ready'})
 
         return res

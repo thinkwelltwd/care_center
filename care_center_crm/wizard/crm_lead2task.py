@@ -61,16 +61,20 @@ class CrmLeadToTaskWizard(models.TransientModel):
         task_calls = self.env['crm.phonecall'].search([
             ('opportunity_id', '=', lead_id),
         ])
-        task_calls.opportunity_id = False
-        task_calls.task_id = task_id
+        task_calls.write({
+            'opportunity_id': False,
+            'task_id': task_id,
+        })
 
     def move_attachments(self, lead_id, task_id):
         attachments = self.env['ir.attachment'].search([
             ('res_model', '=', 'crm.lead'),
             ('res_id', '=', lead_id),
         ])
-        attachments.res_model = 'project.task'
-        attachments.res_id = task_id
+        attachments.write({
+            'res_model': 'project.task',
+            'res_id': task_id,
+        })
 
     def action_lead_to_task(self):
         self.ensure_one()

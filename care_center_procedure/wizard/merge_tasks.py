@@ -28,6 +28,8 @@ class MergeTasks(models.TransientModel):
 
                 ProcedureAssignment.search([
                     ('task_id', '=', task.id),
-                ]).task_id = self.dst_task_id.id
+                ]).write({
+                    'task_id': self.dst_task_id.id,
+                })
 
                 dst_procedures.append(procedure_assignment.procedure_id)

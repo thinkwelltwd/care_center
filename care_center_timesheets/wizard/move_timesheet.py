@@ -143,8 +143,10 @@ class MoveTimesheet(models.TransientModel):
         start = fields.Datetime.to_datetime(self.timesheet_id.date_start)
         session_duration = (end - start).total_seconds()
 
-        self.timesheet_id.date_start = start - timedelta(seconds=session_duration)
-        self.timesheet_id.timer_status = 'paused'
+        self.timesheet_id.write({
+            'date_start': start - timedelta(seconds=session_duration),
+            'timer_status': 'paused',
+        })
 
 
 class MoveTimesheetOrSplit(models.TransientModel):
@@ -256,8 +258,10 @@ class SplitTimesheet(models.TransientModel):
             hours=updated_time,
             invoice_factor=self.timesheet_id.factor,
         )
-        self.timesheet_id.full_duration = updated_time
-        self.timesheet_id.unit_amount = unit_amount
+        self.timesheet_id.write({
+            'full_duration': updated_time,
+            'unit_amount': unit_amount,
+        })
 
         return True
 

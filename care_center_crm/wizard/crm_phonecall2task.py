@@ -53,8 +53,10 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
             'company_id': company_id,
             'tag_ids': [(6, 0, [tag.id for tag in tags])],
         })
-        phonecall_id.task_id = task_id.id
-        phonecall_id.state = 'done'
+        phonecall_id.write({
+            'task_id': task_id.id,
+            'state': 'done',
+        })
 
         return {
             'name': task_id.name,

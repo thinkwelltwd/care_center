@@ -71,8 +71,10 @@ class MergeTasks(models.TransientModel):
                 names.append(name.name)
                 descriptions.append(name.description)
 
-        self.dst_task_id.name = ', '.join([str(name) for name in names])
-        self.dst_task_id.description = ', '.join([str(desc) for desc in descriptions])
+        self.dst_task_id.write({
+            'name': ', '.join([str(name) for name in names]),
+            'description': ', '.join([str(desc) for desc in descriptions]),
+        })
 
     def transfer_messages(self):
         for task in self.task_ids:
