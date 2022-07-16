@@ -120,10 +120,10 @@
             </xpath>
 
             <field name="opportunity_id" position="replace">
-               <field name="available_task_ids" invisible="1"/>
-               <field name="available_lead_ids" invisible="1"/>
-               <field name="opportunity_id"  domain="[('id' , 'in', available_lead_ids)]"/>
-               <field name="task_id"  domain="[('id' , 'in', available_task_ids)]"/>
+               <field name="opportunity_id" domain="opportunity_id_domain"/>
+               <field name="task_id" domain="task_id_domain"/>
+               <field name="opportunity_id_domain" invisible="1"/>
+               <field name="task_id_domain" invisible="1"/>
             </field>
 
             <field name="team_id" position="attributes">
@@ -135,10 +135,9 @@
             </field>
 
             <field name="opportunity_id" position="after">
-                <field name="available_project_ids" invisible="1"/>
-                <field name="project_id"
-                    domain="[('id' , 'in', available_project_ids)]"
+                <field name="project_id" domain="project_id_domain"
                     options="{'no_open': True, 'no_create': True}"/>
+                <field name="project_id_domain" invisible="1"/>
             </field>
             <field name="description" position="after">
                 <notebook>

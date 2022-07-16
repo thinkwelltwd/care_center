@@ -35,7 +35,7 @@ class UpdateProjectInfo(models.TransientModel):
             raise UserError('New Customer is same as old')
 
     @api.onchange('partner_id')
-    def _update_partner_id_domain(self):
+    def clear_unrelated_project(self):
         proj_partner = self.new_project.partner_id and self.new_project.partner_id.id
 
         if self.partner_id and proj_partner and proj_partner not in self.partner_id.get_partner_ids():

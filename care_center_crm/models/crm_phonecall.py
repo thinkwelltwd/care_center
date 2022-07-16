@@ -9,30 +9,6 @@ class CrmPhonecall(models.Model):
     _name = 'crm.phonecall'
     _inherit = ['care_center.base', 'crm.phonecall']
 
-    def _available_task_lead_ids(self):
-        """
-        Enable dynamic domain filters when Editing
-        records where the on_change doesn't fire
-        """
-        domain = [
-            '|',
-            ('partner_id', '=', False),
-            ('partner_id', 'in', self.get_partner_ids()),
-        ]
-        self.available_task_ids = self.env['project.task'].search(domain)
-        self.available_lead_ids = self.env['crm.lead'].search(domain)
-
-    def _available_project_ids(self):
-        """
-        Enable dynamic domain filters when Editing
-        records where the on_change doesn't fire
-        """
-        self.available_project_ids = self.env['project.project'].search([
-            '|',
-            ('catchall', '=', True),
-            ('partner_id', 'in', self.get_partner_ids()),
-        ])
-
     task_id = fields.Many2one(
         comodel_name='project.task',
         string='Task',
@@ -47,13 +23,6 @@ class CrmPhonecall(models.Model):
         comodel_name='account.analytic.line',
         inverse_name='phonecall_id',
     )
-
-    # Compute these properties so they can serve as domains in xml views
-    # active even on Edit mode when partner_id field hasn't been changed
-    available_task_ids = fields.Many2many('project.task', compute='_available_task_lead_ids')
-    available_lead_ids = fields.Many2many('crm.lead', compute='_available_task_lead_ids')
-    available_project_ids = fields.Many2many('project.project', compute='_available_project_ids')
-
     description = fields.Html('Description')
     task_id_domain = fields.Char(
         compute='_compute_partner_related_domains',
@@ -71,6 +40,22 @@ class CrmPhonecall(models.Model):
         store=False,
     )
 
+    @api.onchange('partner_id')
+    def clear_unrelated_fields(self):
+        if not self.partner_id:
+            return
+
+        partner_ids = self.get_partner_ids()
+
+        # Reset fields ONLY if the partner doesn't match! Otherwise, will always
+        # clear partner_id field, due onchange methods on task_id / opportunity_id
+        if self.task_id and self.task_id.partner_id and self.task_id.partner_id.id not in partner_ids:
+            self.task_id = False
+        if self.opportunity_id and self.opportunity_id.partner_id and self.opportunity_id.partner_id.id not in partner_ids:
+            self.opportunity_id = False
+        if self.project_id and not self.project_id.catchall and self.project_id.partner_id and self.project_id.partner_id.id not in partner_ids:
+            self.project_id = False
+
     @api.multi
     @api.depends('partner_id')
     def _compute_partner_related_domains(self):
@@ -79,28 +64,14 @@ class CrmPhonecall(models.Model):
         Tasks of Partner Parent or Children
         """
         for rec in self:
-            partner = rec.partner_id
-            task = rec.task_id
-            opportunity = rec.opportunity_id
-            project = rec.project_id
-
-            if not partner:
-                rec.task_id_domain = {}
-                rec.opportunity_id_domain = {}
-                rec.project_id_domain = {}
+            if not rec.partner_id:
+                rec.task_id_domain = '[]'
+                rec.opportunity_id_domain = '[]'
+                rec.project_id_domain = '[]'
                 continue
 
             partner_ids = rec.get_partner_ids()
             domain = rec.get_partner_domain(partner_ids)
-
-            # Reset fields ONLY if the partner doesn't match! Otherwise, will always
-            # clear partner_id field, due onchange methods on task_id / opportunity_id
-            if task and task.partner_id and task.partner_id.id not in partner_ids:
-                rec.task_id = False
-            if opportunity and opportunity.partner_id and opportunity.partner_id.id not in partner_ids:
-                rec.opportunity_id = False
-            if project and not project.catchall and project.partner_id and project.partner_id.id not in partner_ids:
-                rec.project_id = False
 
             rec.task_id_domain = json_dumps(domain)
             rec.opportunity_id_domain = json_dumps(domain)
