@@ -1,7 +1,8 @@
+from lchttp import json_dumps
+
 from odoo import _, api, fields, models
-from odoo.fields import DATE_LENGTH
 from odoo.exceptions import UserError
-import json
+from odoo.fields import DATE_LENGTH
 
 
 class CrmPhonecall(models.Model):

@@ -1,6 +1,7 @@
+from lchttp import json_dumps
+
 from odoo import models, fields, api
 from odoo.exceptions import UserError
-import json
 
 
 class UpdateProjectInfo(models.TransientModel):
@@ -33,24 +34,20 @@ class UpdateProjectInfo(models.TransientModel):
         if self.partner_id == self.current_task.partner_id:
             raise UserError('New Customer is same as old')
 
+    @api.onchange('partner_id')
+    def _update_partner_id_domain(self):
+        proj_partner = self.new_project.partner_id and self.new_project.partner_id.id
+
+        if self.partner_id and proj_partner and proj_partner not in self.partner_id.get_partner_ids():
+            self.new_project = None
+
     @api.multi
     @api.depends('partner_id')
     def _compute_new_project_domain(self):
         for rec in self:
-            partner = rec.partner_id
-
-            if not partner:
-                domain = []
-            else:
-                partner_ids = rec.get_partner_ids()
-                domain = rec.get_partner_domain(partner_ids)
-
-                # Only reset project if the Partner is set, and is
-                # NOT related to the current Contact selected
-                proj_partner = rec.new_project.partner_id and self.new_project.partner_id.id
-                if proj_partner and proj_partner not in partner_ids:
-                    rec.new_project = None
-            rec.new_project_domain = json_dumps(domain)
+            rec.new_project_domain = json_dumps(
+                rec.partner_id and rec.get_partner_domain(rec.get_partner_ids()) or []
+            )
 
     @api.multi
     def update_customer_project(self):

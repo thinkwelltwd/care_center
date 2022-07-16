@@ -1,6 +1,7 @@
+from lchttp import json_dumps
+
 from odoo import api, fields, models
 from odoo.exceptions import UserError
-import json
 
 
 class CrmLeadToTaskWizard(models.TransientModel):
@@ -8,7 +9,6 @@ class CrmLeadToTaskWizard(models.TransientModel):
     Convert a Lead into a Project Task and
     move the Mail Thread and Attachments.
     """
-
     _name = "crm.lead2task.wizard"
     _description = 'Care Center CRM Lead To Task Wizard'
     _inherit = 'crm.partner.binding'

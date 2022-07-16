@@ -1,5 +1,6 @@
+from lchttp import json_dumps
+
 from odoo import api, fields, models
-import json
 
 
 class SetTaskOnPhoneCallWizard(models.TransientModel):

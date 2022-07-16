@@ -1,12 +1,12 @@
+from lchttp import json_dumps
+
 from odoo import api, fields, models
-import json
 
 
 class CrmPhonecallToTaskWizard(models.TransientModel):
     """
     Convert a Phone Call into a Project Task.
     """
-
     _name = "crm.phonecall2task.wizard"
     _description = 'Care Center CRM Phone Call To Task Wizard'
     _inherit = 'crm.partner.binding'
