@@ -41,7 +41,6 @@ class UpdateProjectInfo(models.TransientModel):
         if self.partner_id and proj_partner and proj_partner not in self.partner_id.get_partner_ids():
             self.new_project = None
 
-    @api.multi
     @api.depends('partner_id')
     def _compute_new_project_domain(self):
         for rec in self:

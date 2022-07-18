@@ -20,7 +20,6 @@ class CrmLeadToTaskWizard(models.TransientModel):
         store=False,
     )
 
-    @api.multi
     @api.depends('project_id')
     def _compute_project_id_domain(self):
         for rec in self:

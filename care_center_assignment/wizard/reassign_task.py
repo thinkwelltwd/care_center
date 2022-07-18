@@ -86,7 +86,6 @@ class ReassignTaskWizard(models.TransientModel):
         if not self.name and not self.task_id.assignment_count:
             self.name = 'Initial Assignment'
 
-    @api.multi
     @api.depends('team_id')
     def _compute_assigned_to_domain(self):
         for rec in self:

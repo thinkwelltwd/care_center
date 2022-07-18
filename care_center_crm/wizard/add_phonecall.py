@@ -19,7 +19,6 @@ class SetTaskOnPhoneCallWizard(models.TransientModel):
         store=False,
     )
 
-    @api.multi
     @api.depends('task_id')
     def _compute_phonecall_id_domain(self):
         for rec in self:
@@ -58,7 +57,6 @@ class SetLeadOnPhoneCallWizard(models.TransientModel):
         store=False,
     )
 
-    @api.multi
     @api.depends('lead_id')
     def _compute_phonecall_id_domain(self):
         for rec in self:

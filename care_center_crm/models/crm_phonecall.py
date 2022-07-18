@@ -56,7 +56,6 @@ class CrmPhonecall(models.Model):
         if self.project_id and not self.project_id.catchall and self.project_id.partner_id and self.project_id.partner_id.id not in partner_ids:
             self.project_id = False
 
-    @api.multi
     @api.depends('partner_id')
     def _compute_partner_related_domains(self):
         """
