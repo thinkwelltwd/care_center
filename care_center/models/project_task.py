@@ -166,15 +166,10 @@ class ProjectTask(models.Model):
         Filter Projects by Partner, including all
         Projects of Partner Parent or Children
         """
-        if not self.partner_id:
-            self.project_id_domain = '[]'
-
-        partner_ids = self.get_partner_ids()
-        self.project_id_domain = json_dumps([
-            '|',
-            ('catchall', '=', True),
-            ('partner_id', 'in', partner_ids),
-        ])
+        for rec in self:
+            rec.project_id_domain = json_dumps(
+                rec.partner_id and rec.project_id.get_partner_domain(rec.get_partner_ids()) or []
+            )
 
     @api.onchange('project_id')
     def _project_id(self):

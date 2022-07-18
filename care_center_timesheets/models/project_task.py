@@ -222,23 +222,3 @@ class ProjectTask(models.Model):
         self.timesheet_ids.filtered(
             lambda ts: not ts.exclude_from_sale_order and not ts.timesheet_invoice_id
         ).write({'so_line': self.sale_line_id.id})
-
-    @api.onchange('partner_id')
-    def _onchange_partner_id(self):
-        # TODO: super()._onchange_partner_id() no longer exists.
-        # formerly the call to it here returned a domain.
-        # result = super()._onchange_partner_id() or {}
-        self.email_from = self.partner_id.email
-        result = {}
-
-        if self.partner_id:
-            partner_ids = self.get_partner_ids()
-            project_domain = self.project_id.get_partner_domain(partner_ids)
-
-            existing_domain = result.get('domain')
-            if existing_domain:
-                existing_domain['project_id'] = project_domain
-            else:
-                result['domain'] = {'project_id': project_domain}
-
-        return result

@@ -80,8 +80,7 @@
 
             </xpath>
 
-            <field name="project_id" position="replace">
-                <field name="project_id" options="{'no_create': True}" required="1"/>
+            <field name="project_id" position="after">
                 <field name="task_active" invisible="1"/>
                 <field name="user_timer_status" invisible="1"/>
                 <field name="has_active_timesheets" invisible="1"/>
