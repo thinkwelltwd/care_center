@@ -73,7 +73,7 @@
             <field name="project_id" position="attributes">
                <attribute name="required">True</attribute>
                <attribute name="no_quick_create">True</attribute>
-               <attribute name="domain" eval="project_id_domain"/>
+               <attribute name="domain">project_id_domain</attribute>
             </field>
 
             <xpath expr="//div[@name='button_box']" position="inside">
