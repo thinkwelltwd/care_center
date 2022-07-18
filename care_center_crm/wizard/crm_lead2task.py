@@ -1,3 +1,5 @@
+from lchttp import json_dumps
+
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 
@@ -7,28 +9,29 @@ class CrmLeadToTaskWizard(models.TransientModel):
     Convert a Lead into a Project Task and
     move the Mail Thread and Attachments.
     """
-
     _name = "crm.lead2task.wizard"
     _description = 'Care Center CRM Lead To Task Wizard'
     _inherit = 'crm.partner.binding'
 
     project_id = fields.Many2one('project.project', string='Project')
+    project_id_domain = fields.Char(
+        compute='_compute_project_id_domain',
+        readonly=True,
+        store=False,
+    )
 
-    @api.onchange('project_id')
-    def set_project_domain(self):
-        lead = self.get_lead()
-        domain = []
-        if lead.partner_id:
-            domain.append(('partner_id', '=', lead.partner_id.id))
-        if lead.partner_id.parent_id:
-            domain.append(('partner_id', '=', lead.partner_id.parent_id.id))
-            domain.insert(0, '|')
-
-        return {
-            'domain': {
-                'project_id': domain,
-            },
-        }
+    @api.multi
+    @api.depends('project_id')
+    def _compute_project_id_domain(self):
+        for rec in self:
+            lead = rec.get_lead()
+            domain = []
+            if lead.partner_id:
+                domain.append(('partner_id', '=', lead.partner_id.id))
+            if lead.partner_id.parent_id:
+                domain.append(('partner_id', '=', lead.partner_id.parent_id.id))
+                domain.insert(0, '|')
+            rec.project_id_domain = json_dumps(domain)
 
     def get_tag_ids(self, lead):
         """

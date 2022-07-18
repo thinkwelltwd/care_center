@@ -12,6 +12,7 @@
 
     'depends': [
         'care_center',
+        'web_domain_field',
     ],
 
     'data': [

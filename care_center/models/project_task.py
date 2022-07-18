@@ -1,6 +1,8 @@
 from datetime import date, timedelta
 
-from odoo import models, fields, api, _
+from lchttp import json_dumps
+
+from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
 
@@ -8,17 +10,6 @@ class ProjectTask(models.Model):
     _name = 'project.task'
     _description = 'Care Center Project Task'
     _inherit = ['care_center.base', 'project.task']
-
-    def _available_project_ids(self):
-        """
-        Enable dynamic domain filters when Editing
-        records where the on_change doesn't fire
-        """
-        self.available_project_ids = self.env['project.project'].search([
-            '|',
-            ('catchall', '=', True),
-            ('partner_id', 'in', self.get_partner_ids()),
-        ])
 
     parent_task_id = fields.Many2one(
         'project.task',
@@ -40,10 +31,11 @@ class ProjectTask(models.Model):
     description = fields.Html('Private Note')
     task_active = fields.Boolean(compute='_task_active')
     subtask_count = fields.Integer(compute='_subtask_count')
-
-    # Compute these properties so they can serve as domains in xml views
-    # active even on Edit mode when partner_id field hasn't been changed
-    available_project_ids = fields.Many2many('project.project', compute='_available_project_ids')
+    project_id_domain = fields.Char(
+        compute='_compute_project_id_domain',
+        readonly=True,
+        store=False,
+    )
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -150,7 +142,7 @@ class ProjectTask(models.Model):
         Create a Ticket via API call. Should be callable with the same signature as
         python's sending emails.
 
-        @param dict msg: dictionary of message variables 
+        @param dict msg: dictionary of message variables
        :rtype: int
        :return: the id of the new Ticket
         """
@@ -180,35 +172,25 @@ class ProjectTask(models.Model):
 
     @api.onchange('partner_id')
     def _partner_id(self):
+        # Only reset project if set, not catchall, and NOT related to the current Contact selected
+        if self.partner_id and self.project_id and not self.project_id.catchall and self.project_id.partner_id and self.project_id.partner_id.id not in self.get_partner_ids():
+            self.project_id = False
+
+    @api.depends('partner_id')
+    def _compute_project_id_domain(self):
         """
         Filter Projects by Partner, including all
         Projects of Partner Parent or Children
         """
-        partner = self.partner_id
-        project = self.project_id
-
-        if not partner:
-            return {
-                'domain': {
-                    'project_id': [],
-                }
-            }
+        if not self.partner_id:
+            self.project_id_domain = '[]'
 
         partner_ids = self.get_partner_ids()
-
-        # Only reset project if set, not catchall, and NOT related to the current Contact selected
-        if project and not project.catchall and project.partner_id and project.partner_id.id not in partner_ids:
-            self.project_id = False
-
-        return {
-            'domain': {
-                'project_id': [
-                    '|',
-                    ('catchall', '=', True),
-                    ('partner_id', 'in', partner_ids),
-                ],
-            },
-        }
+        self.project_id_domain = json_dumps([
+            '|',
+            ('catchall', '=', True),
+            ('partner_id', 'in', partner_ids),
+        ])
 
     @api.onchange('project_id')
     def _project_id(self):

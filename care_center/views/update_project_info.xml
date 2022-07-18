@@ -10,8 +10,9 @@
                     <group>
                         <field name="current_task" readonly="1"/>
                         <field name="partner_id" width="30" class="oe_inline"/>
-                        <field name="new_project" width="30" class="oe_inline"/>
+                        <field name="new_project" width="30" class="oe_inline" domain="new_project_domain"/>
                         <field name="add_follower"/>
+                        <field name="new_project_domain" invisible="1"/>
                     </group>
                 </group>
                 <footer>

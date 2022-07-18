@@ -1,3 +1,5 @@
+from lchttp import json_dumps
+
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -61,6 +63,11 @@ class ReassignTaskWizard(models.TransientModel):
         help="When template is specified, an email will be sent "
         "to all followers of the task being re-assigned.",
     )
+    assigned_to_domain = fields.Char(
+        compute='_compute_assigned_to_domain',
+        readonly=True,
+        store=False,
+    )
 
     @api.constrains('assigned_to', 'team_id')
     def verify_assignment_changed(self):
@@ -79,17 +86,13 @@ class ReassignTaskWizard(models.TransientModel):
         if not self.name and not self.task_id.assignment_count:
             self.name = 'Initial Assignment'
 
-    @api.onchange('team_id')
-    def set_assigned_domain(self):
-        domain = []
-        if self.team_id:
-            domain.append(('id', 'in', self.team_id.member_ids.mapped('id')))
-
-        return {
-            'domain': {
-                'assigned_to': domain,
-            },
-        }
+    @api.multi
+    @api.depends('team_id')
+    def _compute_assigned_to_domain(self):
+        for rec in self:
+            rec.assigned_to_domain = json_dumps(
+                rec.team_id and [('id', 'in', rec.team_id.member_ids.mapped('id'))] or []
+            )
 
     @api.onchange('reassign_to')
     def reset_assignment(self):
@@ -132,7 +135,7 @@ class ReassignTaskWizard(models.TransientModel):
         <p>{by} has assigned the <b>{task}</b> Task to {assignment} </p>
         <p><b>Summary: </b>{summary}</p>
         <p><b>Description: </b></p>
-        {description} 
+        {description}
         """.format(
             by=self.env.user.name,
             assignment=self.assignment(),

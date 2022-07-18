@@ -11,7 +11,7 @@
         * Create Tasks from Phonecalls.
         * Link Tasks to existing Phonecalls.
         * Add Timesheets to Phonecalls.
-    
+
     """,
 
     'author': "Dave Burkholder <dave@thinkwelldesigns.com>",
@@ -23,6 +23,7 @@
     'depends': [
         'care_center',
         'sale_crm',
+        'web_domain_field',
     ],
 
     'data': [
