@@ -1,3 +1,5 @@
+from lchttp import json_dumps
+
 from odoo import api, fields, models
 
 
@@ -9,20 +11,21 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
         return self.get_phonecall().project_id
 
     project_id = fields.Many2one('project.project', string='Project', default=_get_project_id)
+    project_id_domain = fields.Char(
+        compute='_compute_project_id_domain',
+        readonly=True,
+        store=False,
+    )
 
-    @api.onchange('project_id')
-    def set_project_domain(self):
-        phonecall = self.get_phonecall()
-
-        return {
-            'domain': {
-                'project_id': [
-                    '|',
-                    ('catchall', '=', True),
-                    ('partner_id', 'in', phonecall.get_partner_ids()),
-                ],
-            },
-        }
+    @api.depends('project_id')
+    def _compute_project_id_domain(self):
+        for rec in self:
+            phonecall = rec.get_phonecall()
+            rec.project_id_domain = json_dumps([
+                '|',
+                ('catchall', '=', True),
+                ('partner_id', 'in', phonecall.get_partner_ids()),
+            ])
 
     def action_phonecall_to_task(self):
         """

@@ -8,6 +8,7 @@
     'version': '14.0.1.0.0',
     'depends': [
         'care_center',
+        'web_domain_field',
     ],
     'data': [
         'security/ir.model.access.csv',

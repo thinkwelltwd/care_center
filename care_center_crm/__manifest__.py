@@ -17,6 +17,7 @@
     'depends': [
         'care_center',
         'sale_crm',
+        'web_domain_field',
     ],
     'data': [
         'security/ir.model.access.csv',

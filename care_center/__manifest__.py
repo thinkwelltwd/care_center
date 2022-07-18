@@ -14,6 +14,7 @@
         'calendar',
         'crm_phonecall',
         'support_team',
+        'web_domain_field',
     ],
     'data': [
         'security/ir.model.access.csv',
