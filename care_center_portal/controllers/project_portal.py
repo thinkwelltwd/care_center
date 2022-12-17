@@ -367,7 +367,7 @@ class CustomerPortal(CP):
                         partner,
                     )
                     return request.redirect(
-                        partner.get_portal_url(record=task) + f'&status=create_success'
+                        partner.get_portal_url(record=task)
                     )
                 except Exception as e:
                     self._handle_exception(e, qcontext, kw)
