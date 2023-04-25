@@ -1,6 +1,8 @@
 from datetime import date, timedelta
 
-from odoo import models, fields, api, _
+from lchttp import json_dumps
+
+from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
 
@@ -29,6 +31,11 @@ class ProjectTask(models.Model):
     description = fields.Html('Private Note')
     task_active = fields.Boolean(compute='_task_active')
     subtask_count = fields.Integer(compute='_subtask_count')
+    project_id_domain = fields.Char(
+        compute='_compute_project_id_domain',
+        readonly=True,
+        store=False,
+    )
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -117,25 +124,18 @@ class ProjectTask(models.Model):
     @api.multi
     def message_update(self, msg, update_vals=None):
         """
-        Override to re-open task if it was closed.
-        Set stage to Customer Replied if current
-        stage is folded or Waiting on Customer
+        Override to re-open task if it was closed
+        and set stage to Customer Replied
         """
         update_vals = dict(update_vals or {})
         if not self.active:
             update_vals['active'] = True
 
-        Stage = self.env['project.task.type']
-        waiting_stage = Stage.search([
-            ('name', '=', 'Waiting on Customer'),
+        replied_stage = self.env['project.task.type'].search([
+            ('name', '=', 'Customer Replied'),
         ], limit=1).mapped('id')
-
-        if self.stage_id.fold or waiting_stage and self.stage_id.id == waiting_stage[0]:
-            replied_stage = Stage.search([
-                ('name', '=', 'Customer Replied'),
-            ], limit=1).mapped('id')
-            if replied_stage:
-                update_vals['stage_id'] = replied_stage[0]
+        if replied_stage:
+            update_vals['stage_id'] = replied_stage[0]
 
         return super(ProjectTask, self).message_update(msg, update_vals=update_vals)
 
@@ -145,7 +145,7 @@ class ProjectTask(models.Model):
         Create a Ticket via API call. Should be callable with the same signature as
         python's sending emails.
 
-        @param dict msg: dictionary of message variables 
+        @param dict msg: dictionary of message variables
        :rtype: int
        :return: the id of the new Ticket
         """
@@ -175,31 +175,25 @@ class ProjectTask(models.Model):
 
     @api.onchange('partner_id')
     def _partner_id(self):
+        # Only reset project if set, not catchall, and NOT related to the current Contact selected
+        if self.partner_id and self.project_id and not self.project_id.catchall and self.project_id.partner_id and self.project_id.partner_id.id not in self.get_partner_ids():
+            self.project_id = False
+
+    @api.depends('partner_id')
+    def _compute_project_id_domain(self):
         """
-        Filter Tickets by Partner, including all
-        Tickets of Partner Parent or Children
+        Filter Projects by Partner, including all
+        Projects of Partner Parent or Children
         """
-        partner = self.partner_id
+        if not self.partner_id:
+            self.project_id_domain = '[]'
 
-        if not partner:
-            domain = []
-
-        else:
-
-            partner_ids = self.get_partner_ids()
-            domain = self.get_partner_domain(partner_ids)
-
-            # Only reset project if the Partner is set, and is
-            # NOT related to the current Contact selected
-            proj_partner = self.project_id.partner_id and self.project_id.partner_id.id
-            if proj_partner and proj_partner not in partner_ids:
-                self.project_id = None
-
-        return {
-            'domain': {
-                'project_id': domain,
-            },
-        }
+        partner_ids = self.get_partner_ids()
+        self.project_id_domain = json_dumps([
+            '|',
+            ('catchall', '=', True),
+            ('partner_id', 'in', partner_ids),
+        ])
 
     @api.onchange('project_id')
     def _project_id(self):
@@ -243,12 +237,18 @@ class ProjectTask(models.Model):
         Call before closing to allow placeholder
         projects to be used until specific
         projects can be assigned.
+
+        If a catchall project on an inhouse task,
+        don't raise billing error
         """
         invoiceable_timesheets = self.timesheet_ids.filtered(
             lambda ts: not ts.exclude_from_sale_order
         )
 
         if not self.project_id or not self.partner_id or not invoiceable_timesheets:
+            return
+
+        if self.project_id.catchall and self.commercial_partner_id == self.company_id.partner_id:
             return
 
         task_partner = self.partner_id.commercial_partner_id.id

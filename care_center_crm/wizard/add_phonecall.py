@@ -1,3 +1,5 @@
+from lchttp import json_dumps
+
 from odoo import api, fields, models
 
 
@@ -11,22 +13,25 @@ class SetTaskOnPhoneCallWizard(models.TransientModel):
 
     task_id = fields.Many2one('project.task', string='Task', default=_get_task_id)
     phonecall_id = fields.Many2one('crm.phonecall', string='Phone call')
+    phonecall_id_domain = fields.Char(
+        compute='_compute_phonecall_id_domain',
+        readonly=True,
+        store=False,
+    )
 
-    @api.onchange('task_id')
-    def set_phonecall_domain(self):
-        domain = [
-            ('opportunity_id', '=', False),
-            ('task_id', '=', False),
-        ]
-        if self.task_id:
-            partner_ids = self.get_partner_ids(field=self.task_id.partner_id)
-            domain.append(('partner_id', 'in', partner_ids))
+    @api.multi
+    @api.depends('task_id')
+    def _compute_phonecall_id_domain(self):
+        for rec in self:
+            domain = [
+                ('opportunity_id', '=', False),
+                ('task_id', '=', False),
+            ]
+            if rec.task_id:
+                partner_ids = rec.get_partner_ids(field=rec.task_id.partner_id)
+                domain.append(('partner_id', 'in', partner_ids))
 
-        return {
-            'domain': {
-                'phonecall_id': domain,
-            },
-        }
+            rec.phonecall_id_domain = json_dumps(domain)
 
     @api.multi
     def set_task_on_phonecall(self):
@@ -48,22 +53,24 @@ class SetLeadOnPhoneCallWizard(models.TransientModel):
 
     lead_id = fields.Many2one('crm.lead', string='Lead/Opportunity', default=_get_lead_id)
     phonecall_id = fields.Many2one('crm.phonecall', string='Phone call')
+    phonecall_id_domain = fields.Char(
+        compute='_compute_phonecall_id_domain',
+        readonly=True,
+        store=False,
+    )
 
-    @api.onchange('lead_id')
-    def set_phonecall_domain(self):
-        domain = [
-            ('opportunity_id', '=', False),
-            ('task_id', '=', False),
-        ]
-        if self.lead_id:
-            partner_ids = self.get_partner_ids(field=self.lead_id.partner_id)
-            domain.append(('partner_id', 'in', partner_ids))
-
-        return {
-            'domain': {
-                'phonecall_id': domain,
-            },
-        }
+    @api.multi
+    @api.depends('lead_id')
+    def _compute_phonecall_id_domain(self):
+        for rec in self:
+            domain = [
+                ('opportunity_id', '=', False),
+                ('task_id', '=', False),
+            ]
+            if rec.lead_id:
+                partner_ids = rec.get_partner_ids(field=self.lead_id.partner_id)
+                domain.append(('partner_id', 'in', partner_ids))
+            rec.phonecall_id_domain = json_dumps(domain)
 
     @api.multi
     def set_lead_on_phonecall(self):

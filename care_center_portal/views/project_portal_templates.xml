@@ -23,15 +23,6 @@
     </template>
 
      <template id="create_edit_alerts" name="Task Portal Create/Edit Alerts">
-
-        <div class="alert alert-success text-center rounded-0 fade show d-print-none mb-0" role="alert"
-                 t-if="request.params.get('status') == 'create_success'">
-            <t t-esc="record_string"/> created successfully!
-        </div>
-        <div class="alert alert-success text-center rounded-0 fade show d-print-none mb-0" role="alert"
-             t-if="request.params.get('status') == 'edit_success'">
-            Edits saved successfully!
-        </div>
         <div t-if="error_message" class="alert alert-danger text-center rounded-0 fade show d-print-none mb-0" role="alert">
             <t t-foreach="error_message" t-as="err">
                 <t t-esc="err"/><br />

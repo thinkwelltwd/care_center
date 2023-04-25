@@ -4,7 +4,6 @@
         <record id="sms_task_more_menu_server_action" model="ir.actions.server">
             <field name="name">SMS Task Partner</field>
             <field name="model_id" ref="model_project_task"/>
-            <field name="condition">True</field>
             <field name="state">code</field>
             <field name="code">action = record.sms_action()</field>
             <field name="binding_model_id" ref="project.model_project_task"/>
