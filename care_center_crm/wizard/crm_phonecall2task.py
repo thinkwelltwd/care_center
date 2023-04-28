@@ -4,6 +4,9 @@ from odoo import api, fields, models
 
 
 class CrmPhonecallToTaskWizard(models.TransientModel):
+    """
+    Convert a Phone Call into a Project Task.
+    """
     _name = "crm.phonecall2task.wizard"
     _description = 'Care Center CRM Phone Call To Task Wizard'
 
@@ -63,7 +66,6 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
 
         return {
             'name': task_id.name,
-            'view_type': 'form',
             'view_mode': 'form',
             'res_model': 'project.task',
             'type': 'ir.actions.act_window',

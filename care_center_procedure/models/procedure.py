@@ -81,7 +81,6 @@ class ProcedureProcedure(models.Model):
 
         return {
             'name': 'Add Checklist',
-            'view_type': 'form',
             'view_mode': 'form',
             'res_model': 'procedure.procedure',
             'view_id': False,
@@ -173,7 +172,6 @@ class ProcedureAssignment(models.Model):
 
         return {
             'name': '%s Documentation' % self.procedure_id.name,
-            'view_type': 'form',
             'view_mode': 'form',
             'res_model': 'procedure.assignment',
             'view_id': False,

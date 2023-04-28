@@ -105,7 +105,6 @@ class CrmLeadToTaskWizard(models.TransientModel):
         lead.active = False
         return {
             'name': task_id.name,
-            'view_type': 'form',
             'view_mode': 'form',
             'res_model': 'project.task',
             'type': 'ir.actions.act_window',
