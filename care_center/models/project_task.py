@@ -26,7 +26,7 @@ class ProjectTask(models.Model):
         'utm.medium',
         'Medium',
         help="This is the method of delivery. "
-        "Ex: Email / Phonecall / API / Website",
+             "Ex: Email / Phonecall / API / Website",
     )
     description = fields.Html('Private Note')
     task_active = fields.Boolean(compute='_task_active')
@@ -209,15 +209,22 @@ class ProjectTask(models.Model):
         if not self.project_id or not self.partner_id or self.mailserver_mode():
             return
 
-        proj_comp = self.project_id.company_id.name
-        part_comp = self.partner_id.company_id.name
+        proj_comp = self.project_id.company_id
+        part_comp = self.partner_id.company_id
 
         if part_comp != proj_comp:
-            raise ValidationError(
-                f'Project Company does not equal Partner Company \n\n'
-                f'Project {self.project_id.id}: {proj_comp}\n'
-                f'Partner {self.partner_id.id}: {part_comp}'
+            msg = 'Project "{project_name}-{project_id}" company "{proj_comp_id}" does ' \
+                  'not match Partner "{partner}-{partner_id}" company "{part_comp_id}".'.format(
+                project_id=self.project_id.id,
+                project_name=self.project_id.name,
+                partner=self.partner_id.name,
+                partner_id=self.partner_id.id,
+                # .id because website error message mangles message string if using .name :(
+                proj_comp_id=proj_comp.id,
+                part_comp_id=part_comp.id,
             )
+            # TODO in Odoo 13+, raise RedirectWarning and pass in an action + context for Project
+            raise ValidationError(msg)
 
     def confirm_relationships(self):
         """
