@@ -65,7 +65,6 @@ class MoveTimesheet(models.TransientModel):
             'res_model': 'project.task',
             'res_id': self.destination_task_id.id,
             'view_id': task_form.id,
-            'view_type': 'form',
             'view_mode': 'form',
         }
 
@@ -231,7 +230,6 @@ class SplitTimesheet(models.TransientModel):
             'res_model': 'project.task',
             'res_id': self.destination_task_id.id,
             'view_id': task_form.id,
-            'view_type': 'form',
             'view_mode': 'form',
         }
 

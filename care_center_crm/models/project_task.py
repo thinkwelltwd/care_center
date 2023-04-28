@@ -126,7 +126,6 @@ class ProjectTask(models.Model):
 
         return {
             'name': 'Convert Task to Opportunity',
-            'view_type': 'form',
             'view_mode': 'form',
             'view_id': self.env.ref('crm.crm_case_form_view_oppor').id,
             'res_model': 'crm.lead',

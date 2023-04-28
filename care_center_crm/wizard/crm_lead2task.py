@@ -107,7 +107,6 @@ class CrmLeadToTaskWizard(models.TransientModel):
 
         return {
             'name': 'Task created',
-            'view_type': 'form',
             'view_mode': 'form',
             'view_id': self.env.ref('project.view_task_form2').id,
             'res_model': 'project.task',

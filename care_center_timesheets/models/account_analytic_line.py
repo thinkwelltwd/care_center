@@ -146,7 +146,6 @@ class AccountAnalyticLine(models.Model):
             'res_model': 'move_timesheet_or_split.wizard',
             'view_id': wizard_form.id,
             'res_id': switch.id,
-            'view_type': 'form',
             'view_mode': 'form',
             'target': 'new'
         }

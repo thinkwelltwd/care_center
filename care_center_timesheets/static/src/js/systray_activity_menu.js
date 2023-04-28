@@ -44,7 +44,6 @@ ActivityMenu.include({
                 res_model: 'project.task',
                 res_id: data.active_task_id,
                 views: [[false, 'form']],
-                view_type: 'form',
                 view_mode: 'form',
             });
         } else if (data.my_timers === 1) {

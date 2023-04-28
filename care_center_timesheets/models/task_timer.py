@@ -199,7 +199,6 @@ class TaskTimer(models.AbstractModel):
             'res_model': 'move_timesheet_or_pause.wizard',
             'view_id': wizard_form.id,
             'res_id': switch.id,
-            'view_type': 'form',
             'view_mode': 'form',
             'target': 'new'
         }
@@ -431,7 +430,6 @@ class TaskTimer(models.AbstractModel):
             'res_model': 'timesheet_timer.wizard',
             'res_id': new.id,
             'view_id': wizard_form.id,
-            'view_type': 'form',
             'view_mode': 'form',
             'target': 'new',
         }
