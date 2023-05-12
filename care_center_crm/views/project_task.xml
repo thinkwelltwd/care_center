@@ -11,13 +11,13 @@
             </field>
 
             <xpath expr="//div[@name='button_box']" position="inside">
-                <button class="oe_inline oe_stat_button"
+                <button class="oe_stat_button"
                         type="object"
                         name="action_view_phonecalls"
                         icon="fa-phone">
                     <field string="Calls" name="phonecall_count" widget="statinfo"/>
                 </button>
-                <button class="oe_inline oe_stat_button"
+                <button class="oe_stat_button"
                         type="object"
                         name="convert_to_opportunity"
                         icon="fa-reply"

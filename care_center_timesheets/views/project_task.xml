@@ -64,19 +64,19 @@
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="timer_start" string="Start Timer" type="object"
                         attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', 'in', ('running', 'paused'))]}"
-                        class="oe_inline oe_stat_button" icon="fa-play"/>
+                        class="oe_stat_button" icon="fa-play"/>
                 <button name="timer_resume" string="Resume Timer" type="object"
                         attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', '!=', 'paused')]}"
-                        class="oe_inline oe_stat_button" icon="fa-play-circle"/>
+                        class="oe_stat_button" icon="fa-play-circle"/>
                 <button name="timer_pause" string="Pause Timer" type="object"
                         attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', '!=', 'running')]}"
-                        class="oe_inline oe_stat_button" icon="fa-pause"/>
+                        class="oe_stat_button" icon="fa-pause"/>
                 <button name="timer_stop" string="Stop Timer" type="object"
                         attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', 'in', ('paused', 'stopped'))]}"
-                        class="oe_stat_button oe_inline" icon="fa-stop-circle"/>
+                        class="oe_stat_button" icon="fa-stop-circle"/>
                 <button name="close_task" string="Close Ticket" type="object"
                         attrs="{'invisible': ['|', ('has_active_timesheets', '=', True), ('active', '=', False)]}"
-                        class="oe_stat_button oe_inline" icon="fa-stop"/>
+                        class="oe_stat_button" icon="fa-stop"/>
 
             </xpath>
 
