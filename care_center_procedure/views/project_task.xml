@@ -31,7 +31,7 @@
                             <field name="sequence"/>
                             <field name="procedure_id" string="Name"/>
                             <field name="recolor" invisible="1"/>
-                            <button name="show_documentation" string="Show Complete Procedure Documentation"
+                            <button name="show_documentation" title="Show Complete Procedure Documentation"
                                     type="object" icon="fa-book"/>
                             <field name="status"/>
                             <field name="write_date" readonly="True"/>
@@ -47,13 +47,13 @@
                             <field name="procedure_id" string="Name"/>
                             <field name="recolor" invisible="1"/>
                             <field name="status"/>
-                            <button name="change_status_done" string="Mark DONE" type="object" icon="fa-check"
-                                    attrs="{'invisible': ['|', ('status', 'in',['done', 'cancelled'])]}"/>
-                            <button name="change_status_todo" string="Mark TODO" type="object"
+                            <button name="change_status_done" title="Mark Done" type="object" icon="fa-check"
+                                    attrs="{'invisible': [('status', 'in',('done', 'cancelled'))]}"/>
+                            <button name="change_status_todo" title="Mark Todo" type="object"
                                     icon="fa-caret-square-o-right"
-                                    attrs="{'invisible': [ '|',('status', '=', 'todo')]}"/>
-                            <button name="change_status_cancelled" type="object" string="Mark CANCELLED" icon="fa-ban"
-                                    attrs="{'invisible': [ '|',('status', '=', 'cancelled')]}"/>
+                                    attrs="{'invisible': [('status', '=', 'todo')]}"/>
+                            <button name="change_status_cancelled" type="object" title="Mark Cancelled" icon="fa-ban"
+                                    attrs="{'invisible': [('status', '=', 'cancelled')]}"/>
                             <field name="write_date" readonly="True"/>
                         </tree>
                     </field>
