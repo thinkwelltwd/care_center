@@ -33,11 +33,11 @@ class SaleOrderLine(models.Model):
             details.append(line.name)
         return details
 
-    def _prepare_invoice_line(self, qty):
+    def _prepare_invoice_line(self, **optional_values):
         """
         Get Timesheet description(s) over to Invoice line
         """
-        res = super(SaleOrderLine, self)._prepare_invoice_line(qty)
+        res = super(SaleOrderLine, self)._prepare_invoice_line(**optional_values)
         desc_rule = self.order_id.timesheet_invoice_description
         if not desc_rule or desc_rule == '000':
             return res
