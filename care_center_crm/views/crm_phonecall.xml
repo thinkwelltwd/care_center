@@ -83,23 +83,23 @@
                 <field name="source_id" groups="base.group_no_one"/>
                 <field name="medium_id" groups="base.group_no_one"/>
                 <button name="button_end_call"
-                        string="Stop"
+                        title="Stop"
                         type="object"
                         icon="fa-stop-circle"
                         attrs="{'invisible': [('duration', '>', 0)]}"/>
-                <button string="Schedule Other Call"
+                <button title="Schedule Other Call"
                         icon="fa-phone"
                         name="%(crm_phonecall.phonecall_to_phonecall_act)d"
                         type="action"/>
-                <button string="Create Task"
+                <button title="Create Task"
                         icon="fa-life-ring"
                         name="%(create_task_from_phonecall_btn_action)d"
                         attrs="{'invisible':['|', ('opportunity_id','!=',False), ('task_id', '!=', False)]}"
                         type="action"/>
-                <button string="Meeting"
+                <button title="Meeting"
                         icon="fa-calendar"
                         name="action_make_meeting" type="object"/>
-                <button string="Convert to Opportunity"
+                <button title="Convert to Opportunity"
                         name="action_button_convert2opportunity"
                         states="open,pending"
                         icon="fa-hand-pointer-o"
