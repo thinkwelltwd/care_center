@@ -335,7 +335,7 @@ class TaskTimer(models.AbstractModel):
             ('user_id', '=', self.get_user_id()),
         ]) > 0
 
-    def _get_timesheet(self, status):
+    def _get_timesheet_timer(self, status):
         """Get currently running timesheet to Pause / Stop timer"""
         if not self.project_id:
             raise UserError(_('Please specify a project before closing Timesheet.'))
@@ -367,7 +367,7 @@ class TaskTimer(models.AbstractModel):
 
     def timer_pause(self):
         self.ensure_one()
-        timesheet = self._get_timesheet(status='running')
+        timesheet = self._get_timesheet_timer(status='running')
         if not timesheet:
             return
 
@@ -382,7 +382,7 @@ class TaskTimer(models.AbstractModel):
     def timer_resume(self):
         self.ensure_one()
         self._pause_active_timers()
-        timesheet = self._get_timesheet(status='paused')
+        timesheet = self._get_timesheet_timer(status='paused')
         if not timesheet:
             return
         timesheet.with_company(self.company_id.id).write({
@@ -399,7 +399,7 @@ class TaskTimer(models.AbstractModel):
         """
         self.ensure_one()
 
-        timesheet = self._get_timesheet(status='running')
+        timesheet = self._get_timesheet_timer(status='running')
         if not timesheet:
             return
         timesheet.clear_if_previously_running_timesheet()
@@ -432,7 +432,7 @@ class TaskTimer(models.AbstractModel):
         Close timesheet without wizard
         """
         self.ensure_one()
-        wip_timesheet = self._get_timesheet(status='running')
+        wip_timesheet = self._get_timesheet_timer(status='running')
         if not wip_timesheet:
             return False
 
