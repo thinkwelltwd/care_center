@@ -109,24 +109,26 @@ class TaskTimer(models.AbstractModel):
                 continue
 
             aa = task.project_id.analytic_account_id
-            team = task.project_id.team_id
             company_id = task.company_id.id
 
             data = {
                 'project_id': task.project_id.id,
                 'partner_id': task.partner_id.id,
-                'analytic_account_id': aa and aa.id,
-                'team_id': team and team.id,
-                'so_line': None,
+                'account_id': aa and aa.id,
+                'so_line': task.sale_line_id and task.sale_line_id.id,
                 'company_id': company_id,
                 'sheet_id': self.get_hr_timesheet_id(),
             }
 
-            # add date field so _get_timesheet_cost method
-            # in project_timesheet_currency app doesn't crash
-            for ts in task.timesheet_ids:
-                data['date'] = ts.date
-                ts.with_company(company_id).write(data)
+            task.timesheet_ids.filtered(
+                lambda ts: not ts.exclude_from_sale_order and not ts.timesheet_invoice_id
+            ).with_company(company_id).write(data)
+
+            # Clear Sale Order Line on excluded timesheets
+            data['so_line'] = False
+            task.timesheet_ids.filtered(
+                lambda ts: ts.exclude_from_sale_order
+            ).with_company(company_id).write(data)
 
     def _user_timer_status(self):
         for rec in self:

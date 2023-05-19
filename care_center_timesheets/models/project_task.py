@@ -48,7 +48,7 @@ class ProjectTask(models.Model):
         task = super(ProjectTask, self).write(vals)
 
         for record in self:
-            if vals.get('partner_id') or vals.get('project_id'):
+            if vals.get('partner_id') or vals.get('project_id') or vals.get('sale_line_id'):
                 record._update_timesheets()
 
         return task
@@ -209,15 +209,3 @@ class ProjectTask(models.Model):
                 }
             )]
         })
-
-    @api.onchange('sale_line_id')
-    def _onchange_sale_line_id(self):
-        """
-        Update timesheets with new sale_order_line
-        """
-        if not self.timesheet_ids:
-            return
-
-        self.timesheet_ids.filtered(
-            lambda ts: not ts.exclude_from_sale_order and not ts.timesheet_invoice_id
-        ).write({'so_line': self.sale_line_id.id})
