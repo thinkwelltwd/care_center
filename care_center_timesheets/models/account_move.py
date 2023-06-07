@@ -8,7 +8,7 @@ class AccountMove(models.Model):
         """
         Reset all timesheet invoice statuses
         """
-        invoice_ids = [invoice.id for invoice in self if invoice.type == 'out_invoice']
+        invoice_ids = [invoice.id for invoice in self if invoice.move_type == 'out_invoice']
 
         AccountAnalyticLine = self.env['account.analytic.line'].sudo()
         timesheets = AccountAnalyticLine.search([

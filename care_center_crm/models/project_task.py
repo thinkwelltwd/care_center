@@ -105,7 +105,7 @@ class ProjectTask(models.Model):
 
         opportunity = self.env['crm.lead'].create({
             'name': self.name,
-            'planned_revenue': 0.0,
+            'expected_revenue': 0.0,
             'probability': 0.0,
             'partner_id': self.partner_id.id,
             'user_id': self.user_id and self.user_id.id,
@@ -118,7 +118,7 @@ class ProjectTask(models.Model):
             'medium_id': self.medium_id and self.medium_id.id,
             'tag_ids': [(6, 0, self.get_tag_ids())],
         })
-        opportunity._onchange_partner_id()
+
         self.move_phonecalls(opportunity_id=opportunity.id)
         self.move_attachments(opportunity_id=opportunity.id)
         self.message_change_thread(opportunity)
@@ -127,7 +127,7 @@ class ProjectTask(models.Model):
         return {
             'name': 'Convert Task to Opportunity',
             'view_mode': 'form',
-            'view_id': self.env.ref('crm.crm_case_form_view_oppor').id,
+            'view_id': self.env.ref('sale_crm.crm_case_form_view_oppor').id,
             'res_model': 'crm.lead',
             'type': 'ir.actions.act_window',
             'nodestroy': True,

@@ -185,7 +185,6 @@ class ReassignTaskWizard(models.TransientModel):
                 body=self.get_body(),
                 subject=self.get_subject(),
                 message_type='email',
-                subtype=None,
                 parent_id=False,
                 attachments=None,
                 content_subtype='html',
