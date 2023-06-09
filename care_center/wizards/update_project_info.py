@@ -58,15 +58,14 @@ class UpdateProjectInfo(models.TransientModel):
         if self.add_follower and partner and partner.email:
             task.message_subscribe([self.current_task.partner_id.id])
 
+        new_project = self.new_project
         task.write({
             'partner_id': self.partner_id.id,
-            'project_id': self.new_project.id,
-            'sale_order_id': False,
-            'sale_line_id': False,
+            'project_id': new_project.id,
+            'sale_order_id': new_project.sale_order_id and new_project.sale_order_id.id,
+            'sale_line_id': new_project.sale_line_id and new_project.sale_line_id.id,
         })
-
-        so_line = task._default_sale_line_id()
-        if so_line:
-            task.sale_line_id = so_line
+        task._partner_id()
+        task._onchange_project()
 
         return True
