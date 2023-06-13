@@ -66,8 +66,6 @@ class CustomerPortal(CP):
             sortby = 'date'
         order = searchbar_sortings[sortby]['order']
 
-        # archive groups - Default Group By 'create_date'
-        archive_groups = self._get_archive_groups('project.project', domain)
         if date_begin and date_end:
             domain += [('create_date', '>', date_begin), ('create_date', '<=', date_end)]
         # projects count
@@ -96,7 +94,6 @@ class CustomerPortal(CP):
             'date_end': date_end,
             'projects': projects,
             'page_name': 'project',
-            'archive_groups': archive_groups,
             'default_url': '/my/projects',
             'pager': pager,
             'searchbar_sortings': searchbar_sortings,
@@ -165,22 +162,11 @@ class CustomerPortal(CP):
             partner = request.env.user.partner_id
 
         searchbar_sortings = {
-            'date': {
-                'label': _('Newest'),
-                'order': 'create_date desc'
-            },
-            'name': {
-                'label': _('Title'),
-                'order': 'name'
-            },
-            'stage': {
-                'label': _('Stage'),
-                'order': 'stage_id'
-            },
-            'update': {
-                'label': _('Last Stage Update'),
-                'order': 'date_last_stage_update desc'
-            },
+            'date': {'label': _('Newest'), 'order': 'create_date desc'},
+            'name': {'label': _('Title'), 'order': 'name'},
+            'stage': {'label': _('Stage'), 'order': 'stage_id, project_id'},
+            'project': {'label': _('Project'), 'order': 'project_id, stage_id'},
+            'update': {'label': _('Last Stage Update'), 'order': 'date_last_stage_update desc'},
         }
         searchbar_filters = {
             'all': {
@@ -192,36 +178,17 @@ class CustomerPortal(CP):
             },
         }
         searchbar_inputs = {
-            'content': {
-                'input': 'content',
-                'label': _('Search <span class="nolabel"> (in Content)</span>')
-            },
-            'message': {
-                'input': 'message',
-                'label': _('Search in Messages')
-            },
-            'customer': {
-                'input': 'customer',
-                'label': _('Search in Customer')
-            },
-            'stage': {
-                'input': 'stage',
-                'label': _('Search in Stages')
-            },
-            'all': {
-                'input': 'all',
-                'label': _('Search in All')
-            },
+            'content': {'input': 'content', 'label': _('Search <span class="nolabel"> (in Content)</span>')},
+            'message': {'input': 'message', 'label': _('Search in Messages')},
+            'customer': {'input': 'customer', 'label': _('Search in Customer')},
+            'stage': {'input': 'stage', 'label': _('Search in Stages')},
+            'project': {'input': 'project', 'label': _('Search in Project')},
+            'all': {'input': 'all', 'label': _('Search in All')},
         }
         searchbar_groupby = {
-            'none': {
-                'input': 'none',
-                'label': _('None')
-            },
-            'project': {
-                'input': 'project',
-                'label': _('Project')
-            },
+            'none': {'input': 'none', 'label': _('None')},
+            'project': {'input': 'project', 'label': _('Project')},
+            'stage': {'input': 'stage', 'label': _('Stage')},
         }
 
         # extends filterby criteria with project the customer has access to
@@ -259,10 +226,12 @@ class CustomerPortal(CP):
         # default filter by value
         if not filterby:
             filterby = 'all'
-        domain = searchbar_filters[filterby]['domain']
+        domain = searchbar_filters.get(filterby, searchbar_filters.get('all'))['domain']
 
-        # archive groups - Default Group By 'create_date'
-        archive_groups = self._get_archive_groups('project.task', domain)
+        # default group by value
+        if not groupby:
+            groupby = 'project'
+
         if date_begin and date_end:
             domain += [('create_date', '>', date_begin), ('create_date', '<=', date_end)]
 
@@ -280,6 +249,8 @@ class CustomerPortal(CP):
                 search_domain = OR([search_domain, [('message_ids.body', 'ilike', search)]])
             if search_in in ('stage', 'all'):
                 search_domain = OR([search_domain, [('stage_id', 'ilike', search)]])
+            if search_in in ('project', 'all'):
+                search_domain = OR([search_domain, [('project_id', 'ilike', search)]])
             domain += search_domain
 
         # task count
@@ -292,6 +263,7 @@ class CustomerPortal(CP):
                 'date_end': date_end,
                 'sortby': sortby,
                 'filterby': filterby,
+                'groupby': groupby,
                 'search_in': search_in,
                 'search': search
             },
@@ -302,12 +274,14 @@ class CustomerPortal(CP):
         # content according to pager and archive selected
         if groupby == 'project':
             order = "project_id, %s" % order  # force sort on project first to group by project in view
+        elif groupby == 'stage':
+            order = "stage_id, %s" % order  # force sort on stage first to group by stage in view
 
         tasks = request.env['project.task'].search(
             domain,
             order=order,
             limit=self._items_per_page,
-            offset=(page - 1) * self._items_per_page
+            offset=pager['offset']
         )
         request.session['my_tasks_history'] = tasks.ids[:100]
         if groupby == 'project':
@@ -323,13 +297,13 @@ class CustomerPortal(CP):
             'date_end': date_end,
             'grouped_tasks': grouped_tasks,
             'page_name': 'task',
-            'archive_groups': archive_groups,
             'default_url': '/my/tasks',
             'pager': pager,
             'searchbar_sortings': searchbar_sortings,
             'searchbar_groupby': searchbar_groupby,
             'searchbar_inputs': searchbar_inputs,
             'search_in': search_in,
+            'search': search,
             'sortby': sortby,
             'groupby': groupby,
             'searchbar_filters': OrderedDict(sorted(searchbar_filters.items())),

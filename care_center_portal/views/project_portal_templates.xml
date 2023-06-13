@@ -129,17 +129,13 @@
 
     <template id="portal_my_tasks" inherit_id="project.portal_my_tasks">
         <a t-attf-href="/my/task/#{task.id}?{{ keep_query() }}" position="attributes">
-            <attribute name="t-attf-href">{{ ((partner and partner.get_portal_url(record=task) or
-                task.get_portal_url())) + ('&amp;' + keep_query())}}
-            </attribute>
+            <attribute name="t-attf-href">{{ partner and partner.get_portal_url(record=task) or task.get_portal_url() }}?{{ keep_query() }}</attribute>
         </a>
     </template>
 
     <template id="list_projects" inherit_id="project.portal_my_projects">
         <a t-attf-href="/my/project/#{project.id}?{{ keep_query() }}" position="attributes">
-            <attribute name="t-attf-href">{{ ((partner and partner.get_portal_url(record=project) or
-                project.get_portal_url())) + ('&amp;' + keep_query())}}
-            </attribute>
+            <attribute name="t-attf-href">{{ partner and partner.get_portal_url(record=project) or project.get_portal_url() }}?{{ keep_query() }}</attribute>
         </a>
     </template>
 

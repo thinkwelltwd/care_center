@@ -8,15 +8,10 @@
         'base',
         'project',
         'portal',
-        # 'website_forum',
     ],
     'data': [
         'security/project_security.xml',
         'views/project_portal_templates.xml',
         'views/portal_templates.xml',
-        # 'views/assets.xml',
-    ],
-    'qweb': [
-        'static/src/xml/portal_chatter.xml'
     ]
 }
