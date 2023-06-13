@@ -67,7 +67,7 @@
                 <field name="project_id_domain" invisible="1"/>
             </field>
             <field name="project_id" position="before">
-                <field name="partner_id" widget="res_partner_many2one" class="o_task_customer_field"
+                <field name="partner_id" class="o_task_customer_field"
                        options="{'no_quick_create': True}" required="1"/>
             </field>
             <field name="parent_id" position="attributes">

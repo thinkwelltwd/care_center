@@ -72,10 +72,9 @@ class ResUsers(models.Model):
             self.env.cr.execute(my_timers_sql, [self.env.uid])
             task_timer_data = self.env.cr.dictfetchall()
             task_id, task_name = None, None
-            unique_ids = set()
+            unique_ids = set(task['task_id'] for task in task_timer_data)
 
             for task in task_timer_data:
-                unique_ids.add(task['task_id'])
                 if task['timer_status'] == 'running':
                     task_id = task['task_id']
                     task_name = task['name']

@@ -46,6 +46,12 @@ class AccountAnalyticLine(models.Model):
         string='Timer Status',
     )
 
+    def init(self):
+        self._cr.execute("""
+        CREATE INDEX IF NOT EXISTS systray_optimize_analytic_line_user_idx
+        ON account_analytic_line(user_id, task_id) WHERE task_id IS NOT NULL;
+        """)
+
     @api.onchange('full_duration', 'factor')
     def _compute_durations(self):
         self.unit_amount = get_factored_duration(

@@ -38,6 +38,12 @@ class ProjectTask(models.Model):
         compute='_has_active_timesheets',
     )
 
+    def init(self):
+        self._cr.execute("""
+        CREATE INDEX IF NOT EXISTS systray_optimize_active_task_user_idx
+        ON project_task(user_id) WHERE active = True;
+        """)
+
     def _has_active_timesheets(self):
         for task in self:
             task.has_active_timesheets = task.timesheet_ids.filtered(
