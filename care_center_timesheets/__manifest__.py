@@ -4,7 +4,7 @@
     'author': "Dave Burkholder <dave@thinkwelldesigns.com>",
     'website': "http://www.thinkwelldesigns.com",
     'category': 'Projects and Sales',
-    'version': '14.0.1.0.0',
+    'version': '15.0.1.0.0',
     'depends': [
         'sale_timesheet_line_exclude',
         'hr_timesheet_sheet',

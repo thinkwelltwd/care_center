@@ -3,7 +3,7 @@
     'summary': """Allows Portal Users to Create Tickets""",
     'author': "Denver Risser",
     'category': 'Portal',
-    'version': '14.0.1.0.0',
+    'version': '15.0.1.0.0',
     'depends': [
         'base',
         'project',
