@@ -88,8 +88,8 @@
 
     <template id="smart_button" inherit_id="care_center_portal.button">
         <a position="inside">
-            <span t-esc="count"/>
-            <span t-esc="text"/>
+            <span t-out="count"/>
+            <span t-out="text"/>
         </a>
     </template>
 
@@ -141,7 +141,7 @@
              t-attf-style="width: {{ field_width }}%;">
             <label t-if="not no_label" t-att-for="field_name"
                    t-attf-class="col-sm-{{ label_size or 3 }} col-form-label py-0 px-1 align-self-{{ label_pos or 'center' }}">
-                <strong><t t-esc="string"/>:
+                <strong><t t-out="string"/>:
                 </strong>
             </label>
             <t t-if="error_value">
@@ -205,14 +205,14 @@
         <input t-att-name="field_name" position="replace">
             <select t-att-name="field_name"
                     t-attf-class="form-control px-1 #{error.get(field_name) and 'is-invalid' or ''}">
-                <option value=""><t t-esc="string"/>...
+                <option value=""><t t-out="string"/>...
                 </option>
                 <t t-foreach="records or []" t-as="rec">
                     <option
                             t-att-value="rec[0]"
                             t-att-selected="rec[0] == (record_value or optional_test)"
                             t-att="{k: rec[-1] if not v else v for k, v in extra_attrs.items() } if extra_attrs else ''">
-                        <t t-esc="rec[1]"/>
+                        <t t-out="rec[1]"/>
                     </option>
                 </t>
             </select>

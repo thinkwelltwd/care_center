@@ -25,16 +25,16 @@
                                 <tbody>
                                     <tr style="width:100%;height:30px;border:1px solid">
                                         <td style="vertical-align:middle;text-align:center;border:1px solid">
-                                            <span t-esc="o.code"/>
+                                            <span t-out="o.code"/>
                                         </td>
                                         <td style="vertical-align:middle;text-align:center;border:1px solid">
-                                            <span t-esc="o.create_date.strftime('%m/%d/%Y')"/>
+                                            <span t-out="o.create_date.strftime('%m/%d/%Y')"/>
                                         </td>
                                         <th style="vertical-align:middle;text-align:center;border:1px solid">
-                                            <span t-esc="o.partner_id.display_name"/>
+                                            <span t-out="o.partner_id.display_name"/>
                                         </th>
                                         <th style="vertical-align:middle;text-align:center;border:1px solid">
-                                            <span t-esc="o.user_id.display_name"/>
+                                            <span t-out="o.user_id.display_name"/>
                                         </th>
                                     </tr>
                                 </tbody>

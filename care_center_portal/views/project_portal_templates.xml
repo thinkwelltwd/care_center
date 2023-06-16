@@ -25,7 +25,7 @@
     <template id="create_edit_alerts" name="Task Portal Create/Edit Alerts">
         <div t-if="error_message" class="alert alert-danger text-center rounded-0 fade show d-print-none mb-0" role="alert">
             <t t-foreach="error_message" t-as="err">
-                <t t-esc="err"/>
+                <t t-out="err"/>
                 <br/>
             </t>
         </div>
