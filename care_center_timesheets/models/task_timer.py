@@ -236,7 +236,7 @@ class TaskTimer(models.AbstractModel):
         Activity = self.env['mail.activity']
         user_id = self.get_user_id()
         activity_type_id = self.env['mail.activity.type'].search([('name', '=', 'Sign Out')]).mapped('id')
-        res_model_id = self.env['ir.model'].search([('model', '=', 'project.task')]).mapped('id')
+        res_model_id = self.env['ir.model'].sudo().search([('model', '=', 'project.task')]).mapped('id')
 
         if not activity_type_id:
             return
