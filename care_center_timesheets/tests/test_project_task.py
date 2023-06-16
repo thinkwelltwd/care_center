@@ -2,7 +2,7 @@ from odoo.tests import common
 from odoo.exceptions import UserError, ValidationError
 
 
-class TestTask(common.SavepointCase):
+class TestTask(common.TransactionCase):
 
     @classmethod
     def setUpClass(cls):

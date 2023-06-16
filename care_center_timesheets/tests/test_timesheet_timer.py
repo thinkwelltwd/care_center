@@ -4,7 +4,7 @@ from odoo.tests import common
 from odoo.tools import float_round
 
 
-class TestTimesheetTimer(common.SavepointCase):
+class TestTimesheetTimer(common.TransactionCase):
 
     @classmethod
     def setUpClass(cls):
