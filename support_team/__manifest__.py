@@ -19,9 +19,9 @@
         'views/support_team.xml',
         'views/project_task.xml',
         'views/support_team_dashboard.xml',
-     ],
-    'qweb': [
-        'static/src/xml/support_team_dashboard.xml',
     ],
+    'assets': {
+        'web.assets_qweb': ['/support_team/static/src/xml/support_team_dashboard.xml'],
+    },
     'installable': True,
 }

@@ -26,7 +26,7 @@
         'views/timesheet_timer.xml',
         'views/move_timesheet.xml',
     ],
-    'qweb': [
-        'static/src/xml/systray.xml',
-    ],
+    'assets': {
+        'web.assets_qweb': ['/care_center_timesheets/static/src/xml/systray.xml'],
+    },
 }
