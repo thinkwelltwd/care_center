@@ -17,4 +17,5 @@
     'data': [
         'views/res_config.xml',
     ],
+    'license': 'LGPL-3',
 }

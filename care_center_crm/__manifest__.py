@@ -30,4 +30,5 @@
         'views/crm_phonecall_to_phonecall.xml',
         'views/systray.xml',
     ],
+    'license': 'LGPL-3',
 }

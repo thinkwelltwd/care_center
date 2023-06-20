@@ -16,4 +16,5 @@
         'views/res_partner.xml',
         'views/extra_contactinfo.xml',
     ],
+    'license': 'LGPL-3',
 }

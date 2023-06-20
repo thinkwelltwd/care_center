@@ -16,4 +16,5 @@
         'views/add_internal_phonecall.xml',
         'views/end_internal_phonecall.xml',
     ],
+    'license': 'LGPL-3',
 }

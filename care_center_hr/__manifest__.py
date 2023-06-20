@@ -13,4 +13,5 @@
         'report/hr_attendance.xml',
         'report/hr_timesheet_attendance.xml',
     ],
+    'license': 'LGPL-3',
 }

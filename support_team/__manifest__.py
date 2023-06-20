@@ -24,4 +24,5 @@
         'web.assets_qweb': ['/support_team/static/src/xml/support_team_dashboard.xml'],
     },
     'installable': True,
+    'license': 'LGPL-3',
 }

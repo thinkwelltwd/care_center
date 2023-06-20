@@ -10,4 +10,5 @@
         'views/project_task.xml',
     ],
     "installable": True,
+    'license': 'LGPL-3',
 }

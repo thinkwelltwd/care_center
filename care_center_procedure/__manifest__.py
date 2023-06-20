@@ -14,4 +14,5 @@
         'views/project_task.xml',
         'views/procedure.xml',
     ],
+    'license': 'LGPL-3',
 }

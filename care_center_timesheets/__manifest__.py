@@ -29,4 +29,5 @@
     'assets': {
         'web.assets_qweb': ['/care_center_timesheets/static/src/xml/systray.xml'],
     },
+    'license': 'LGPL-3',
 }

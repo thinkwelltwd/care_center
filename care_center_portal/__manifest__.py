@@ -13,5 +13,6 @@
         'security/project_security.xml',
         'views/project_portal_templates.xml',
         'views/portal_templates.xml',
-    ]
+    ],
+    'license': 'LGPL-3',
 }
