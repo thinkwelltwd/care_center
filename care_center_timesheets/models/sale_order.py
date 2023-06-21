@@ -83,7 +83,7 @@ class SaleOrderLine(models.Model):
             qty_invoiced = 0.0
             for invoice_line in line.invoice_lines:
                 if invoice_line.move_id.state != 'cancel':
-                    line_rounded = invoice_line.uom_id._compute_quantity(
+                    line_rounded = invoice_line.product_uom_id._compute_quantity(
                         invoice_line.quantity, line.product_uom, rounding_method='HALF-UP'
                     )
                     if invoice_line.move_id.move_type == 'out_invoice':

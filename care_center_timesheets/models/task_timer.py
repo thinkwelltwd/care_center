@@ -70,9 +70,10 @@ class TaskTimer(models.AbstractModel):
         self.ensure_one()
         employee = self.env['hr.employee'].search([
             ('user_id', '=', self.get_user_id()),
+            ('company_id', '=', self.company_id.id),
         ], limit=1)
         if not employee:
-            raise UserError('%s is not linked to an Employee Record' % self.env.user.name)
+            raise UserError(f'{self.env.user.name} has no Employee in {self.company_id.name}')
 
         Param = self.env['ir.config_parameter'].sudo()
         manage_hr_time = Param.get_param('hr_timesheet.manage_hr_timesheet', default=True)
