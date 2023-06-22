@@ -36,7 +36,7 @@ class ProjectTask(models.Model):
                     ('id', '=', values['medium_id']),
                 ]).mapped('name')
                 if medium and medium[0] in ('Email', 'API'):
-                    values['user_id'] = False
+                    values['user_ids'] = False
 
         return super(ProjectTask, self).create(vals_list)
 

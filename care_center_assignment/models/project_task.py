@@ -25,13 +25,13 @@ class ProjectTask(models.Model):
 
     def _assignment_message(self):
         for task in self:
-            if task.user_id:
-                uname = task.user_id.name
+            if task.user_ids:
+                unames = ', '.join(u.name for u in task.user_ids)
                 if not task.team_id:
-                    task.assignment_message = "%s's queue" % uname
+                    task.assignment_message = f"{unames}'s queue"
                 else:
-                    task.assignment_message = "%s from the %s team" % (uname, task.team_id.name)
+                    task.assignment_message = f"{unames} from the {task.team_id.name} team"
             elif task.team_id:
-                task.assignment_message = 'the %s team' % task.team_id.name
+                task.assignment_message = f'the {task.team_id.name} team'
             else:
                 task.assignment_message = 'the general queue'

@@ -176,7 +176,7 @@ class TestTask(common.TransactionCase):
         # now we shouldn't be able to create another time sheet on this task
         with self.assertRaises(ValidationError):
             self.env['account.analytic.line'].create({
-                'name': 'Ooops. Ned to add more time',
+                'name': 'Ooops. Need to add more time',
                 'user_id': self.user_projectuser.id,
                 'task_id': self.task.id,
                 'project_id': self.api_project.id,

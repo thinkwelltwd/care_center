@@ -10,27 +10,27 @@ class MailThread(models.AbstractModel):
     _name = 'mail.thread'
     _inherit = 'mail.thread'
 
-    def message_subscribe(self, partner_ids=None, channel_ids=None, subtype_ids=None):
+    def message_subscribe(self, *args, **kwargs):
         """
         Override this method, so that followers are disabled when calling
         various action methods on an existing record.
         """
         if self.env.context.get('disable_auto_subscribe', False):
             return True
-        return super().message_subscribe(partner_ids=partner_ids, channel_ids=channel_ids, subtype_ids=subtype_ids)
+        return super().message_subscribe(*args, **kwargs)
 
     def _message_auto_subscribe(self, *args, **kwargs):
         if self.env.context.get('disable_auto_subscribe', False):
             return True
         return super()._message_auto_subscribe(*args, **kwargs)
 
-    def _message_auto_subscribe_followers(self, updated_values, default_subtype_ids):
+    def _message_auto_subscribe_followers(self, *args, **kwargs):
         """
         Override this method, so that followers are disabled when creating new records.
         """
         if self.env.context.get('disable_auto_subscribe', False):
             return []
-        return super()._message_auto_subscribe_followers(updated_values, default_subtype_ids)
+        return super()._message_auto_subscribe_followers(*args, **kwargs)
 
 
 class DisableFollowers(models.AbstractModel):

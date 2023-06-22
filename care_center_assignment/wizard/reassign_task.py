@@ -72,13 +72,13 @@ class ReassignTaskWizard(models.TransientModel):
     @api.constrains('assigned_to', 'team_id')
     def verify_assignment_changed(self):
         if self.assigned_to:
-            if self.assigned_to.id == self.task_id.user_id.id:
-                raise ValidationError('The Task is already assigned to %s' % self.assigned_to.name)
+            if self.assigned_to in self.task_id.user_ids:
+                raise ValidationError(f'The Task is already assigned to {self.assigned_to.name}')
 
         if self.team_id:
             if self.team_id == self.task_id.team_id:
                 raise ValidationError(
-                    'The Task is already assigned to the %s Team' % self.team_id.name
+                    f'The Task is already assigned to the {self.team_id.name} Team'
                 )
 
     @api.onchange('assigned_to', 'team_id')
@@ -109,7 +109,7 @@ class ReassignTaskWizard(models.TransientModel):
 
     def assignment(self):
         if self.team_id:
-            return 'the %s Team' % self.team_id.name
+            return f'the {self.team_id.name} Team'
         return 'you'
 
     def get_partner_ids(self):
@@ -123,11 +123,8 @@ class ReassignTaskWizard(models.TransientModel):
 
     def get_subject(self):
         if self.assigned_to:
-            return '%s has assigned a Task to you' % self.env.user.name
-        return '{by} has assigned a Task to the {team} Team'.format(
-            by=self.env.user.name,
-            team=self.team_id.name,
-        )
+            return f'{self.env.user.name} has assigned a Task to you'
+        return f'{self.env.user.name} has assigned a Task to the {self.team_id.name} Team'
 
     def get_body(self):
         return """
@@ -167,8 +164,13 @@ class ReassignTaskWizard(models.TransientModel):
             'task_id': self.task_id.id,
         })
 
+        if assigned_to:
+            user_ids = [(6, 0, [assigned_to])]
+        else:
+            user_ids = [(5, 0, 0)]
+
         stats = {
-            'user_id': self.assigned_to and self.assigned_to.id,
+            'user_ids': user_ids,
         }
         if self.team_id:
             stats['team_id'] = self.team_id.id

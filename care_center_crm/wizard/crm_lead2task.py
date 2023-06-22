@@ -87,12 +87,13 @@ class CrmLeadToTaskWizard(models.TransientModel):
 
         company_id = lead.partner_id.company_id.id
         Task = self.env['project.task'].with_company(company_id)
+        user_id = lead.user_id and lead.user_id.id
         task_id = Task.create({
             'name': lead.name,
             'description': lead.description,
             'project_id': self.project_id.id,
             'partner_id': lead.partner_id.id,
-            'user_id': lead.user_id and lead.user_id.id,
+            'user_ids': [(6, 0, [user_id])] if user_id else False,
             'medium_id': (lead.medium_id and lead.medium_id.id) or False,
             'team_id': self.get_team_id(lead=lead),
             'company_id': company_id,

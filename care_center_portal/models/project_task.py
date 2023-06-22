@@ -20,7 +20,7 @@ class ProjectTask(models.Model):
         return self.handle_update()
 
     def handle_create(self, partner, values):
-        values['user_id'] = False
+        values['user_ids'] = False
         values['company_id'] = partner.company_id.id
         values['project_id'] = int(values['project_id'])
         return self.create(values)
