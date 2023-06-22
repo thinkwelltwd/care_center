@@ -17,7 +17,7 @@
                         help="Assign a Procedure to this Ticket"/>
             </header>
 
-            <field name="user_id" position="before">
+            <field name="user_ids" position="before">
                 <field name="procedure_count" invisible="1"/>
                 <field name="checklist_count" invisible="1"/>
             </field>

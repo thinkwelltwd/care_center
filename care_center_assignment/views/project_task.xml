@@ -24,9 +24,9 @@
             <field name="user_id" position="attributes">
                 <attribute name="readonly">1</attribute>
             </field>
-            <field name="team_id" position="attributes">
-                <attribute name="readonly">1</attribute>
-            </field>
+<!--            <field name="team_id" position="attributes">-->
+<!--                <attribute name="readonly">1</attribute>-->
+<!--            </field>-->
 
             <notebook position="inside">
                 <page string="Assignments" attrs="{'invisible': [('assignment_count', '=', 0)]}">

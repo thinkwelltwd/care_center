@@ -9,9 +9,6 @@
             <field name="partner_id" position="attributes">
                 <attribute name="readonly">1</attribute>
             </field>
-            <field name="user_id" position="attributes">
-                <attribute name="readonly">1</attribute>
-            </field>
             <field name="company_id" position="attributes">
                 <attribute name="readonly">1</attribute>
             </field>
@@ -64,9 +61,9 @@
             </field>
             <field name="sequence" position="after">
                 <field name="medium_id" options="{'no_create': True, 'no_open': True}"/>
-                <field name="project_id_domain" invisible="1"/>
             </field>
             <field name="project_id" position="before">
+                <field name="project_id_domain" invisible="1"/>
                 <field name="partner_id" class="o_task_customer_field"
                        options="{'no_quick_create': True}" required="1"/>
             </field>
