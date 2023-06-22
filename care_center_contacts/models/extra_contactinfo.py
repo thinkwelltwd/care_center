@@ -8,7 +8,7 @@ valid_email = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 
 class ExtraContactInfo(models.Model):
     _name = 'extra.contactinfo'
-    _inherit = ['phone.validation.mixin']
+    _inherit = ['mail.thread.phone']
     _description = 'Extra Contact Info'
 
     name = fields.Char(
@@ -40,6 +40,9 @@ class ExtraContactInfo(models.Model):
             'Extra Phone or Email records must be unique!',
         ),
     ]
+
+    def _phone_get_number_fields(self):
+        return ['name']
 
     @api.constrains('name', 'type')
     def _validate_email_address(self):
