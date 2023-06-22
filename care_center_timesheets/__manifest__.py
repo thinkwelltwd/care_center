@@ -22,12 +22,16 @@
         'views/project_task.xml',
         'views/res_config.xml',
         'views/sale.xml',
-        'views/systray.xml',
         'views/timesheet_timer.xml',
         'views/move_timesheet.xml',
     ],
     'assets': {
-        'web.assets_qweb': ['/care_center_timesheets/static/src/xml/systray.xml'],
+        'web.assets_backend': [
+            '/care_center_timesheets/static/src/js/systray_activity_menu.js',
+        ],
+        'web.assets_qweb': [
+            '/care_center_timesheets/static/src/xml/systray.xml',
+        ],
     },
     'license': 'LGPL-3',
 }

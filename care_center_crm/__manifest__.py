@@ -28,7 +28,11 @@
         'views/project_task.xml',
         'views/add_phonecall.xml',
         'views/crm_phonecall_to_phonecall.xml',
-        'views/systray.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            '/care_center_crm/static/src/js/systray_activity_menu.js',
+        ],
+    },
     'license': 'LGPL-3',
 }
