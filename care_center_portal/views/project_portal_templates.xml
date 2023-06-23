@@ -127,8 +127,8 @@
         </t>
     </template>
 
-    <template id="portal_my_tasks" inherit_id="project.portal_my_tasks">
-        <a t-attf-href="/my/task/#{task.id}?{{ keep_query() }}" position="attributes">
+    <template id="portal_my_tasks" inherit_id="project.portal_tasks_list">
+        <a t-attf-href="/my/#{task_url}/#{task.id}?{{ keep_query() }}" position="attributes">
             <attribute name="t-attf-href">{{ partner and partner.get_portal_url(record=task) or task.get_portal_url() }}?{{ keep_query() }}</attribute>
         </a>
     </template>

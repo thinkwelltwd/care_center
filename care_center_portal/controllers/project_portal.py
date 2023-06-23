@@ -6,7 +6,7 @@ from odoo.addons.project.controllers.portal import CustomerPortal as CP
 
 from odoo import http, tools, _
 from odoo.http import request
-from odoo.osv.expression import OR
+from odoo.osv.expression import AND
 from odoo.tools import groupby as groupbyelem
 
 
@@ -53,14 +53,8 @@ class CustomerPortal(CP):
         domain = [('message_partner_ids', 'child_of', partner.commercial_partner_id.id)]
 
         searchbar_sortings = {
-            'date': {
-                'label': _('Newest'),
-                'order': 'create_date desc'
-            },
-            'name': {
-                'label': _('Name'),
-                'order': 'name'
-            },
+            'date': {'label': _('Newest'), 'order': 'create_date desc'},
+            'name': {'label': _('Name'), 'order': 'name'},
         }
         if not sortby:
             sortby = 'date'
@@ -68,25 +62,20 @@ class CustomerPortal(CP):
 
         if date_begin and date_end:
             domain += [('create_date', '>', date_begin), ('create_date', '<=', date_end)]
+
         # projects count
         project_count = Project.search_count(domain)
         # pager
         pager = portal_pager(
             url="/my/projects",
-            url_args={
-                'date_begin': date_begin,
-                'date_end': date_end,
-                'sortby': sortby
-            },
+            url_args={'date_begin': date_begin, 'date_end': date_end, 'sortby': sortby},
             total=project_count,
             page=page,
             step=self._items_per_page
         )
 
         # content according to pager and archive selected
-        projects = Project.search(
-            domain, order=order, limit=self._items_per_page, offset=pager['offset']
-        )
+        projects = Project.search(domain, order=order, limit=self._items_per_page, offset=pager['offset'])
         request.session['my_projects_history'] = projects.ids[:100]
 
         values.update({
@@ -147,7 +136,7 @@ class CustomerPortal(CP):
             filterby=None,
             search=None,
             search_in='content',
-            groupby='project',
+            groupby=None,
             partner_id=None,
             **kw
     ):
@@ -156,40 +145,20 @@ class CustomerPortal(CP):
         supporting tasks for records (eg. devices) not related to logged in user.  Added partner routes & partner_id param.
         """
         values = self._prepare_portal_layout_values()
+        searchbar_sortings = self._task_get_searchbar_sortings()
+        searchbar_sortings = dict(sorted(self._task_get_searchbar_sortings().items(),
+                                         key=lambda item: item[1]["sequence"]))
 
         partner = request.env['res.partner'].sudo().browse(partner_id)
         if not partner:
             partner = request.env.user.partner_id
 
-        searchbar_sortings = {
-            'date': {'label': _('Newest'), 'order': 'create_date desc'},
-            'name': {'label': _('Title'), 'order': 'name'},
-            'stage': {'label': _('Stage'), 'order': 'stage_id, project_id'},
-            'project': {'label': _('Project'), 'order': 'project_id, stage_id'},
-            'update': {'label': _('Last Stage Update'), 'order': 'date_last_stage_update desc'},
-        }
         searchbar_filters = {
-            'all': {
-                'label':
-                    _('All'),
-                # Revamped domain to be based off passed in partner_id
-                'domain':
-                    [('project_id.message_partner_ids', 'child_of', partner.commercial_partner_id.id)]
-            },
+            'all': {'label': _('All'), 'domain': [('project_id', '!=', False), ('project_id.message_partner_ids', 'child_of', partner.commercial_partner_id.id)]},
         }
-        searchbar_inputs = {
-            'content': {'input': 'content', 'label': _('Search <span class="nolabel"> (in Content)</span>')},
-            'message': {'input': 'message', 'label': _('Search in Messages')},
-            'customer': {'input': 'customer', 'label': _('Search in Customer')},
-            'stage': {'input': 'stage', 'label': _('Search in Stages')},
-            'project': {'input': 'project', 'label': _('Search in Project')},
-            'all': {'input': 'all', 'label': _('Search in All')},
-        }
-        searchbar_groupby = {
-            'none': {'input': 'none', 'label': _('None')},
-            'project': {'input': 'project', 'label': _('Project')},
-            'stage': {'input': 'stage', 'label': _('Stage')},
-        }
+
+        searchbar_inputs = self._task_get_searchbar_inputs()
+        searchbar_groupby = self._task_get_searchbar_groupby()
 
         # extends filterby criteria with project the customer has access to
         projects = request.env['project.project'].search([
@@ -198,31 +167,25 @@ class CustomerPortal(CP):
         ])
         for project in projects:
             searchbar_filters.update({
-                str(project.id): {
-                    'label': project.name,
-                    'domain': [('project_id', '=', project.id)]
-                }
+                str(project.id): {'label': project.name, 'domain': [('project_id', '=', project.id)]}
             })
 
         # extends filterby criteria with project (criteria name is the project id)
         # Note: portal users can't view projects they don't follow
-        project_groups = request.env['project.task'].read_group([
-            ('project_id', 'not in', projects.ids)
-        ], ['project_id'], ['project_id'])
+        project_groups = request.env['project.task'].read_group([('project_id', 'not in', projects.ids)],
+                                                                ['project_id'], ['project_id'])
         for group in project_groups:
             proj_id = group['project_id'][0] if group['project_id'] else False
             proj_name = group['project_id'][1] if group['project_id'] else _('Others')
             searchbar_filters.update({
-                str(proj_id): {
-                    'label': proj_name,
-                    'domain': [('project_id', '=', proj_id)]
-                }
+                str(proj_id): {'label': proj_name, 'domain': [('project_id', '=', proj_id)]}
             })
 
         # default sort by value
         if not sortby:
             sortby = 'date'
         order = searchbar_sortings[sortby]['order']
+
         # default filter by value
         if not filterby:
             filterby = 'all'
@@ -237,60 +200,40 @@ class CustomerPortal(CP):
 
         # search
         if search and search_in:
-            search_domain = []
-            if search_in in ('content', 'all'):
-                search_domain = OR([
-                    search_domain,
-                    ['|', ('name', 'ilike', search), ('description', 'ilike', search)]
-                ])
-            if search_in in ('customer', 'all'):
-                search_domain = OR([search_domain, [('partner_id', 'ilike', search)]])
-            if search_in in ('message', 'all'):
-                search_domain = OR([search_domain, [('message_ids.body', 'ilike', search)]])
-            if search_in in ('stage', 'all'):
-                search_domain = OR([search_domain, [('stage_id', 'ilike', search)]])
-            if search_in in ('project', 'all'):
-                search_domain = OR([search_domain, [('project_id', 'ilike', search)]])
-            domain += search_domain
+            domain += self._task_get_search_domain(search_in, search)
+
+        TaskSudo = request.env['project.task'].sudo()
+        domain = AND([domain, request.env['ir.rule']._compute_domain(TaskSudo._name, 'read')])
 
         # task count
-        task_count = request.env['project.task'].search_count(domain)
+        task_count = TaskSudo.search_count(domain)
         # pager
         pager = portal_pager(
             url="/my/tasks",
-            url_args={
-                'date_begin': date_begin,
-                'date_end': date_end,
-                'sortby': sortby,
-                'filterby': filterby,
-                'groupby': groupby,
-                'search_in': search_in,
-                'search': search
-            },
+            url_args={'date_begin': date_begin, 'date_end': date_end, 'sortby': sortby, 'filterby': filterby, 'groupby': groupby, 'search_in': search_in, 'search': search},
             total=task_count,
             page=page,
             step=self._items_per_page
         )
         # content according to pager and archive selected
-        if groupby == 'project':
-            order = "project_id, %s" % order  # force sort on project first to group by project in view
-        elif groupby == 'stage':
-            order = "stage_id, %s" % order  # force sort on stage first to group by stage in view
+        order = self._task_get_order(order, groupby)
 
-        tasks = request.env['project.task'].search(
-            domain,
-            order=order,
-            limit=self._items_per_page,
-            offset=pager['offset']
-        )
+        tasks = TaskSudo.search(domain, order=order, limit=self._items_per_page, offset=pager['offset'])
         request.session['my_tasks_history'] = tasks.ids[:100]
-        if groupby == 'project':
-            grouped_tasks = [
-                request.env['project.task'].concat(*g)
-                for k, g in groupbyelem(tasks, itemgetter('project_id'))
-            ]
+
+        groupby_mapping = self._task_get_groupby_mapping()
+        group = groupby_mapping.get(groupby)
+        if group:
+            grouped_tasks = [request.env['project.task'].concat(*g) for k, g in groupbyelem(tasks, itemgetter(group))]
         else:
             grouped_tasks = [tasks]
+
+        task_states = dict(request.env['project.task']._fields['kanban_state']._description_selection(request.env))
+        if sortby == 'status':
+            if groupby == 'none' and grouped_tasks:
+                grouped_tasks[0] = grouped_tasks[0].sorted(lambda tasks: task_states.get(tasks.kanban_state))
+            else:
+                grouped_tasks.sort(key=lambda tasks: task_states.get(tasks[0].kanban_state))
 
         values.update({
             'date': date_begin,
@@ -298,6 +241,7 @@ class CustomerPortal(CP):
             'grouped_tasks': grouped_tasks,
             'page_name': 'task',
             'default_url': '/my/tasks',
+            'task_url': 'task',
             'pager': pager,
             'searchbar_sortings': searchbar_sortings,
             'searchbar_groupby': searchbar_groupby,
@@ -517,8 +461,6 @@ class CustomerPortal(CP):
             msg = f"Device name {context['name']} already exists!"
         if 'username' in msg:
             partner = request.env['res.partner'].sudo().browse(int(context['contact_id']))
-            msg = msg.replace("None", partner.username).replace('(',
-                                                                '').replace(')',
-                                                                            '').replace("'", '', 2)
+            msg = msg.replace("None", partner.username).replace('(', '').replace(')', '').replace("'", '', 2)
         context.update({'error_message': [msg]})
         context.update(values)
