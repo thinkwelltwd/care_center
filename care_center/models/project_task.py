@@ -311,8 +311,8 @@ class ProjectTaskType(models.Model):
 
     _sql_constraints = [
         (
-            'task_type_name_unique',
-            'unique(name)',
-            'There is already a task stage with that name!',
+            'task_type_name_unique_per_user',
+            'unique(name,user_id)',
+            'There is already a task stage by this name assigned to this user!',
         ),
     ]
