@@ -1,21 +1,15 @@
-odoo.define('care_center_timesheets.systray.ActivityMenu', function (require) {
-"use strict";
+/** @odoo-module **/
 
-var ActivityMenu = require('mail.systray.ActivityMenu');
+import ActivityMenu from '@mail/js/systray/systray_activity_menu';
+
 
 ActivityMenu.include({
     events: _.extend({}, ActivityMenu.prototype.events, {
         'click .o_timer_action': '_onTimerFilterClick',
     }),
 
-    /**
-     * Redirect to particular model view
-     * @private
-     * @param {MouseEvent} event
-     */
     _onActivityFilterClick: function (event) {
-
-        var data = _.extend({}, $(event.currentTarget).data(), $(event.target).data());
+        var data = _.extend({}, this.$(event.currentTarget).data(), this.$(event.target).data());
         if (data.activity_type === 'timer') {
             this.do_action({
                 type: 'ir.actions.act_window',
@@ -30,13 +24,11 @@ ActivityMenu.include({
         } else {
             this._super(event);
         }
-
     },
 
     _onTimerFilterClick: function (event) {
         event.stopPropagation();
         var data = _.extend({}, $(event.currentTarget).data(), $(event.target).data());
-
         if (data.active_task_id) {
             this.do_action({
                 type: 'ir.actions.act_window',
@@ -65,8 +57,6 @@ ActivityMenu.include({
                 },
             });
         }
-
     }
 
-});
 });
