@@ -47,7 +47,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <h3 t-out="o.name"/>
-                <p t-raw="o.description"/>
+                <p t-out="o.description"/>
             </div>
         </div>
 

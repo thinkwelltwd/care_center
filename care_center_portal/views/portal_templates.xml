@@ -185,11 +185,11 @@
             </t>
             <t t-if="not no_label">
                 <div class="col-sm-8 px-0">
-                    <t t-raw="input_value"/>
+                    <t t-out="input_value"/>
                 </div>
             </t>
             <t t-else="">
-                <t t-raw="input_value"/>
+                <t t-out="input_value"/>
             </t>
 
         </div>
