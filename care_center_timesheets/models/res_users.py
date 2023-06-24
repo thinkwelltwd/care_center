@@ -42,12 +42,15 @@ class ResUsers(models.Model):
         my_tasks_sql = """
             SELECT COUNT(*) FROM project_task
             WHERE active = True
-            AND (user_id = %(user_id)s OR id IN (
-                    SELECT DISTINCT(task_id)
-                    FROM account_analytic_line
-                    WHERE user_id = %(user_id)s
-                    AND task_id IS NOT NULL
-                 )
+            AND id IN (
+                SELECT DISTINCT(task_id) FROM project_task_user_rel
+                WHERE (user_id = %(user_id)s OR id IN (
+                        SELECT DISTINCT(task_id)
+                        FROM account_analytic_line
+                        WHERE user_id = %(user_id)s
+                        AND task_id IS NOT NULL
+                     )
+                )
             )
         """
         self.env.cr.execute(my_tasks_sql, {'user_id': self.env.uid})
