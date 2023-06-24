@@ -33,29 +33,23 @@
         </field>
     </record>
 
-<!--    <record id="crm_team_view_kanban" model="ir.ui.view">-->
-<!--        <field name="name">crm.team.kanban</field>-->
-<!--        <field name="model">crm.team</field>-->
-<!--        <field name="inherit_id" ref="sales_team.crm_team_view_kanban"/>-->
-<!--        <field name="arch" type="xml">-->
-<!--            <data>-->
+    <record id="support_team_view_kanban_dashboard" model="ir.ui.view">
+        <field name="name">support.team.view.kanban.dashboard</field>
+        <field name="model">crm.team</field>
+        <field name="inherit_id" ref="sales_team.crm_team_view_kanban_dashboard"/>
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//div[hasclass('o_kanban_primary_left')]" position="inside">
+                    <button string="Tasks" class="btn btn-primary" name="%(action_view_task)d" type="action">Tasks</button>
+                </xpath>
 
-<!--                <xpath expr="//div[hasclass('o_kanban_primary_left')]" position="inside">-->
-<!--                    <button string="Tasks" class="btn btn-primary" name="%(action_view_task)d" type="action">Tasks-->
-<!--                    </button>-->
-<!--                </xpath>-->
-
-<!--                <xpath expr="//div[hasclass('col-4','o_kanban_card_manage_section','o_kanban_manage_new')]"-->
-<!--                       position="inside">-->
-<!--                    <div>-->
-<!--                        <a name="%(action_task_form)d" type="action">-->
-<!--                            Task-->
-<!--                        </a>-->
-<!--                    </div>-->
-<!--                </xpath>-->
-
-<!--            </data>-->
-<!--        </field>-->
-<!--    </record>-->
+                <xpath expr="//div[hasclass('o_kanban_manage_new')]" position="inside">
+                    <div>
+                        <a name="%(action_task_form)d" type="action">Task</a>
+                    </div>
+                </xpath>
+            </data>
+        </field>
+    </record>
 
 </odoo>
