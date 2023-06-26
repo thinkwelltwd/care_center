@@ -82,8 +82,8 @@ class ProjectTask(models.Model):
         )
 
         for timesheet in invoiceable:
-            so_line = timesheet._timesheet_get_sale_line()
-            timesheet.so_line = so_line.id
+            so_line = timesheet._timesheet_determine_sale_line()
+            timesheet.so_line = so_line and so_line.id
 
     def timesheet_factor_unconfirmed(self):
         """
