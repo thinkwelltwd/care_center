@@ -191,6 +191,9 @@ class ProjectTask(models.Model):
         proj_comp = self.project_id.company_id
         part_comp = self.partner_id.company_id
 
+        if not proj_comp or not part_comp:
+            return
+
         if part_comp != proj_comp:
             msg = 'Project "{project_name}-{project_id}" company "{proj_comp_id}" does ' \
                   'not match Partner "{partner}-{partner_id}" company "{part_comp_id}".'.format(

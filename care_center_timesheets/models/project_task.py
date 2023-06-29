@@ -65,6 +65,13 @@ class ProjectTask(models.Model):
                 record.has_active_timers()
         super(ProjectTask, self).toggle_active()
 
+    @api.constrains('project_id', 'partner_id')
+    def check_matching_company(self):
+        # Catchall projects can belong to any company
+        if self.project_id and self.project_id.catchall:
+            return
+        return super().check_matching_company()
+
     @api.model
     def mark_timesheets_ready(self):
         """
