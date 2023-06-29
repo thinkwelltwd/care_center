@@ -15,11 +15,12 @@ class CustomerPortal(CP):
     def _prepare_portal_layout_values(self):
         values = super(CustomerPortal, self)._prepare_portal_layout_values()
         partner = request.env.user.partner_id
-        values['project_count'] = request.env['project.project'].search_count([
-            ('message_partner_ids', 'child_of', partner.commercial_partner_id.id)
+        values['project_count'] = request.env['project.project'].sudo().search_count([
+            ('message_partner_ids', 'child_of', partner.commercial_partner_id.id),
         ])
-        values['task_count'] = request.env['project.task'].search_count([
-            ('project_id.message_partner_ids', 'child_of', partner.commercial_partner_id.id)
+        values['task_count'] = request.env['project.task'].sudo().search_count([
+            ('project_id.message_partner_ids', 'child_of', partner.commercial_partner_id.id),
+            ('message_partner_ids', 'child_of', partner.commercial_partner_id.id)
         ])
         return values
 
@@ -43,7 +44,7 @@ class CustomerPortal(CP):
         in user. Added partner routes & partner_id param.
         """
         values = self._prepare_portal_layout_values()
-        Project = request.env['project.project']
+        Project = request.env['project.project'].sudo()
 
         partner = request.env['res.partner'].sudo().browse(partner_id)
         if not partner:
@@ -146,22 +147,26 @@ class CustomerPortal(CP):
         """
         values = self._prepare_portal_layout_values()
         searchbar_sortings = self._task_get_searchbar_sortings()
-        searchbar_sortings = dict(sorted(self._task_get_searchbar_sortings().items(),
-                                         key=lambda item: item[1]["sequence"]))
+        searchbar_sortings = dict(
+            sorted(searchbar_sortings.items(), key=lambda item: item[1]["sequence"])
+        )
 
         partner = request.env['res.partner'].sudo().browse(partner_id)
         if not partner:
             partner = request.env.user.partner_id
 
         searchbar_filters = {
-            'all': {'label': _('All'), 'domain': [('project_id', '!=', False), ('project_id.message_partner_ids', 'child_of', partner.commercial_partner_id.id)]},
+            'all': {'label': _('All'), 'domain': [
+                ('project_id', '!=', False),
+                ('project_id.message_partner_ids', 'child_of', partner.commercial_partner_id.id),
+            ]},
         }
 
         searchbar_inputs = self._task_get_searchbar_inputs()
         searchbar_groupby = self._task_get_searchbar_groupby()
 
         # extends filterby criteria with project the customer has access to
-        projects = request.env['project.project'].search([
+        projects = request.env['project.project'].sudo().search([
             # Revamped domain to be based off passed in partner_id
             ('message_partner_ids', 'child_of', partner.commercial_partner_id.id)
         ])
@@ -172,8 +177,10 @@ class CustomerPortal(CP):
 
         # extends filterby criteria with project (criteria name is the project id)
         # Note: portal users can't view projects they don't follow
-        project_groups = request.env['project.task'].read_group([('project_id', 'not in', projects.ids)],
-                                                                ['project_id'], ['project_id'])
+        project_groups = request.env['project.task'].read_group(
+            [('project_id', 'not in', projects.ids)],
+            ['project_id'], ['project_id'],
+        )
         for group in project_groups:
             proj_id = group['project_id'][0] if group['project_id'] else False
             proj_name = group['project_id'][1] if group['project_id'] else _('Others')
@@ -210,7 +217,15 @@ class CustomerPortal(CP):
         # pager
         pager = portal_pager(
             url="/my/tasks",
-            url_args={'date_begin': date_begin, 'date_end': date_end, 'sortby': sortby, 'filterby': filterby, 'groupby': groupby, 'search_in': search_in, 'search': search},
+            url_args={
+                'date_begin': date_begin,
+                'date_end': date_end,
+                'sortby': sortby,
+                'filterby': filterby,
+                'groupby': groupby,
+                'search_in': search_in,
+                'search': search,
+            },
             total=task_count,
             page=page,
             step=self._items_per_page
