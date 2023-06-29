@@ -68,7 +68,7 @@ class ProjectTask(models.Model):
                     and partner.parent_id \
                     and partner.parent_id.sale_warn == 'block':
                 partner = partner.parent_id
-            title = ("Warning for %s") % partner.name
+            title = f"Warning for {partner.name}"
             message = partner.sale_warn_msg
             warning = {
                 'title': title,
@@ -286,7 +286,10 @@ class ProjectTask(models.Model):
         self.ensure_one()
         self.confirm_subtasks_done()
         self.confirm_relationships()
-        self.stage_id = self.env['project.task.type'].search([('name', '=', 'Done')])
+        self.stage_id = self.env['project.task.type'].search([
+            ('name', '=', 'Done'),
+            ('user_id', '=', self.env.uid),
+        ])
         if self.active:
             self.toggle_active()
 
