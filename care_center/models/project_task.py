@@ -84,6 +84,15 @@ class ProjectTask(models.Model):
         if warning:
             return {'warning': warning}
 
+    def _check_company(self, **kwargs):
+        """
+        Disable matching company alignment when creating Tasks from email.
+        Rectifying the issue can be done by people later.
+        """
+        if self.mailserver_mode():
+            return
+        return super()._check_company(**kwargs)
+
     @api.model
     def message_new(self, msg, custom_values=None):
         """Override to set message body to be in the
@@ -185,7 +194,12 @@ class ProjectTask(models.Model):
 
     @api.constrains('project_id', 'partner_id')
     def check_matching_company(self):
-        if not self.project_id or not self.partner_id or self.mailserver_mode():
+        if (
+            not self.project_id
+            or not self.partner_id
+            or self.mailserver_mode()
+            or self.env.context.get('in_delete_operation', False)
+        ):
             return
 
         proj_comp = self.project_id.company_id
@@ -281,6 +295,13 @@ class ProjectTask(models.Model):
         if values.get('stage_id') and self.mailserver_mode():
             self._check_stage_id(values['stage_id'])
         return super(ProjectTask, self).write(values)
+
+    def unlink(self):
+        """
+        Set context so check_matching_company constraint checks can be disregarded.
+        """
+        self = self.with_context(in_delete_operation=True)
+        return super(ProjectTask, self).unlink()
 
     def close_task(self):
         self.ensure_one()

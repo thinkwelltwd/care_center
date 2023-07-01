@@ -47,6 +47,9 @@ class ProjectTask(models.Model):
     def write(self, vals):
         task = super(ProjectTask, self).write(vals)
 
+        if self.mailserver_mode():
+            return task
+
         for record in self:
             if vals.get('partner_id') or vals.get('project_id') or vals.get('sale_line_id'):
                 record._update_timesheets()
