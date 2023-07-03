@@ -8,7 +8,6 @@ from odoo.exceptions import ValidationError
 
 class ProjectTask(models.Model):
     _name = 'project.task'
-    _description = 'Care Center Project Task'
     _inherit = ['care_center.base', 'project.task']
 
     medium_id = fields.Many2one(

@@ -4,7 +4,6 @@ from odoo.exceptions import UserError
 
 class ProjectTask(models.Model):
     _name = 'project.task'
-    _description = 'Care Center CRM Project Task'
     _inherit = ['care_center.base', 'project.task']
 
     phonecall_ids = fields.One2many(

@@ -30,7 +30,6 @@ class ProjectTaskType(models.Model):
 
 class ProjectTask(models.Model):
     _name = 'project.task'
-    _description = 'Care Center Timesheets Project Task'
     _inherit = ['task.timer', 'project.task']
 
     has_active_timesheets = fields.Boolean(
