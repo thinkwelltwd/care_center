@@ -1,6 +1,6 @@
 from datetime import date, timedelta
-
 from lchttp import json_dumps
+from markupsafe import Markup
 
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
@@ -330,6 +330,12 @@ class ProjectTask(models.Model):
                 self.date_end = None
 
         super(ProjectTask, self).toggle_active()
+
+    def safe_description(self):
+        """
+        Wrap description in Markup object for unescaped display in Qweb templates.
+        """
+        return Markup(self.description)
 
 
 class ProjectTaskType(models.Model):

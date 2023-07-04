@@ -1,3 +1,4 @@
+from markupsafe import Markup
 from odoo import models, fields, api
 
 
@@ -40,3 +41,9 @@ class Lead(models.Model):
             update_vals['stage_id'] = replied_stage[0]
 
         return super(Lead, self).message_update(msg_dict, update_vals=update_vals)
+
+    def safe_description(self):
+        """
+        Wrap description in Markup object for unescaped display in Qweb templates.
+        """
+        return Markup(self.description)
