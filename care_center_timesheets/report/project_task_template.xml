@@ -17,9 +17,9 @@
                                     <tr style="height:35px;border:1px solid">
                                         <th style="vertical-align:middle;text-align:center;border:1px solid">Code</th>
                                         <th style="vertical-align:middle;text-align:center;border:1px solid">Date</th>
-                                        <th style="vertical-align:middle;text-align:center;border:1px solid">Customer
-                                        </th>
-                                        <th style="vertical-align:middle;text-align:center;border:1px solid">Agent</th>
+                                        <th style="vertical-align:middle;text-align:center;border:1px solid">Customer</th>
+                                        <th t-if='len(o.user_ids) > 1' style="vertical-align:middle;text-align:center;border:1px solid">Agents</th>
+                                        <th t-else='' style="vertical-align:middle;text-align:center;border:1px solid">Agent</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -34,7 +34,7 @@
                                             <span t-out="o.partner_id.display_name"/>
                                         </th>
                                         <th style="vertical-align:middle;text-align:center;border:1px solid">
-                                            <span t-out="o.user_id.display_name"/>
+                                            <span t-out="', '.join(o.user_ids.mapped('display_name'))"/>
                                         </th>
                                     </tr>
                                 </tbody>
