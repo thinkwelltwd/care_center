@@ -107,7 +107,7 @@ class ProjectTask(models.Model):
             'expected_revenue': 0.0,
             'probability': 0.0,
             'partner_id': self.partner_id.id,
-            'user_id': self.user_id and self.user_id.id,
+            'user_id': self.env.uid,
             'team_id': self.get_team_id(),
             'description': self.description,
             'priority': self.priority,
