@@ -9,6 +9,7 @@
             <header position="inside">
                 <field name="task_active" invisible="1"/>
                 <button string="Assign Procedure"
+                        data-hotkey="shift+d"
                         type="action"
                         name="%(action_assign_procedure_wizard)d"
                         class="oe_highlight"

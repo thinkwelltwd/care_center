@@ -62,16 +62,16 @@
         <field name="arch" type="xml">
 
             <xpath expr="//div[@name='button_box']" position="inside">
-                <button name="timer_start" string="Start Timer" type="object"
+                <button name="timer_start" string="Start Timer" type="object" data-hotkey="shift+t"
                         attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', 'in', ('running', 'paused'))]}"
                         class="oe_stat_button" icon="fa-play"/>
-                <button name="timer_resume" string="Resume Timer" type="object"
+                <button name="timer_resume" string="Resume Timer" type="object" data-hotkey="shift+t"
                         attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', '!=', 'paused')]}"
                         class="oe_stat_button" icon="fa-play-circle"/>
-                <button name="timer_pause" string="Pause Timer" type="object"
+                <button name="timer_pause" string="Pause Timer" type="object" data-hotkey="shift+p"
                         attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', '!=', 'running')]}"
                         class="oe_stat_button" icon="fa-pause"/>
-                <button name="timer_stop" string="Stop Timer" type="object"
+                <button name="timer_stop" string="Stop Timer" type="object" data-hotkey="shift+x"
                         attrs="{'invisible': ['|', ('task_active', '=', False), ('user_timer_status', 'in', ('paused', 'stopped'))]}"
                         class="oe_stat_button" icon="fa-stop-circle"/>
                 <button name="close_task" string="Close Ticket" type="object"
@@ -122,8 +122,9 @@
                 <field name="task_active" invisible="1"/>
                 <button name="reopen_ticket" string="Reopen Ticket" type="object" class="oe_highlight"
                         attrs="{'invisible': [('task_active', '=', True)]}"/>
-                <button name="email_customer" string="Email Customer" type="object"/>
+                <button name="email_customer" string="Email Customer" type="object" data-hotkey="shift+i"/>
                 <button name="close_task" string="Reply and Close" type="object" class="oe_highlight"
+                        data-hotkey="shift+c"
                         context="{'email_customer': True, 'closing_task': True}"
                         attrs="{'invisible': [('task_active', '=', False)]}"/>
             </field>
