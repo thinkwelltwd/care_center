@@ -21,11 +21,11 @@
 
             <filter name="current" position="after">
                 <filter string="Overdue Calls" name="phonecalls_overdue"
-                        domain="[('state', 'in', ('open', 'pending')), ('date', '&lt;', context_today().strftime('%Y-%m-%d')), '|', ('team_id.member_ids', '=', uid), ('user_id', '=', uid)]"/>
+                        domain="[('state', 'in', ('open', 'pending')), ('date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
                 <filter string="Due Today" name="phonecalls_today"
-                        domain="[('state', 'in', ('open', 'pending')), ('date', '&gt;=', context_today().strftime('%Y-%m-%d')), ('date', '&lt;', (context_today() + relativedelta(days=1)).strftime('%Y-%m-%d')), '|', ('team_id.member_ids', '=', uid), ('user_id', '=', uid)]"/>
+                        domain="[('state', 'in', ('open', 'pending')), ('date', '&gt;=', context_today().strftime('%Y-%m-%d')), ('date', '&lt;', (context_today() + relativedelta(days=1)).strftime('%Y-%m-%d'))]"/>
                 <filter string="Scheduled Calls" name="phonecalls_planned"
-                        domain="[('state', 'in', ('open', 'pending')), ('date', '&gt;', context_today().strftime('%Y-%m-%d')), '|', ('team_id.member_ids', '=', uid), ('user_id', '=', uid)]"/>
+                        domain="[('state', 'in', ('open', 'pending')), ('date', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
             </filter>
 
         </field>

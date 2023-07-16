@@ -6,9 +6,8 @@
         <field name="inherit_id" ref="crm_phonecall.view_crm_case_phonecalls_filter"/>
         <field name="arch" type="xml">
 
-            <filter name="my_team" position="replace">
-                <filter string="Assigned To My Team(s)" name="my_team"
-                        domain="['|', ('team_id.member_ids', '=', uid), ('user_id', '=', uid)]"/>
+            <filter name="my_team" position="attributes">
+                <attribute name="string">Assigned To My Team(s)</attribute>
             </filter>
 
         </field>

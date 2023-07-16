@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class CrmPhonecall2phonecall(models.TransientModel):
@@ -23,10 +23,20 @@ class CrmPhonecall2phonecall(models.TransientModel):
         'project.project',
         string='Project',
         default=_get_project_id,
-    )  # TODO put a domain on here
+        domain="[('partner_id', '=', partner_id)]",
+    )
 
     def get_vals_action_schedule(self):
         vals = super().get_vals_action_schedule()
-        vals['task_id'] = self.task_id.id or False
-        vals['project_id'] = self.project_id.id or False
+        vals.update({
+            'task_id': self.task_id.id or False,
+            'project_id': self.project_id.id or False,
+            'direction': 'out',
+        })
         return vals
+
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        res['date'] = fields.Datetime.now()
+        return res

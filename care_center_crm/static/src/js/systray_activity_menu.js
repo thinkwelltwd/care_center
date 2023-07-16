@@ -1,7 +1,6 @@
-odoo.define('care_center_crm.systray.ActivityMenu', function (require) {
-"use strict";
+/** @odoo-module **/
+import ActivityMenu from '@mail/js/systray/systray_activity_menu';
 
-var ActivityMenu = require('mail.systray.ActivityMenu');
 
 ActivityMenu.include({
     /**
@@ -11,11 +10,13 @@ ActivityMenu.include({
      */
     _onActivityFilterClick: function (event) {
 
-        var data = _.extend({}, $(event.currentTarget).data(), $(event.target).data());
-        var call_filter = data.filter;
+        let data = _.extend({}, $(event.currentTarget).data(), $(event.target).data());
+        let call_filter = data.filter;
+        let action_name = data.model_name;
         if (data.res_model === 'crm.phonecall') {
-            var context = {};
+            let context = {'search_default_my_phonecalls': 1, 'search_default_my_team': 1};
             if (call_filter === 'my') {
+                action_name = 'My ' + action_name;
                 context['search_default_phonecalls_overdue'] = 1;
                 context['search_default_phonecalls_today'] = 1;
                 context['search_default_phonecalls_planned'] = 1;
@@ -24,9 +25,13 @@ ActivityMenu.include({
             } else {
                 context['search_default_phonecalls_' + data.filter] = 1;
             }
+            if (call_filter === 'overdue') {
+                action_name = 'Overdue ' + action_name;
+            }
+
             this.do_action({
                 type: 'ir.actions.act_window',
-                name: data.model_name,
+                name: action_name,
                 res_model:  data.res_model,
                 views: [[false, 'list'], [false, 'form']],
                 search_view_id: [false],
@@ -38,5 +43,4 @@ ActivityMenu.include({
 
     },
 
-});
 });

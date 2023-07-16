@@ -18,7 +18,7 @@ class ResUsers(models.Model):
             FROM crm_phonecall AS phonecall
             WHERE (
                     (
-                        team_id IN (SELECT team_id FROM team_member_user_rel WHERE user_id = %(user_id)s) 
+                        team_id IN (SELECT crm_team_id FROM crm_team_member WHERE user_id = %(user_id)s) 
                         AND user_id IS NULL
                     )
                     OR user_id = %(user_id)s
@@ -34,7 +34,7 @@ class ResUsers(models.Model):
         phonecall_data = self.env.cr.dictfetchall()
 
         user_phonecalls = {
-            'name': 'Phone Calls to Return',
+            'name': 'Calls to Return',
             'type': 'activity',
             'model': 'crm.phonecall',
             'icon': modules.module.get_module_icon('crm'),

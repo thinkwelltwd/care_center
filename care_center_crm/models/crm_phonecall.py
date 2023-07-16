@@ -9,6 +9,13 @@ class CrmPhonecall(models.Model):
     _name = 'crm.phonecall'
     _inherit = ['care_center.base', 'crm.phonecall']
 
+    user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Responsible",
+        default=lambda self: self.env.user,
+        # overriding field to set domain
+        domain=[('share', '=', False)],
+    )
     task_id = fields.Many2one(
         comodel_name='project.task',
         string='Task',
@@ -135,7 +142,10 @@ class CrmPhonecall(models.Model):
 
     @api.model
     def create(self, vals):
-        add_timesheet = self.env.context.get('timesheet_from_call_duration', True)
+        add_timesheet = (
+            vals.get('user_id')
+            and self.env.context.get('timesheet_from_call_duration', True)
+        )
         if add_timesheet and vals.get('project_id') and vals.get('duration', 0) > 0:
             timesheet_data = self._timesheet_prepare(vals)
             vals['timesheet_ids'] = vals.get('timesheet_ids', [])
@@ -144,7 +154,11 @@ class CrmPhonecall(models.Model):
         return super().create(vals)
 
     def write(self, vals):
-        add_timesheet = self.env.context.get('timesheet_from_call_duration', True)
+        add_timesheet = (
+            vals.get('user_id')
+            or self.user_id
+            and self.env.context.get('timesheet_from_call_duration', True)
+        )
         if not add_timesheet:
             return super().write(vals)
 
@@ -185,6 +199,10 @@ class CrmPhonecall(models.Model):
 
     def get_values_schedule_another_phonecall(self, vals):
         res = super().get_values_schedule_another_phonecall(vals)
-        res['task_id'] = vals.get('task_id')
-        res['project_id'] = vals.get('project_id')
+        res.update({
+            'task_id': vals.get('task_id'),
+            'project_id': vals.get('project_id'),
+            'direction': 'out',
+            'date': fields.Datetime.now(),
+        })
         return res
