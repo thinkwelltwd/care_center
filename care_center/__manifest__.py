@@ -27,6 +27,7 @@
         'views/care_center.xml',
         'views/merge_tasks_wizard.xml',
         'views/update_project_info.xml',
+        'views/email_template_selection.xml',
     ],
     'installable': True,
     'application': True,

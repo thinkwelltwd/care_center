@@ -1,0 +1,22 @@
+<odoo>
+
+    <record model="ir.actions.act_window" id="action_email_template_selection">
+        <field name="name">Email Template Selection</field>
+        <field name="res_model">email.template.selection</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- list view -->
+    <record id="email_template_selection_view_tree" model="ir.ui.view">
+        <field name="name">Email Template Selection Tree</field>
+        <field name="model">email.template.selection</field>
+        <field name="arch" type="xml">
+          <tree string="Email Template Selection">
+            <field name="template_id"/>
+            <field name="tag_id"/>
+            <field name="reply_type"/>
+          </tree>
+        </field>
+    </record>
+
+</odoo>

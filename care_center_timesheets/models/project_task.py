@@ -125,13 +125,23 @@ class ProjectTask(models.Model):
 
         if self.env.context.get('closing_task', False):
             name = 'Close'
+            template = self.env['email.template.selection'].search([
+                ('reply_type', '=', 'close'),
+                ('tag_id', 'in', [tag.id for tag in self.tag_ids])
+            ], limit=1).template_id
         else:
             name = 'Ticket Reply'
+            template = self.env['email.template.selection'].search([
+                ('reply_type', '=', 'reply'),
+                ('tag_id', 'in', [tag.id for tag in self.tag_ids])
+            ], limit=1).template_id
 
-        template = self.env['mail.template'].search([
-            ('name', 'like', name),
-            ('model', '=', 'project.task'),
-        ], limit=1)
+        if not template:
+            template = self.env['mail.template'].search([
+                ('name', 'like', name),
+                ('model', '=', 'project.task'),
+            ], limit=1)
+        
         ctx = {
             'default_model': 'project.task',
             'default_res_id': self.id,
@@ -139,6 +149,7 @@ class ProjectTask(models.Model):
             'default_template_id': template and template.id,
             'default_composition_mode': 'comment',
         }
+
         return {
             'name': 'Compose Email',
             'type': 'ir.actions.act_window',
@@ -221,3 +232,4 @@ class ProjectTask(models.Model):
                 }
             )]
         })
+
