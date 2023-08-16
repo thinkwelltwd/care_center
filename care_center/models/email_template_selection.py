@@ -21,6 +21,7 @@ class EmailTemplateSelection(models.Model):
     reply_type = fields.Selection(
         selection=[
             ('reply', 'Reply to Customer'),
+            ('initial', 'Initial Reply to Customer'),
             ('close', 'Closing Ticket'),
         ],
         default='reply',

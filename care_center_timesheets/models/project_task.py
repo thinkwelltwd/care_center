@@ -108,59 +108,6 @@ class ProjectTask(models.Model):
         if self.has_active_timesheets:
             raise UserError('Please stop all Running / Paused timesheets.')
 
-    def email_customer(self):
-        """
-        Open a window to compose an email
-        """
-        self.ensure_one()
-        return self.email_the_customer()
-
-    def email_the_customer(self):
-        """
-        Helper function to be called from close_task or email_customer.
-        Can't be a decorated and be called from other decorated methods
-        """
-
-        compose_form = self.env.ref('mail.email_compose_message_wizard_form', False)
-
-        if self.env.context.get('closing_task', False):
-            name = 'Close'
-            template = self.env['email.template.selection'].search([
-                ('reply_type', '=', 'close'),
-                ('tag_id', 'in', [tag.id for tag in self.tag_ids])
-            ], limit=1).template_id
-        else:
-            name = 'Ticket Reply'
-            template = self.env['email.template.selection'].search([
-                ('reply_type', '=', 'reply'),
-                ('tag_id', 'in', [tag.id for tag in self.tag_ids])
-            ], limit=1).template_id
-
-        if not template:
-            template = self.env['mail.template'].search([
-                ('name', 'like', name),
-                ('model', '=', 'project.task'),
-            ], limit=1)
-        
-        ctx = {
-            'default_model': 'project.task',
-            'default_res_id': self.id,
-            'default_use_template': bool(template),
-            'default_template_id': template and template.id,
-            'default_composition_mode': 'comment',
-        }
-
-        return {
-            'name': 'Compose Email',
-            'type': 'ir.actions.act_window',
-            'view_mode': 'form',
-            'res_model': 'mail.compose.message',
-            'views': [(compose_form.id, 'form')],
-            'view_id': compose_form.id,
-            'target': 'new',
-            'context': ctx,
-        }
-
     def close_task(self):
         """
         Close Task, timesheets and set stage.
@@ -172,9 +119,6 @@ class ProjectTask(models.Model):
         self.add_planned_expected_difference()
         self.sudo().mark_timesheets_ready()
         super().close_task()
-
-        if self.env.context.get('email_customer', False):
-            return self.email_the_customer()
 
     def set_done_stage(self):
         """Set stage to Done or other invoiceable stage"""

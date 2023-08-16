@@ -16,6 +16,7 @@ class ProjectTask(models.Model):
         help="This is the method of delivery. "
              "Ex: Email / Phonecall / API / Website",
     )
+    email_message_count = fields.Integer(compute='_compute_email_message_count')
     description = fields.Html('Private Note')
     task_active = fields.Boolean(compute='_task_active')
     project_id_domain = fields.Char(
@@ -23,6 +24,20 @@ class ProjectTask(models.Model):
         readonly=True,
         store=False,
     )
+
+    def _compute_email_message_count(self):
+        read_group_var = self.env['mail.message'].sudo().read_group(
+            domain=[
+                ('res_id', 'in', self.ids),
+                ('model', '=', self._name),
+            ],
+            fields=['res_id'],
+            groupby=['res_id'],
+        )
+
+        message_count_dict = dict((d['res_id'], d['res_id_count']) for d in read_group_var)
+        for record in self:
+            record.email_message_count = message_count_dict.get(record.id, 0)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -313,6 +328,9 @@ class ProjectTask(models.Model):
         if self.active:
             self.toggle_active()
 
+        if self.env.context.get('email_customer', False):
+            return self.email_the_customer()
+
     def reopen_ticket(self):
         self.ensure_one()
         self.stage_id = self.env['project.task.type'].search([('name', '=', 'In Progress')])
@@ -336,6 +354,70 @@ class ProjectTask(models.Model):
         Wrap description in Markup object for unescaped display in Qweb templates.
         """
         return Markup(self.description)
+
+    def email_customer(self):
+        """
+        Open a window to compose an email
+        """
+        self.ensure_one()
+        return self.email_the_customer()
+
+    def email_initial_reply(self):
+        self.ensure_one()
+        return self.with_context(initial_reply=True).email_the_customer()
+
+    def email_the_customer(self):
+        """
+        Helper function to be called from close_task or email_customer.
+        Can't be a decorated and be called from other decorated methods
+        """
+
+        compose_form = self.env.ref('mail.email_compose_message_wizard_form', False)
+        tags = self.tag_ids
+
+        if tags and self.env.context.get('closing_task', False):
+            name = 'Close'
+            template = self.env['email.template.selection'].search([
+                ('reply_type', '=', 'close'),
+                ('tag_id', 'in', [tag.id for tag in tags])
+            ], limit=1).template_id
+        elif tags and self.env.context.get('initial_reply', False):
+            name = 'Initial Reply to Customer'
+            template = self.env['email.template.selection'].search([
+                ('reply_type', '=', 'initial'),
+                ('tag_id', 'in', [tag.id for tag in tags])
+            ], limit=1).template_id
+        else:
+            name = 'Ticket Reply'
+            template = self.env['email.template.selection'].search([
+                ('reply_type', '=', 'reply'),
+                ('tag_id', 'in', [tag.id for tag in tags])
+            ], limit=1).template_id
+
+        if not template:
+            template = self.env['mail.template'].search([
+                ('name', 'like', name),
+                ('model', '=', 'project.task'),
+            ], limit=1)
+
+        ctx = {
+            'default_model': 'project.task',
+            'default_res_id': self.id,
+            'default_use_template': bool(template),
+            'default_template_id': template and template.id,
+            'default_composition_mode': 'comment',
+        }
+
+        return {
+            'name': 'Compose Email',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'mail.compose.message',
+            'views': [(compose_form.id, 'form')],
+            'view_id': compose_form.id,
+            'target': 'new',
+            'context': ctx,
+        }
 
 
 class ProjectTaskType(models.Model):

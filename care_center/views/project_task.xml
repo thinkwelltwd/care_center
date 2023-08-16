@@ -77,6 +77,22 @@
                 <attribute name="domain">project_id_domain</attribute>
             </field>
 
+            <field name="stage_id" position="before">
+                <field name="task_active" invisible="1"/>
+                <field name="email_message_count" invisible="1"/>
+                <button name="email_initial_reply" string="Send Initial Reply" type="object" class="oe_highlight"
+                        groups="support_team.group_support_manager"
+                        data-hotkey="shift+y"
+                        attrs="{'invisible': ['|', ('task_active', '=', False), ('email_message_count', '>', 0)]}"/>
+                <button name="reopen_ticket" string="Reopen Ticket" type="object" class="oe_highlight"
+                        attrs="{'invisible': [('task_active', '=', True)]}"/>
+                <button name="email_customer" string="Email Customer" type="object" data-hotkey="shift+i"/>
+                <button name="close_task" string="Reply and Close" type="object" class="oe_highlight"
+                        data-hotkey="shift+c"
+                        context="{'email_customer': True, 'closing_task': True}"
+                        attrs="{'invisible': [('task_active', '=', False)]}"/>
+            </field>
+
         </field>
     </record>
 
