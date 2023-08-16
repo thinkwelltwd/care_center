@@ -4,9 +4,11 @@ class EmailTemplateSelection(models.Model):
     _name = 'email.template.selection'
     _description = 'Email template selections by tag.'
 
+    name = fields.Char(related='template_id.name')
+
     template_id = fields.Many2one(
         'mail.template',
-        string='Device',
+        string='Template',
         required=True,
         domain=[('model', '=', 'project.task')],
     )
@@ -14,12 +16,15 @@ class EmailTemplateSelection(models.Model):
         'project.tags',
         string='Tag',
         required=True,
+        help='Template '
     )
     reply_type = fields.Selection(
         selection=[
-            ('reply', 'Reply'),
+            ('reply', 'Reply to Customer'),
             ('close', 'Closing Ticket'),
         ],
+        default='reply',
+        required=True,
     )
 
     _sql_constraints = [(
