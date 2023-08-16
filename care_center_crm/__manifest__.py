@@ -16,6 +16,7 @@
     'conflicts': ['crm_phonecall_timesheet'],
     'depends': [
         'care_center',
+        'project',
         'sale_crm',
         'web_domain_field',
     ],
