@@ -1,6 +1,6 @@
 from datetime import date, timedelta
-from lchttp import json_dumps
 from markupsafe import Markup
+import json
 
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
@@ -30,6 +30,7 @@ class ProjectTask(models.Model):
             domain=[
                 ('res_id', 'in', self.ids),
                 ('model', '=', self._name),
+                ('message_type', '=', 'comment'),
             ],
             fields=['res_id'],
             groupby=['res_id'],
@@ -190,7 +191,7 @@ class ProjectTask(models.Model):
         Projects of Partner Parent or Children
         """
         for rec in self:
-            rec.project_id_domain = json_dumps(
+            rec.project_id_domain = json.dumps(
                 rec.partner_id and rec.project_id.get_partner_domain(rec.get_partner_ids()) or []
             )
 
@@ -328,9 +329,6 @@ class ProjectTask(models.Model):
         if self.active:
             self.toggle_active()
 
-        if self.env.context.get('email_customer', False):
-            return self.email_the_customer()
-
     def reopen_ticket(self):
         self.ensure_one()
         self.stage_id = self.env['project.task.type'].search([('name', '=', 'In Progress')])
@@ -366,6 +364,11 @@ class ProjectTask(models.Model):
         self.ensure_one()
         return self.with_context(initial_reply=True).email_the_customer()
 
+    def reply_and_close(self):
+        self.ensure_one()
+        self.close_task()
+        return self.with_context(closing_task=True).email_the_customer()
+
     def email_the_customer(self):
         """
         Helper function to be called from close_task or email_customer.
@@ -373,30 +376,36 @@ class ProjectTask(models.Model):
         """
 
         compose_form = self.env.ref('mail.email_compose_message_wizard_form', False)
-        tags = self.tag_ids
 
-        if tags and self.env.context.get('closing_task', False):
-            name = 'Close'
-            template = self.env['email.template.selection'].search([
-                ('reply_type', '=', 'close'),
-                ('tag_id', 'in', [tag.id for tag in tags])
-            ], limit=1).template_id
-        elif tags and self.env.context.get('initial_reply', False):
+        if self.env.context.get('closing_task', False):
+            name = 'Ticket Close'
+            reply_type = 'close'
+        elif self.env.context.get('initial_reply', False):
             name = 'Initial Reply to Customer'
-            template = self.env['email.template.selection'].search([
-                ('reply_type', '=', 'initial'),
-                ('tag_id', 'in', [tag.id for tag in tags])
-            ], limit=1).template_id
+            reply_type = 'initial'
         else:
             name = 'Ticket Reply'
+            reply_type = 'reply'
+
+        if self.team_id:
+            team_query = [False, self.team_id.id]
+            op = 'in'
+        else:
+            team_query = False
+            op = '='
+
+        if self.tag_ids:
             template = self.env['email.template.selection'].search([
-                ('reply_type', '=', 'reply'),
-                ('tag_id', 'in', [tag.id for tag in tags])
+                ('reply_type', '=', reply_type),
+                ('tag_id', 'in', [tag.id for tag in self.tag_ids]),
+                ('team_id', op, team_query)
             ], limit=1).template_id
+        else:
+            template = None
 
         if not template:
             template = self.env['mail.template'].search([
-                ('name', 'like', name),
+                ('name', '=', name),
                 ('model', '=', 'project.task'),
             ], limit=1)
 

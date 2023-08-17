@@ -1,4 +1,4 @@
-from lchttp import json_dumps
+import json
 
 from odoo import models, fields, api
 from odoo.exceptions import UserError
@@ -44,7 +44,7 @@ class UpdateProjectInfo(models.TransientModel):
     @api.depends('partner_id')
     def _compute_new_project_domain(self):
         for rec in self:
-            rec.new_project_domain = json_dumps(
+            rec.new_project_domain = json.dumps(
                 rec.partner_id and rec.get_partner_domain(rec.get_partner_ids()) or []
             )
 

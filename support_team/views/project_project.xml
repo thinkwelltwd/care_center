@@ -8,6 +8,10 @@
         <field name="arch" type="xml">
             <field name="user_id" position="after">
                 <field name="team_id" required="1" options="{'no_quick_create': True}"/>
+                <field name="tag_ids_domain" invisible="1"/>
+            </field>
+            <field name="tag_ids" position="attributes">
+                <attribute name="domain">tag_ids_domain</attribute>
             </field>
         </field>
     </record>

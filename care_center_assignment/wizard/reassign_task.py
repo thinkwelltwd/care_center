@@ -1,4 +1,4 @@
-from lchttp import json_dumps
+import json
 
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
@@ -89,7 +89,7 @@ class ReassignTaskWizard(models.TransientModel):
     @api.depends('team_id')
     def _compute_assigned_to_domain(self):
         for rec in self:
-            rec.assigned_to_domain = json_dumps(
+            rec.assigned_to_domain = json.dumps(
                 rec.team_id and [('id', 'in', rec.team_id.member_ids.mapped('id'))] or []
             )
 

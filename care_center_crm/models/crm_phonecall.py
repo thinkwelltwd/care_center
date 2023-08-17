@@ -1,4 +1,4 @@
-from lchttp import json_dumps
+import json
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
@@ -79,9 +79,9 @@ class CrmPhonecall(models.Model):
             partner_ids = rec.get_partner_ids()
             domain = rec.get_partner_domain(partner_ids)
 
-            rec.task_id_domain = json_dumps(domain)
-            rec.opportunity_id_domain = json_dumps(domain)
-            rec.project_id_domain = json_dumps([
+            rec.task_id_domain = json.dumps(domain)
+            rec.opportunity_id_domain = json.dumps(domain)
+            rec.project_id_domain = json.dumps([
                 '|',
                 ('catchall', '=', True),
                 ('partner_id', 'in', partner_ids),

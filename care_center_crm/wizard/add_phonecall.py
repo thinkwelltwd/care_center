@@ -1,4 +1,4 @@
-from lchttp import json_dumps
+import json
 
 from odoo import api, fields, models
 
@@ -31,7 +31,7 @@ class SetTaskOnPhoneCallWizard(models.TransientModel):
                 partner_ids = rec.get_partner_ids(field=rec.task_id.partner_id)
                 domain.append(('partner_id', 'in', partner_ids))
 
-            rec.phonecall_id_domain = json_dumps(domain)
+            rec.phonecall_id_domain = json.dumps(domain)
 
     def set_task_on_phonecall(self):
         self.phonecall_id.task_id = self.task_id.id
@@ -64,7 +64,7 @@ class SetLeadOnPhoneCallWizard(models.TransientModel):
             if rec.lead_id:
                 partner_ids = rec.get_partner_ids(field=self.lead_id.partner_id)
                 domain.append(('partner_id', 'in', partner_ids))
-            rec.phonecall_id_domain = json_dumps(domain)
+            rec.phonecall_id_domain = json.dumps(domain)
 
     def set_lead_on_phonecall(self):
         self.phonecall_id.opportunity_id = self.lead_id.id

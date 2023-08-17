@@ -1,0 +1,14 @@
+<odoo>
+
+    <record model="ir.ui.view" id="tag_team_view">
+        <field name="name">Tag Team</field>
+        <field name="model">project.tags</field>
+        <field name="inherit_id" ref="project.project_tags_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="team_id" options="{'no_create': True}"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

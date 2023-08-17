@@ -1,4 +1,4 @@
-from lchttp import json_dumps
+import json
 
 from odoo import api, fields, models
 
@@ -24,7 +24,7 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
     def _compute_project_id_domain(self):
         for rec in self:
             phonecall = rec.get_phonecall()
-            rec.project_id_domain = json_dumps([
+            rec.project_id_domain = json.dumps([
                 '|',
                 ('catchall', '=', True),
                 ('partner_id', 'in', phonecall.get_partner_ids()),

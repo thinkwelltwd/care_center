@@ -1,5 +1,6 @@
 from odoo import fields, models
 
+
 class EmailTemplateSelection(models.Model):
     _name = 'email.template.selection'
     _description = 'Email template selections by tag.'
@@ -11,12 +12,20 @@ class EmailTemplateSelection(models.Model):
         string='Template',
         required=True,
         domain=[('model', '=', 'project.task')],
+        help='Email template that will be auto-selected when Tag and Team fields match a Task',
     )
     tag_id = fields.Many2one(
         'project.tags',
         string='Tag',
         required=True,
-        help='Template '
+        help='Template can be used on Tasks with this Tag',
+    )
+    team_id = fields.Many2one(
+        comodel_name='crm.team',
+        string='Team',
+        index=True,
+        help='Template can be used on Tasks assigned to this Team',
+        domain=[('type_team', '!=', 'sales')],
     )
     reply_type = fields.Selection(
         selection=[
@@ -30,6 +39,6 @@ class EmailTemplateSelection(models.Model):
 
     _sql_constraints = [(
         'template_tag_type_unique',
-        'UNIQUE(tag_id,reply_type)',
-        'Template already assigned for this Tag and Reply Type',
+        'UNIQUE(tag_id,team_id,reply_type)',
+        'Template already assigned for this Tag, Team and Reply Type',
     )]

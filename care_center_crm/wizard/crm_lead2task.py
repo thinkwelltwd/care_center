@@ -1,4 +1,4 @@
-from lchttp import json_dumps
+import json
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError
@@ -29,7 +29,7 @@ class CrmLeadToTaskWizard(models.TransientModel):
             if lead.partner_id.parent_id:
                 domain.append(('partner_id', '=', lead.partner_id.parent_id.id))
                 domain.insert(0, '|')
-            rec.project_id_domain = json_dumps(domain)
+            rec.project_id_domain = json.dumps(domain)
 
     def get_tag_ids(self, lead):
         """

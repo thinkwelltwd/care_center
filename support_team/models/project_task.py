@@ -2,7 +2,8 @@ from odoo import models, fields, api
 
 
 class ProjectTask(models.Model):
-    _inherit = "project.task"
+    _name = 'project.task'
+    _inherit = ['project.task', 'project.tag.team.base']
 
     team_id = fields.Many2one(
         comodel_name='crm.team',
