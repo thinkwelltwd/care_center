@@ -39,10 +39,19 @@
                 <filter string="Sub Tasks" name="sub_task_filter" domain="[('parent_id', '!=', False)]"/>
                 <separator/>
                 <filter string="Due Today" name="due_today"
-                        domain="[('stage_id', '!=', 'Done'), ('date_deadline', '&lt;=', datetime.date.today().strftime('%Y-%m-%d'))]"/>
+                        domain="[
+                        ('stage_id', '!=', 'Done'),
+                        ('date_deadline', '>=', context_today().strftime('%Y-%m-%d')),
+                        ('date_deadline', '&lt;=', context_today().strftime('%Y-%m-%d')),
+
+                    ]"/>
                 <filter string="Due This Week" name="due_this_week"
-                        domain="[('stage_id', '!=', 'Done'), ('date_deadline', '&lt;=', (datetime.date.today() + datetime.timedelta(7)).strftime('%Y-%m-%d'))]"/>
-                <filter string="No Deadline" name="due_this_week"
+                        domain="[
+                        ('stage_id', '!=', 'Done'),
+                        ('date_deadline', '>=', (datetime.datetime.combine(context_today() + relativedelta(weeks=-1,days=1,weekday=0), datetime.time(0,0,0)).to_utc()).strftime('%Y-%m-%d %H:%M:%S')),
+                        ('date_deadline', '&lt;', (datetime.datetime.combine(context_today() + relativedelta(days=1,weekday=0), datetime.time(0,0,0)).to_utc()).strftime('%Y-%m-%d %H:%M:%S'))]"
+                    />
+                <filter string="No Deadline" name="no_deadline"
                         domain="[('stage_id', '!=', 'Done'), ('date_deadline', '=', False)]"/>
                 <separator/>
             </xpath>
