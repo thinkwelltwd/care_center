@@ -1,5 +1,25 @@
 <odoo>
 
+    <!--
+        Duplicate upstream "action_view_task" action and replace, removing the domain.
+        Tasks should appear even though no Project is assigned.
+    -->
+    <record id="action_view_ticket" model="ir.actions.act_window">
+        <field name="name">Tickets</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">kanban,tree,form,calendar,pivot,graph,activity</field>
+        <field name="context">{'search_default_my_tasks': 1}</field>
+        <field name="search_view_id" ref="project.view_task_search_form"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No Tickets or Tasks found. Let's create one!
+            </p><p>
+                To get things done, use activities and status on tasks.<br/>
+                Chat in real-time or by email to collaborate efficiently.
+            </p>
+        </field>
+    </record>
+
     <record id="care_center_task_tree" model="ir.ui.view">
         <field name="name">Care Center Task Tree</field>
         <field name="model">project.task</field>
