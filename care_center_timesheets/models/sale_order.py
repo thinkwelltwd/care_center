@@ -1,3 +1,4 @@
+from collections import defaultdict
 from odoo import api, fields, models, _
 from odoo.tools import config
 
@@ -28,7 +29,7 @@ class SaleOrderLine(models.Model):
         if desc_rule[0] == '1':
             details.append(fields.Date.to_string(line.date))
         if desc_rule[1] == '1':
-            details.append("%s %s" % (round(line.unit_amount, 3), line.product_uom_id.name))
+            details.append(f"{round(line.unit_amount, 3)} {line.product_uom_id.name}")
         if desc_rule[2] == '1':
             details.append(line.name)
         return details
@@ -41,7 +42,7 @@ class SaleOrderLine(models.Model):
         desc_rule = self.order_id.timesheet_invoice_description
         if not desc_rule or desc_rule == '000':
             return res
-        note = []
+        notes_by_task = defaultdict(list)
 
         domain = [
             ('so_line', '=', self.id),
@@ -57,13 +58,23 @@ class SaleOrderLine(models.Model):
 
         for line in timesheets:
             details = self._prepare_invoice_line_details(line, desc_rule)
-            note.append(' - '.join([str(x) or '' for x in details]))
+            notes_by_task[line.task_id].append(' - '.join([str(x) or '' for x in details]))
 
         # This is for not breaking possible tests that expects to create the
         # invoices lines the standard way
-        if note and \
+        if notes_by_task and \
                 (not config['test_enable'] or self.env.context.get('test_timesheet_description')):
-            res['name'] += "\n" + ("\n".join([str(x) or '' for x in note]))
+
+            name_lines = []
+            for task, timesheet_lines in notes_by_task.items():
+                name_lines.append(
+                    f'\nProject: {task.project_id.name}'
+                    f'\nTicket #: {task.code}'
+                    f'\nTicket Name: {task.name}'
+                )
+                name_lines.extend(timesheet_lines)
+
+            res['name'] = "%s\n%s" % (res['name'], '\n'.join(name_lines))
 
         timesheets.write({'invoice_status': 'invoiced'})
 
