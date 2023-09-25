@@ -80,21 +80,17 @@
 
             </xpath>
 
-            <field name="project_id" position="after">
+            <field name="user_ids" position="after">
                 <field name="task_active" invisible="1"/>
                 <field name="user_timer_status" invisible="1"/>
                 <field name="has_active_timesheets" invisible="1"/>
                 <field name="allow_billable" invisible="1"/>
             </field>
 
-            <!-- Override the field definition to prevent creating new records -->
-            <field name="user_ids" position="replace">
-                <field name="user_ids"
-                    class="o_task_user_field"
-                    options="{'no_open': True, 'no_create': True}"
-                    widget="many2many_avatar_user"
-                    domain="[('share', '=', False), ('active', '=', True)]"
-                />
+            <!-- Prevent creating new records -->
+            <field name="user_ids" position="attributes">
+                <attribute name="options">{'no_open': True, 'no_create': True}</attribute>
+                <attribute name="domain">[('share', '=', False), ('active', '=', True)]</attribute>
             </field>
 
             <field name="timesheet_ids" position="replace">

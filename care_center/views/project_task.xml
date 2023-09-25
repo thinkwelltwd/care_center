@@ -85,28 +85,23 @@
         <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
 
-            <field name="partner_id" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </field>
             <field name="sequence" position="after">
                 <field name="medium_id" options="{'no_create': True, 'no_open': True}"/>
-            </field>
-            <field name="project_id" position="before">
-                <field name="project_id_domain" invisible="1"/>
-                <field name="partner_id" class="o_task_customer_field"
-                       options="{'no_quick_create': True}" required="1"/>
             </field>
             <field name="parent_id" position="attributes">
                 <attribute name="options">{'no_create': True}</attribute>
                 <attribute name="domain">[('parent_id', '=', False), ('project_id', '=', project_id)]</attribute>
             </field>
-            <field name="project_id" position="attributes">
-                <attribute name="required">True</attribute>
-                <attribute name="no_quick_create">True</attribute>
-                <attribute name="domain">project_id_domain</attribute>
+
+            <field name="partner_id" position="replace">
+                <field name="partner_id" options="{'no_create': True}" invisible="0" class="o_task_customer_field"/>
+            </field>
+            <field name="project_id" position="replace">
+                <field name="project_id" options="{'no_create': True}" domain="project_id_domain"/>
             </field>
 
             <field name="stage_id" position="before">
+                <field name="project_id_domain" invisible="1"/>
                 <field name="task_active" invisible="1"/>
                 <field name="email_message_count" invisible="1"/>
                 <button name="email_initial_reply" string="Send Initial Reply" type="object" class="oe_highlight"

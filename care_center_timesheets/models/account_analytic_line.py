@@ -179,8 +179,9 @@ class AccountAnalyticLine(models.Model):
 
     @api.constrains('date', 'employee_id', 'project_id', 'company_id')
     def check_has_timesheet_sheet(self):
-        if self.project_id and not self.sheet_id:
-            raise ValidationError('This timesheet must be attached to a sheet!')
+        for ts in self:
+            if ts.project_id and not ts.sheet_id:
+                raise ValidationError(f'Timesheet {ts.name!r} must be attached to a sheet!')
 
     def _timesheet_determine_sale_line(self):
         """
