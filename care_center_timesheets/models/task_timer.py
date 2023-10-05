@@ -22,7 +22,7 @@ class TaskDurationFields(models.AbstractModel):
     full_duration = fields.Float(
         string='Time',
         default=0.0,
-        help='Total and undiscounted amount of time spent on timesheet',
+        help='Total and un-discounted amount of time spent on timesheet',
     )
     full_duration_rounded = fields.Float(compute='_round_full_duration')
     billable_time = fields.Float(compute='_get_billable_time')
@@ -122,7 +122,7 @@ class TaskTimer(models.AbstractModel):
             }
 
             task.timesheet_ids.filtered(
-                lambda ts: not ts.exclude_from_sale_order and not ts.timesheet_invoice_id
+                lambda ts: not ts.exclude_from_sale_order and ts.invoice_status != 'invoiced'
             ).with_company(company_id).write(data)
 
             # Clear Sale Order Line on excluded timesheets
@@ -316,7 +316,7 @@ class TaskTimer(models.AbstractModel):
         """
         Check for active timesheets before closing / deactivation.
         Or check if a singleton has active timesheets.
-        A user can also be specificed for a timesheet
+        A user can also be specified for a timesheet
         @param singleton: Bool, whether you want it to check all tasks or just a singleton
         @param user_id: ResUser, whether you also want to see if the active timesheet relates to a specific user
         """

@@ -97,7 +97,7 @@
                 <field name="partner_id" options="{'no_create': True}" invisible="0" class="o_task_customer_field"/>
             </field>
             <field name="project_id" position="replace">
-                <field name="project_id" options="{'no_create': True}" domain="project_id_domain"/>
+                <field name="project_id" required="1" options="{'no_create': True}" domain="project_id_domain"/>
             </field>
 
             <field name="stage_id" position="before">

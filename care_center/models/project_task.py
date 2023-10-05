@@ -250,7 +250,7 @@ class ProjectTask(models.Model):
         don't raise billing error
         """
         invoiceable_timesheets = self.timesheet_ids.filtered(
-            lambda ts: not ts.exclude_from_sale_order
+            lambda ts: not ts.exclude_from_sale_order and ts.invoice_status != 'invoiced'
         )
 
         if not self.project_id or not self.partner_id or not invoiceable_timesheets:
