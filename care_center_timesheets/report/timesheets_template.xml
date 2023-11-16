@@ -27,7 +27,7 @@
                             <span t-out="t.date"/>
                         </td>
                         <td style="vertical-align:middle;text-align:left;border:1px solid; padding-left: 10px;">
-                            <span t-out="t.display_name"/>
+                            <span t-out="t.name"/>
                         </td>
                         <td style="vertical-align:middle;text-align:left;border:1px solid; padding-left: 10px;">
                             <span t-out="t.user_id.display_name"/>
