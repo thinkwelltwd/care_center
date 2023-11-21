@@ -55,6 +55,10 @@
         <field name="inherit_id" ref="project.view_task_search_form"/>
         <field name="arch" type="xml">
 
+            <field name="user_ids" position="after">
+                <field name="description" string="Description"/>
+            </field>
+
             <xpath expr="//filter[@name='message_needaction']" position="before">
                 <filter string="Sub Tasks" name="sub_task_filter" domain="[('parent_id', '!=', False)]"/>
                 <separator/>
