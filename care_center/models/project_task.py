@@ -1,9 +1,12 @@
 from datetime import date, timedelta
 from markupsafe import Markup
 import json
+import logging
 
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
+
+logger = logging.getLogger(__name__)
 
 
 class ProjectTask(models.Model):
@@ -122,8 +125,9 @@ class ProjectTask(models.Model):
         task = super(ProjectTask, self).message_new(msg, custom_values=custom_values)
 
         # Task company_id should match Partner's company_id!
-        if task.partner_id and task.partner_id != task.company_id:
-            task.company_id = task.partner_id.company_id.id
+        if task.partner_id and task.partner_id.company_id:
+            if task.partner_id.company_id.id != task.company_id.id:
+                task.company_id = task.partner_id.company_id.id
 
         return task
 
