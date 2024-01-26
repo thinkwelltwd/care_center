@@ -474,8 +474,5 @@ class CustomerPortal(CP):
         msg = str(msg)
         if context['name'] in msg:
             msg = f"Device name {context['name']} already exists!"
-        if 'username' in msg:
-            partner = request.env['res.partner'].sudo().browse(int(context['contact_id']))
-            msg = msg.replace("None", partner.username).replace('(', '').replace(')', '').replace("'", '', 2)
         context.update({'error_message': [msg]})
         context.update(values)
