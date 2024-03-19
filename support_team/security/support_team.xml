@@ -24,11 +24,10 @@
         <field name="users" eval="[(4, ref('base.user_root'))]"/>
     </record>
 
-
     <record id="support_rule_customer_website_support" model="ir.rule">
-        <field name="name">Own Tickets</field>
+        <field name="name">Own Teams</field>
         <field ref="sales_team.model_crm_team" name="model_id"/>
-        <field name="domain_force">['|', ('user_id', '=', user.id), ('partner_id','=', user.partner_id)]</field>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
         <field name="groups" eval="[(4, ref('group_support_customer_website_support'))]"/>
     </record>
 
