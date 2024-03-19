@@ -6,6 +6,7 @@
     'category': 'Projects and Sales',
     'version': '15.0.1.0.0',
     'depends': [
+        'project_task_code',
         'sale_timesheet_line_exclude',
         'hr_timesheet_sheet',
         'care_center',
