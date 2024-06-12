@@ -99,8 +99,8 @@ class MergeTasks(models.TransientModel):
             if task.id == self.dst_task_id.id:
                 continue
 
-            for tag in task.tag_ids:
-                tag.write({'tag_ids': (6, 0, [self.dst_task_id.id])})
+            tag_set = list(set(task.tag_ids.ids + self.dst_task_id.tag_ids.ids))
+            self.dst_task_id.write({'tag_ids': [(6, 0, tag_set)]})
 
     def close_old_tasks(self):
         """
