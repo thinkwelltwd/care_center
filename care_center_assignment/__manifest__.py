@@ -14,6 +14,7 @@
         'security/ir.model.access.csv',
         'views/task_assignment.xml',
         'views/task_reassignment_wizard.xml',
+        'views/tasks_reassignment_wizard.xml',
         'views/project_task.xml',
     ],
     'installable': True,
