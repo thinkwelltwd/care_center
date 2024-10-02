@@ -3,14 +3,18 @@ from odoo import models, fields, api
 
 
 class Lead(models.Model):
-    _inherit = 'crm.lead'
+    _inherit = ['crm.lead', 'crm.response_dates']
+    _name = 'crm.lead'
 
     description = fields.Html('Notes')
     convertable = fields.Boolean(compute='_can_be_converted')
 
     def _can_be_converted(self):
         for lead in self:
-            lead.convertable = lead.active and not lead.stage_id.fold and lead.probability != 100 and not len(lead.order_ids)
+            lead.convertable = (
+                lead.active and not lead.stage_id.fold and lead.probability != 100
+                and not len(lead.order_ids)
+            )
 
     @api.model
     def message_new(self, msg, custom_values=None):
