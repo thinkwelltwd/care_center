@@ -30,4 +30,14 @@
         <field name="factor">100.0</field>
     </record>
 
+    <record model="hr_timesheet_invoice.factor" id="150_percent_invoiceable">
+        <field name="name">150%</field>
+        <field name="factor">150.0</field>
+    </record>
+
+    <record model="hr_timesheet_invoice.factor" id="200_percent_invoiceable">
+        <field name="name">200%</field>
+        <field name="factor">200.0</field>
+    </record>
+
 </odoo>
