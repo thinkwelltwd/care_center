@@ -18,6 +18,6 @@ class MailThread(models.AbstractModel):
             partners = self.env['res.partner'].search([
                 ('contact_info_ids.name', 'in', email_addresses),
                 ('contact_info_ids.type', '=', 'email'),
-             ])
+            ])
 
         return partners

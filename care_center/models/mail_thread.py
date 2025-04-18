@@ -13,7 +13,7 @@ class MailThread(models.AbstractModel):
     def get_prefix(self, model):
         try:
             prefix = self.env['ir.sequence'].search([('code', '=', model)])[0].prefix
-            return prefix[:prefix.index('%')]
+            return prefix[: prefix.index('%')]
         except IndexError:
             return ''
 
@@ -46,13 +46,13 @@ class MailThread(models.AbstractModel):
 
     @api.model
     def message_process(
-            self,
-            model,
-            message,
-            custom_values=None,
-            save_original=False,
-            strip_attachments=False,
-            thread_id=None,
+        self,
+        model,
+        message,
+        custom_values=None,
+        save_original=False,
+        strip_attachments=False,
+        thread_id=None,
     ):
         """
         Some email clients strip out the Message-ID header :-(

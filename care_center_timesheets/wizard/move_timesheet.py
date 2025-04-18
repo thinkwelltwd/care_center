@@ -169,10 +169,13 @@ class MoveTimesheetOrSplit(models.TransientModel):
 
     @api.onchange('destination_task_id', 'ts_action')
     def check_needs_description(self):
-        if not self.destination_task_id.has_active_timers(
+        if (
+            not self.destination_task_id.has_active_timers(
                 singleton=True,
                 user_id=self.timesheet_id.user_id,
-        ) and self.ts_action == 'split':
+            )
+            and self.ts_action == 'split'
+        ):
             self.needs_description = True
         else:
             self.needs_description = False
@@ -233,7 +236,6 @@ class SplitTimesheet(models.TransientModel):
         }
 
     def split_timesheet(self):
-
         self.ensure_one()
 
         self.handle_origin_timesheet()
@@ -242,12 +244,13 @@ class SplitTimesheet(models.TransientModel):
         return True
 
     def handle_origin_timesheet(self):
-
         self.timesheet_id.pause_timer_if_running()
 
         full_duration = self.timesheet_id.full_duration
         if self.time_to_move > full_duration:
-            raise UserError(_(f"Time to move exceeds Timesheet duration of {round(full_duration, 2)}!"))
+            raise UserError(
+                _(f"Time to move exceeds Timesheet duration of {round(full_duration, 2)}!")
+            )
         elif not (self.time_to_move > 0):
             raise UserError(_("Time to move can not be less than 00:01"))
 
@@ -264,7 +267,6 @@ class SplitTimesheet(models.TransientModel):
         return True
 
     def handle_destination_timesheet(self):
-
         destination_timesheet = self.destination_task_id.has_active_timers(
             singleton=True,
             user_id=self.timesheet_id.user_id,

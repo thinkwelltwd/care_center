@@ -2,7 +2,6 @@ from odoo.tests import common
 
 
 class TestTask(common.TransactionCase):
-
     def setUp(self):
         super(TestTask, self).setUp()
 
@@ -18,7 +17,6 @@ class TestTask(common.TransactionCase):
         })
 
     def test_task_converts_to_opportunity(self):
-
         Task = self.env['project.task']
         msg = 'This Task should have been an opportunity'
 

@@ -26,7 +26,7 @@ class AddInternalPhonecall(models.TransientModel):
     @api.constrains('partner_id')
     def _check_partner_id(self):
         if self.env.uid == self.partner_id.get_odoo_user().id:
-            raise UserError(f'You should not call yourself!')
+            raise UserError('You should not call yourself!')
 
     def place_internal_phonecall(self):
         """

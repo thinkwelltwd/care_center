@@ -2,7 +2,6 @@ from odoo.tests import common
 
 
 class TestTaskProcedureAssignment(common.TransactionCase):
-
     def setUp(self):
         super(TestTaskProcedureAssignment, self).setUp()
 
@@ -34,7 +33,7 @@ class TestTaskProcedureAssignment(common.TransactionCase):
         self.parent = Procedure.create({
             'name': 'Configure Network',
             'description': 'Configure the new network.',
-            'planned_hours': .5,
+            'planned_hours': 0.5,
         })
 
         self.child1 = Procedure.create({
@@ -69,4 +68,4 @@ class TestTaskProcedureAssignment(common.TransactionCase):
         self.assertEqual(checklist_count, 2)
 
         assignment.unlink()
-        self.assertEqual(self.task.planned_hours, .5)
+        self.assertEqual(self.task.planned_hours, 0.5)

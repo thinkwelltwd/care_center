@@ -12,7 +12,9 @@ class Lead(models.Model):
     def _can_be_converted(self):
         for lead in self:
             lead.convertable = (
-                lead.active and not lead.stage_id.fold and lead.probability != 100
+                lead.active
+                and not lead.stage_id.fold
+                and lead.probability != 100
                 and not len(lead.order_ids)
             )
 
@@ -38,10 +40,10 @@ class Lead(models.Model):
         if not self.active:
             update_vals['active'] = True
 
-        replied_stage = self.env['crm.stage'].search([
+        domain = [
             ('name', '=', 'Customer Replied'),
-        ], limit=1).mapped('id')
-        if replied_stage:
+        ]
+        if replied_stage := self.env['crm.stage'].search(domain, limit=1).mapped('id'):
             update_vals['stage_id'] = replied_stage[0]
 
         return super(Lead, self).message_update(msg_dict, update_vals=update_vals)

@@ -31,10 +31,11 @@ class EndInternalPhonecall(models.TransientModel):
         callee_previous_timesheet = callee.previous_running_timesheet
 
         # stop the callee's timesheet on this task, if it wasn't stopped manually
-        stopped_running_ts = task_id.sudo().with_context(
-            calculate_minimum_duration=False,
-            user_id=callee.id,
-        ).api_timer_stop(summary=self.name)
+        stopped_running_ts = (
+            task_id.sudo()
+            .with_context(calculate_minimum_duration=False, user_id=callee.id)
+            .api_timer_stop(summary=self.name)
+        )
 
         if stopped_running_ts and callee_previous_timesheet:
             callee_previous_timesheet.task_id.sudo().with_context(user_id=callee.id).timer_resume()

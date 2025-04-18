@@ -5,7 +5,6 @@ from odoo.tools import float_round
 
 
 class TestTimesheetTimer(common.TransactionCase):
-
     @classmethod
     def setUpClass(cls):
         super(TestTimesheetTimer, cls).setUpClass()
@@ -24,7 +23,7 @@ class TestTimesheetTimer(common.TransactionCase):
             'name': 'Armande ProjectUser',
             'login': 'Armande',
             'email': 'armande.projectuser@example.com',
-            'groups_id': [(6, 0, groups)]
+            'groups_id': [(6, 0, groups)],
         })
 
         cls.no_discount = Factor.create({
@@ -65,12 +64,11 @@ class TestTimesheetTimer(common.TransactionCase):
             'factor': cls.no_discount.id,
             'timer_status': 'stopped',
             'amount': 40,
-            'full_duration': .25,
-            'unit_amount': .25,
+            'full_duration': 0.25,
+            'unit_amount': 0.25,
         })
 
     def test_minimum_duration(self):
-
         Timer = self.env['timesheet_timer.wizard']
         Param = self.env['ir.config_parameter']
 
@@ -101,4 +99,4 @@ class TestTimesheetTimer(common.TransactionCase):
 
         # Over minimum returns timed duration
         stats = timer.timesheet_stats()
-        self.assertAlmostEqual(float_round(stats['unit_amount'], 1), .5)
+        self.assertAlmostEqual(float_round(stats['unit_amount'], 1), 0.5)

@@ -11,11 +11,11 @@ class PhoneCommon(models.AbstractModel):
         if res:
             return res
 
-        nr_digits_to_match_from_end = \
-            self.env.company.number_of_digits_to_match_from_end
+        nr_digits_to_match_from_end = self.env.company.number_of_digits_to_match_from_end
         if len(presented_number) >= nr_digits_to_match_from_end:
             end_number_to_match = presented_number[
-                -nr_digits_to_match_from_end:len(presented_number)]
+                -nr_digits_to_match_from_end : len(presented_number)
+            ]
         else:
             end_number_to_match = presented_number
 

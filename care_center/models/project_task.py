@@ -16,8 +16,7 @@ class ProjectTask(models.Model):
     medium_id = fields.Many2one(
         'utm.medium',
         'Medium',
-        help="This is the method of delivery. "
-             "Ex: Email / Phonecall / API / Website",
+        help="This is the method of delivery. Ex: Email / Phonecall / API / Website",
     )
     email_message_count = fields.Integer(compute='_compute_email_message_count')
     description = fields.Html('Private Note')
@@ -29,14 +28,18 @@ class ProjectTask(models.Model):
     )
 
     def _compute_email_message_count(self):
-        read_group_var = self.env['mail.message'].sudo().read_group(
-            domain=[
-                ('res_id', 'in', self.ids),
-                ('model', '=', self._name),
-                ('message_type', '=', 'comment'),
-            ],
-            fields=['res_id'],
-            groupby=['res_id'],
+        read_group_var = (
+            self.env['mail.message']
+            .sudo()
+            .read_group(
+                domain=[
+                    ('res_id', 'in', self.ids),
+                    ('model', '=', self._name),
+                    ('message_type', '=', 'comment'),
+                ],
+                fields=['res_id'],
+                groupby=['res_id'],
+            )
         )
 
         message_count_dict = dict((d['res_id'], d['res_id_count']) for d in read_group_var)
@@ -45,14 +48,12 @@ class ProjectTask(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-
         # Reset user_id if task is created via email or API.
         # In those cases, such tasks should be unassigned.
         for values in vals_list:
             if 'medium_id' in values:
-                medium = self.env['utm.medium'].search([
-                    ('id', '=', values['medium_id']),
-                ]).mapped('name')
+                Medium = self.env['utm.medium']
+                medium = Medium.search([('id', '=', values['medium_id'])]).mapped('name')
                 if medium and medium[0] in ('Email', 'API'):
                     values['user_ids'] = False
 
@@ -82,9 +83,11 @@ class ProjectTask(models.Model):
 
         if partner.sale_warn != 'no-message':
             # Block if partner only has warning but parent company is blocked
-            if partner.sale_warn != 'block' \
-                    and partner.parent_id \
-                    and partner.parent_id.sale_warn == 'block':
+            if (
+                partner.sale_warn != 'block'
+                and partner.parent_id
+                and partner.parent_id.sale_warn == 'block'
+            ):
                 partner = partner.parent_id
             title = f"Warning for {partner.name}"
             message = partner.sale_warn_msg
@@ -140,10 +143,10 @@ class ProjectTask(models.Model):
         if not self.active:
             update_vals['active'] = True
 
-        replied_stage = self.env['project.task.type'].search([
+        domain = [
             ('name', '=', 'Customer Replied'),
-        ], limit=1).mapped('id')
-        if replied_stage:
+        ]
+        if replied_stage := self.env['project.task.type'].search(domain, limit=1).mapped('id'):
             update_vals['stage_id'] = replied_stage[0]
 
         return super(ProjectTask, self).message_update(msg, update_vals=update_vals)
@@ -151,12 +154,12 @@ class ProjectTask(models.Model):
     @api.model
     def api_message_new(self, msg):
         """
-        Create a Ticket via API call. Should be callable with the same signature as
-        python's sending emails.
+         Create a Ticket via API call. Should be callable with the same signature as
+         python's sending emails.
 
-        @param dict msg: dictionary of message variables
-       :rtype: int
-       :return: the id of the new Ticket
+         @param dict msg: dictionary of message variables
+        :rtype: int
+        :return: the id of the new Ticket
         """
 
         Tag = self.env['project.tags']
@@ -185,7 +188,13 @@ class ProjectTask(models.Model):
     @api.onchange('partner_id')
     def _partner_id(self):
         # Only reset project if set, not catchall, and NOT related to the current Contact selected
-        if self.partner_id and self.project_id and not self.project_id.catchall and self.project_id.partner_id and self.project_id.partner_id.id not in self.get_partner_ids():
+        if (
+            self.partner_id
+            and self.project_id
+            and not self.project_id.catchall
+            and self.project_id.partner_id
+            and self.project_id.partner_id.id not in self.get_partner_ids()
+        ):
             self.project_id = False
 
     @api.depends('partner_id')
@@ -201,7 +210,6 @@ class ProjectTask(models.Model):
 
     @api.onchange('project_id')
     def _project_id(self):
-
         if not self.date_deadline:
             self.date_deadline = fields.Date.to_string(date.today() + timedelta(hours=48))
 
@@ -228,15 +236,17 @@ class ProjectTask(models.Model):
             return
 
         if part_comp != proj_comp:
-            msg = 'Project "{project_name}-{project_id}" company "{proj_comp_id}" does ' \
-                  'not match Partner "{partner}-{partner_id}" company "{part_comp_id}".'.format(
-                project_id=self.project_id.id,
-                project_name=self.project_id.name,
-                partner=self.partner_id.name,
-                partner_id=self.partner_id.id,
-                # .id because website error message mangles message string if using .name :(
-                proj_comp_id=proj_comp.id,
-                part_comp_id=part_comp.id,
+            msg = (
+                'Project "{project_name}-{project_id}" company "{proj_comp_id}" does '
+                'not match Partner "{partner}-{partner_id}" company "{part_comp_id}".'.format(
+                    project_id=self.project_id.id,
+                    project_name=self.project_id.name,
+                    partner=self.partner_id.name,
+                    partner_id=self.partner_id.id,
+                    # .id because website error message mangles message string if using .name :(
+                    proj_comp_id=proj_comp.id,
+                    part_comp_id=part_comp.id,
+                )
             )
             # TODO in Odoo 13+, raise RedirectWarning and pass in an action + context for Project
             raise ValidationError(msg)
@@ -274,21 +284,23 @@ class ProjectTask(models.Model):
                 'with Project Partner.\n\n'
                 'Project Partner: %s\n'
                 'Task Partner: %s\n\n'
-                'For correct billing, assign a Project associated with %s to this Task.' %
-                (project_partner, task_partner, task_partner)
+                'For correct billing, assign a Project associated with %s to this Task.'
+                % (project_partner, task_partner, task_partner)
             )
 
     @api.model
     def message_get_reply_to(self, res_ids, default=None):
-        """ Override to get the reply_to of the parent project. """
+        """Override to get the reply_to of the parent project."""
         tasks = self.browse(res_ids)
         project_ids = set(tasks.mapped('project_id').ids)
         aliases = self.env['project.project'].message_get_reply_to(
             list(project_ids),
             default=default,
         )
-        return dict((task.id, aliases.get(task.project_id and task.project_id.id or 0, False))
-                    for task in tasks)
+        return dict(
+            (task.id, aliases.get(task.project_id and task.project_id.id or 0, False))
+            for task in tasks
+        )
 
     def confirm_subtasks_done(self):
         for subtask in self._get_all_subtasks():
@@ -310,7 +322,7 @@ class ProjectTask(models.Model):
             self.toggle_active()
 
     def write(self, values):
-        """ on_change doesn't fire for stage_id clicks """
+        """on_change doesn't fire for stage_id clicks"""
         if values.get('stage_id') and self.mailserver_mode():
             self._check_stage_id(values['stage_id'])
         return super(ProjectTask, self).write(values)
@@ -340,7 +352,7 @@ class ProjectTask(models.Model):
         self.date_end = None
 
     def toggle_active(self):
-        """ Inverse the value of the field ``active`` on the records in ``self``. """
+        """Inverse the value of the field ``active`` on the records in ``self``."""
 
         for record in self:
             if record.active:
@@ -399,19 +411,23 @@ class ProjectTask(models.Model):
             op = '='
 
         if self.tag_ids:
-            template = self.env['email.template.selection'].search([
+            domain = [
                 ('reply_type', '=', reply_type),
                 ('tag_id', 'in', [tag.id for tag in self.tag_ids]),
-                ('team_id', op, team_query)
-            ], limit=1).template_id
+                ('team_id', op, team_query),
+            ]
+            template = self.env['email.template.selection'].search(domain, limit=1).template_id
         else:
             template = None
 
         if not template:
-            template = self.env['mail.template'].search([
-                ('name', '=', name),
-                ('model', '=', 'project.task'),
-            ], limit=1)
+            template = self.env['mail.template'].search(
+                [
+                    ('name', '=', name),
+                    ('model', '=', 'project.task'),
+                ],
+                limit=1,
+            )
 
         ctx = {
             'default_model': 'project.task',

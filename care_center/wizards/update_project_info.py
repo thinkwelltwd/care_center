@@ -38,7 +38,11 @@ class UpdateProjectInfo(models.TransientModel):
     def clear_unrelated_project(self):
         proj_partner = self.new_project.partner_id and self.new_project.partner_id.id
 
-        if self.partner_id and proj_partner and proj_partner not in self.partner_id.get_partner_ids():
+        if (
+            self.partner_id
+            and proj_partner
+            and proj_partner not in self.partner_id.get_partner_ids()
+        ):
             self.new_project = None
 
     @api.depends('partner_id')

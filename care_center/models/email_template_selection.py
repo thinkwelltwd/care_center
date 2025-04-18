@@ -37,8 +37,10 @@ class EmailTemplateSelection(models.Model):
         required=True,
     )
 
-    _sql_constraints = [(
-        'template_tag_type_unique',
-        'UNIQUE(tag_id,team_id,reply_type)',
-        'Template already assigned for this Tag, Team and Reply Type',
-    )]
+    _sql_constraints = [
+        (
+            'template_tag_type_unique',
+            'UNIQUE(tag_id,team_id,reply_type)',
+            'Template already assigned for this Tag, Team and Reply Type',
+        ),
+    ]

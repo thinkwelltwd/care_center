@@ -27,10 +27,13 @@ class ResUsers(models.Model):
             GROUP BY states;
         """
         self.env['crm.phonecall'].flush()
-        self.env.cr.execute(query, {
-            'today': fields.Date.context_today(self),
-            'user_id': self.env.uid,
-        })
+        self.env.cr.execute(
+            query,
+            {
+                'today': fields.Date.context_today(self),
+                'user_id': self.env.uid,
+            },
+        )
         phonecall_data = self.env.cr.dictfetchall()
 
         user_phonecalls = {

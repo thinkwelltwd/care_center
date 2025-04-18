@@ -3,7 +3,6 @@ from odoo.exceptions import UserError, ValidationError
 
 
 class TestTask(common.TransactionCase):
-
     @classmethod
     def setUpClass(cls):
         super(TestTask, cls).setUpClass()
@@ -67,7 +66,9 @@ class TestTask(common.TransactionCase):
         cls.task.write({
             'timesheet_ids': [
                 (
-                    0, 0, {
+                    0,
+                    0,
+                    {
                         'name': 'Worked on this briefly',
                         'user_id': cls.user_projectuser.id,
                         'project_id': cls.api_project.id,
@@ -75,12 +76,14 @@ class TestTask(common.TransactionCase):
                         'timer_status': 'stopped',
                         'invoice_status': 'notready',
                         'amount': 40,
-                        'full_duration': .5,
-                        'unit_amount': .5,
-                    }
+                        'full_duration': 0.5,
+                        'unit_amount': 0.5,
+                    },
                 ),
                 (
-                    0, 0, {
+                    0,
+                    0,
+                    {
                         'name': 'Go down deep; stay down long',
                         'user_id': cls.user_projectuser.id,
                         'project_id': cls.api_project.id,
@@ -90,7 +93,7 @@ class TestTask(common.TransactionCase):
                         'amount': 40,
                         'full_duration': 4.5,
                         'unit_amount': 4.5,
-                    }
+                    },
                 ),
             ]
         })
@@ -103,7 +106,6 @@ class TestTask(common.TransactionCase):
         self.task.check_invoiceable_stage()
 
     def test_mark_timesheets_ready(self):
-
         for ts in self.task.timesheet_ids:
             self.assertEqual(ts.invoice_status, 'notready')
 
@@ -118,11 +120,10 @@ class TestTask(common.TransactionCase):
         self.assertEqual(worked_hours, self.task.effective_hours)
 
     def test_timesheet_compute_durations(self):
-
         for ts in self.task.timesheet_ids:
             ts._compute_durations()
             hours = ts.full_duration
-            hours -= (hours * ts.factor.factor / 100.0)
+            hours -= hours * ts.factor.factor / 100.0
             self.assertEqual(ts.unit_amount, hours)
 
     def test_change_stage_with_unconfirmed_invoiceability(self):
@@ -166,7 +167,6 @@ class TestTask(common.TransactionCase):
             self.task.write({'stage_id': self.stage_done.id})
 
     def test_timesheet_check_if_marked_ready(self):
-
         for ts in self.task.timesheet_ids:
             self.assertEqual(ts.invoice_status, 'notready')
 
@@ -187,7 +187,6 @@ class TestTask(common.TransactionCase):
             })
 
     def test_timer_buttons(self):
-
         ts_count = len(self.task.timesheet_ids)
         self.task.timer_start()
         self.assertEqual(len(self.task.timesheet_ids), ts_count + 1)
@@ -216,7 +215,6 @@ class TestTask(common.TransactionCase):
         self.assertEqual(timer, 1)
 
     def test_add_planned_expected_difference(self):
-
         ts_count = len(self.task.timesheet_ids)
         ts_total_time = sum(ts.unit_amount for ts in self.task.timesheet_ids)
         self.assertGreater(self.task.planned_hours, ts_total_time)

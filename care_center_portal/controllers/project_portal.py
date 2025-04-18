@@ -11,17 +11,24 @@ from odoo.tools import groupby as groupbyelem
 
 
 class CustomerPortal(CP):
-
     def _prepare_portal_layout_values(self):
         values = super(CustomerPortal, self)._prepare_portal_layout_values()
         partner = request.env.user.partner_id
-        values['project_count'] = request.env['project.project'].sudo().search_count([
-            ('message_partner_ids', 'child_of', partner.commercial_partner_id.id),
-        ])
-        values['task_count'] = request.env['project.task'].sudo().search_count([
-            ('project_id.message_partner_ids', 'child_of', partner.commercial_partner_id.id),
-            ('message_partner_ids', 'child_of', partner.commercial_partner_id.id)
-        ])
+        values['project_count'] = (
+            request.env['project.project']
+            .sudo()
+            .search_count([
+                ('message_partner_ids', 'child_of', partner.commercial_partner_id.id),
+            ])
+        )
+        values['task_count'] = (
+            request.env['project.task']
+            .sudo()
+            .search_count([
+                ('project_id.message_partner_ids', 'child_of', partner.commercial_partner_id.id),
+                ('message_partner_ids', 'child_of', partner.commercial_partner_id.id),
+            ])
+        )
         return values
 
     @http.route(
@@ -37,7 +44,9 @@ class CustomerPortal(CP):
         auth="user",
         website=True,
     )
-    def list_projects(self, page=1, date_begin=None, date_end=None, sortby=None, partner_id=None, **kw):
+    def list_projects(
+        self, page=1, date_begin=None, date_end=None, sortby=None, partner_id=None, **kw
+    ):
         """
         Override 'portal_my_projects' (not calling super) in addons/project/controllers/portal.py.  Needed to be done
         for supporting other companies projects for tasks (tasks are related/based off projects) not related to logged
@@ -72,11 +81,13 @@ class CustomerPortal(CP):
             url_args={'date_begin': date_begin, 'date_end': date_end, 'sortby': sortby},
             total=project_count,
             page=page,
-            step=self._items_per_page
+            step=self._items_per_page,
         )
 
         # content according to pager and archive selected
-        projects = Project.search(domain, order=order, limit=self._items_per_page, offset=pager['offset'])
+        projects = Project.search(
+            domain, order=order, limit=self._items_per_page, offset=pager['offset']
+        )
         request.session['my_projects_history'] = projects.ids[:100]
 
         values.update({
@@ -129,17 +140,17 @@ class CustomerPortal(CP):
         website=True,
     )
     def list_tasks(
-            self,
-            page=1,
-            date_begin=None,
-            date_end=None,
-            sortby=None,
-            filterby=None,
-            search=None,
-            search_in='content',
-            groupby=None,
-            partner_id=None,
-            **kw
+        self,
+        page=1,
+        date_begin=None,
+        date_end=None,
+        sortby=None,
+        filterby=None,
+        search=None,
+        search_in='content',
+        groupby=None,
+        partner_id=None,
+        **kw,
     ):
         """
         Override 'portal_my_tasks' (not calling super) in addons/project/controllers/portal.py.  Needed to be done for
@@ -156,23 +167,37 @@ class CustomerPortal(CP):
             partner = request.env.user.partner_id
 
         searchbar_filters = {
-            'all': {'label': _('All'), 'domain': [
-                ('project_id', '!=', False),
-                ('project_id.message_partner_ids', 'child_of', partner.commercial_partner_id.id),
-            ]},
+            'all': {
+                'label': _('All'),
+                'domain': [
+                    ('project_id', '!=', False),
+                    (
+                        'project_id.message_partner_ids',
+                        'child_of',
+                        partner.commercial_partner_id.id,
+                    ),
+                ],
+            },
         }
 
         searchbar_inputs = self._task_get_searchbar_inputs()
         searchbar_groupby = self._task_get_searchbar_groupby()
 
         # extends filterby criteria with project the customer has access to
-        projects = request.env['project.project'].sudo().search([
-            # Revamped domain to be based off passed in partner_id
-            ('message_partner_ids', 'child_of', partner.commercial_partner_id.id)
-        ])
+        projects = (
+            request.env['project.project']
+            .sudo()
+            .search([
+                # Revamped domain to be based off passed in partner_id
+                ('message_partner_ids', 'child_of', partner.commercial_partner_id.id)
+            ])
+        )
         for project in projects:
             searchbar_filters.update({
-                str(project.id): {'label': project.name, 'domain': [('project_id', '=', project.id)]}
+                str(project.id): {
+                    'label': project.name,
+                    'domain': [('project_id', '=', project.id)],
+                }
             })
 
         user = request.env.user
@@ -181,7 +206,8 @@ class CustomerPortal(CP):
             # Note: portal users can't view projects they don't follow
             project_groups = request.env['project.task'].read_group(
                 [('project_id', 'not in', projects.ids)],
-                ['project_id'], ['project_id'],
+                ['project_id'],
+                ['project_id'],
             )
             for group in project_groups:
                 proj_id = group['project_id'][0] if group['project_id'] else False
@@ -230,25 +256,34 @@ class CustomerPortal(CP):
             },
             total=task_count,
             page=page,
-            step=self._items_per_page
+            step=self._items_per_page,
         )
         # content according to pager and archive selected
         order = self._task_get_order(order, groupby)
 
-        tasks = TaskSudo.search(domain, order=order, limit=self._items_per_page, offset=pager['offset'])
+        tasks = TaskSudo.search(
+            domain, order=order, limit=self._items_per_page, offset=pager['offset']
+        )
         request.session['my_tasks_history'] = tasks.ids[:100]
 
         groupby_mapping = self._task_get_groupby_mapping()
         group = groupby_mapping.get(groupby)
         if group:
-            grouped_tasks = [request.env['project.task'].concat(*g) for k, g in groupbyelem(tasks, itemgetter(group))]
+            grouped_tasks = [
+                request.env['project.task'].concat(*g)
+                for k, g in groupbyelem(tasks, itemgetter(group))
+            ]
         else:
             grouped_tasks = [tasks]
 
-        task_states = dict(request.env['project.task']._fields['kanban_state']._description_selection(request.env))
+        task_states = dict(
+            request.env['project.task']._fields['kanban_state']._description_selection(request.env)
+        )
         if sortby == 'status':
             if groupby == 'none' and grouped_tasks:
-                grouped_tasks[0] = grouped_tasks[0].sorted(lambda tasks: task_states.get(tasks.kanban_state))
+                grouped_tasks[0] = grouped_tasks[0].sorted(
+                    lambda tasks: task_states.get(tasks.kanban_state)
+                )
             else:
                 grouped_tasks.sort(key=lambda tasks: task_states.get(tasks[0].kanban_state))
 
@@ -301,9 +336,7 @@ class CustomerPortal(CP):
                         qcontext,
                         partner,
                     )
-                    return request.redirect(
-                        partner.get_portal_url(record=task)
-                    )
+                    return request.redirect(partner.get_portal_url(record=task))
                 except Exception as e:
                     self._handle_exception(e, qcontext, kw)
 
@@ -427,13 +460,13 @@ class CustomerPortal(CP):
                 error[field_name] = 'invalid'
 
     def _form_validate(
-            self,
-            data,
-            fields,
-            check_mandatory=True,
-            check_email=True,
-            check_numeric=True,
-            check_punc=False
+        self,
+        data,
+        fields,
+        check_mandatory=True,
+        check_email=True,
+        check_numeric=True,
+        check_punc=False,
     ):
         """
         Check all form data is correct
@@ -460,9 +493,7 @@ class CustomerPortal(CP):
         form_error, error_message = self._form_validate(
             data,
             {
-                'mandatory': {
-                    'all': ['name', 'project_id', 'description']
-                },
+                'mandatory': {'all': ['name', 'project_id', 'description']},
             },
             check_numeric=False,
             check_email=False,

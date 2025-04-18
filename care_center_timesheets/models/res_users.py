@@ -57,7 +57,6 @@ class ResUsers(models.Model):
         my_tasks = self.env.cr.dictfetchall()
 
         if my_tasks:
-
             my_timers_sql = """
                 SELECT DISTINCT(task_id), timer_status, project_task.name
                 FROM account_analytic_line
@@ -105,9 +104,12 @@ class ResUsers(models.Model):
         """
         self.ensure_one()
 
-        employee = self.env['hr.employee'].search([
-            ('user_id', '=', self.id),
-        ], limit=1)
+        employee = self.env['hr.employee'].search(
+            [
+                ('user_id', '=', self.id),
+            ],
+            limit=1,
+        )
         if not employee:
             raise UserError('%s is not linked to an Employee Record' % self.env.user.name)
 
@@ -131,7 +133,11 @@ class ResUsers(models.Model):
         if not manage_hr_time:
             return False
 
-        return TimesheetSheet.with_company(company_id).create({
-            'employee_id': employee.id,
-            'company_id': company_id,
-        }).id
+        return (
+            TimesheetSheet.with_company(company_id)
+            .create({
+                'employee_id': employee.id,
+                'company_id': company_id,
+            })
+            .id
+        )

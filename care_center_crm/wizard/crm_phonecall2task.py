@@ -7,6 +7,7 @@ class CrmPhonecallToTaskWizard(models.TransientModel):
     """
     Convert a Phone Call into a Project Task.
     """
+
     _name = "crm.phonecall2task.wizard"
     _description = 'Care Center CRM Phone Call To Task Wizard'
 

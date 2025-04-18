@@ -61,7 +61,7 @@ class ReassignTaskWizard(models.TransientModel):
         required=False,
         domain=[('model_id.model', '=', 'project.task')],
         help="When template is specified, an email will be sent "
-             "to all followers of the task being re-assigned.",
+        "to all followers of the task being re-assigned.",
     )
     assigned_to_domain = fields.Char(
         compute='_compute_assigned_to_domain',
@@ -152,7 +152,6 @@ class ReassignTaskWizard(models.TransientModel):
         self.email_template_id.send_mail(self.task_id.id)
 
     def reassign_user_team(self):
-
         team_id = self.team_id and self.team_id.id
         assigned_to = self.assigned_to and self.assigned_to.id
         assignment = self.env['task.assignment'].create({

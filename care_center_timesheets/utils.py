@@ -8,7 +8,7 @@ def get_factored_duration(hours, invoice_factor):
     if invoice_factor:
         factor_decimal_val = round(invoice_factor.factor / 100, 2)
         if factor_decimal_val <= 1:
-            hours = ((1 - factor_decimal_val) * hours)
+            hours = (1 - factor_decimal_val) * hours
         else:
             hours *= factor_decimal_val
 

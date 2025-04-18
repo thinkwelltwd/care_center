@@ -9,6 +9,7 @@ class CrmLeadToTaskWizard(models.TransientModel):
     Convert a Lead into a Project Task and
     move the Mail Thread and Attachments.
     """
+
     _name = "crm.lead2task.wizard"
     _description = 'Care Center CRM Lead To Task Wizard'
 
@@ -97,7 +98,7 @@ class CrmLeadToTaskWizard(models.TransientModel):
             'medium_id': (lead.medium_id and lead.medium_id.id) or False,
             'team_id': self.get_team_id(lead=lead),
             'company_id': company_id,
-            'tag_ids': [(6, 0, self.get_tag_ids(lead=lead))]
+            'tag_ids': [(6, 0, self.get_tag_ids(lead=lead))],
         })
         lead.message_change_thread(task_id)
         self.move_attachments(lead_id=lead.id, task_id=task_id.id)

@@ -1,6 +1,6 @@
 import logging
 
-from odoo import models, fields, api, _
+from odoo import models, fields, _
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -31,7 +31,6 @@ class MergeTasks(models.TransientModel):
     dst_task_id = fields.Many2one('project.task', string='Destination Task', required=True)
 
     def action_merge(self):
-
         self.merge_validation()
         self.merge_name_description()
         self.transfer_messages()
@@ -42,7 +41,6 @@ class MergeTasks(models.TransientModel):
         return True
 
     def merge_validation(self):
-
         for task in self.task_ids:
             if task.id == self.dst_task_id.id or not task.timesheet_ids:
                 continue
@@ -59,7 +57,6 @@ class MergeTasks(models.TransientModel):
                 )
 
     def merge_name_description(self):
-
         names = [self.dst_task_id.name]
         descriptions = [self.dst_task_id.description]
 

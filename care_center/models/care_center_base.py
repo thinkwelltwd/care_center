@@ -6,6 +6,7 @@ class CareCenterBase(models.AbstractModel):
     Base model including helper functions / fields
     useful in multiple other project models.
     """
+
     _name = 'care_center.base'
     _description = 'Care Center Base'
 

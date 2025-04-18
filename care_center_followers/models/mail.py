@@ -7,6 +7,7 @@ class MailThread(models.AbstractModel):
     """
     Base model to disable auto-subscribing followers
     """
+
     _name = 'mail.thread'
     _inherit = 'mail.thread'
 
@@ -37,6 +38,7 @@ class DisableFollowers(models.AbstractModel):
     """
     Base model to disable auto-subscribing followers
     """
+
     _name = 'disable.followers'
     _description = 'Disable Followers'
     _followers_key = ''

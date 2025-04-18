@@ -16,7 +16,7 @@ class ProjectTask(models.Model):
             '3': lambda p: p.write({'priority': '1'}),
             '4': lambda p: p.write({'priority': '1'}),
             '5': lambda p: p.write({'priority': '1'}),
-        }
+        },
     )
 
     def toggle_active(self):

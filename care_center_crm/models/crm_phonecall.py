@@ -56,11 +56,24 @@ class CrmPhonecall(models.Model):
 
         # Reset fields ONLY if the partner doesn't match! Otherwise, will always
         # clear partner_id field, due onchange methods on task_id / opportunity_id
-        if self.task_id and self.task_id.partner_id and self.task_id.partner_id.id not in partner_ids:
+        if (
+            self.task_id
+            and self.task_id.partner_id
+            and self.task_id.partner_id.id not in partner_ids
+        ):
             self.task_id = False
-        if self.opportunity_id and self.opportunity_id.partner_id and self.opportunity_id.partner_id.id not in partner_ids:
+        if (
+            self.opportunity_id
+            and self.opportunity_id.partner_id
+            and self.opportunity_id.partner_id.id not in partner_ids
+        ):
             self.opportunity_id = False
-        if self.project_id and not self.project_id.catchall and self.project_id.partner_id and self.project_id.partner_id.id not in partner_ids:
+        if (
+            self.project_id
+            and not self.project_id.catchall
+            and self.project_id.partner_id
+            and self.project_id.partner_id.id not in partner_ids
+        ):
             self.project_id = False
 
     @api.depends('partner_id')
@@ -142,10 +155,8 @@ class CrmPhonecall(models.Model):
 
     @api.model
     def create(self, vals):
-        add_timesheet = (
-            vals.get('user_id')
-            and self.env.context.get('timesheet_from_call_duration', True)
-        )
+        ctx = self.env.context
+        add_timesheet = vals.get('user_id') and ctx.get('timesheet_from_call_duration', True)
         if add_timesheet and vals.get('project_id') and vals.get('duration', 0) > 0:
             timesheet_data = self._timesheet_prepare(vals)
             vals['timesheet_ids'] = vals.get('timesheet_ids', [])

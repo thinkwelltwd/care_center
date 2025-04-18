@@ -62,9 +62,9 @@ class SaleOrderLine(models.Model):
 
         # This is for not breaking possible tests that expects to create the
         # invoices lines the standard way
-        if notes_by_task and \
-                (not config['test_enable'] or self.env.context.get('test_timesheet_description')):
-
+        if notes_by_task and (
+            not config['test_enable'] or self.env.context.get('test_timesheet_description')
+        ):
             name_lines = []
             for task, timesheet_lines in notes_by_task.items():
                 name_lines.append(

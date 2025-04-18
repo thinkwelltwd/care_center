@@ -18,6 +18,7 @@ class ProjectTagTeamBase(models.AbstractModel):
     """
     Add filtering of Project Tags by Team
     """
+
     _name = 'project.tag.team.base'
     _description = 'Project Tag Team Base'
 

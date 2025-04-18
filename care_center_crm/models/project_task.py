@@ -26,15 +26,19 @@ class ProjectTask(models.Model):
         for task in self:
             active_timesheets = task.timesheet_ids.filtered(
                 lambda ts: ts.phonecall_id
-                           and ts.phonecall_id.state == 'open'
-                           and ts.user_id.id == self.env.uid
-                           and ts.timer_status == 'running'
+                and ts.phonecall_id.state == 'open'
+                and ts.user_id.id == self.env.uid
+                and ts.timer_status == 'running'
             )
-            task.active_phonecall_id = active_timesheets and active_timesheets.phonecall_id.id or False
+            task.active_phonecall_id = (
+                active_timesheets and active_timesheets.phonecall_id.id or False
+            )
 
     def _can_be_converted(self):
         for task in self:
-            task.convertable = task.active and not len(task.timesheet_ids) and not task.stage_id.fold
+            task.convertable = (
+                task.active and not len(task.timesheet_ids) and not task.stage_id.fold
+            )
 
     def _phonecall_count(self):
         for task in self:
@@ -164,7 +168,6 @@ class ProjectTask(models.Model):
                 'res_id': call_id.id,
             })
         else:
-
             view.update({
                 'view_mode': 'tree,form,calendar',
             })

@@ -149,8 +149,7 @@ class ProjectTask(models.Model):
             return
 
         billable_timesheets = self.timesheet_ids.filtered(
-            lambda ts: not ts.exclude_from_sale_order
-                       and not ts.timesheet_invoice_id
+            lambda ts: not ts.exclude_from_sale_order and not ts.timesheet_invoice_id
         )
         if billable_timesheets:
             timesheet = billable_timesheets[0]
@@ -158,22 +157,23 @@ class ProjectTask(models.Model):
             return
 
         self.with_context(sheet_create=True).write({
-            'timesheet_ids': [(
-                0,
-                0,
-                {
-                    'name': 'Task / Contract Fulfillment',
-                    'full_duration': 0,  # keep 0 to report on staff efficiency
-                    'unit_amount': self.remaining_hours,
-                    'invoice_status': 'ready',
-                    'timer_status': 'stopped',
-                    'factor': False,  # No factor, because we invoice at full amount
-                    'user_id': self.env.uid,
-                    'account_id': self.project_id.analytic_account_id.id,
-                    'project_id': self.project_id.id,
-                    'sheet_id': self.get_hr_timesheet_id(),
-                    'so_line': self.sale_line_id and self.sale_line_id.id,
-                }
-            )]
+            'timesheet_ids': [
+                (
+                    0,
+                    0,
+                    {
+                        'name': 'Task / Contract Fulfillment',
+                        'full_duration': 0,  # keep 0 to report on staff efficiency
+                        'unit_amount': self.remaining_hours,
+                        'invoice_status': 'ready',
+                        'timer_status': 'stopped',
+                        'factor': False,  # No factor, because we invoice at full amount
+                        'user_id': self.env.uid,
+                        'account_id': self.project_id.analytic_account_id.id,
+                        'project_id': self.project_id.id,
+                        'sheet_id': self.get_hr_timesheet_id(),
+                        'so_line': self.sale_line_id and self.sale_line_id.id,
+                    },
+                )
+            ]
         })
-

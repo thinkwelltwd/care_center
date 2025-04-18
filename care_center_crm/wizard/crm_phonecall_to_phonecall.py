@@ -5,14 +5,10 @@ class CrmPhonecall2phonecall(models.TransientModel):
     _inherit = 'crm.phonecall2phonecall'
 
     def _get_task_id(self):
-        return self.env['crm.phonecall'].browse(
-            self.env.context.get('active_id')
-        ).task_id.id
+        return self.env['crm.phonecall'].browse(self.env.context.get('active_id')).task_id.id
 
     def _get_project_id(self):
-        return self.env['crm.phonecall'].browse(
-            self.env.context.get('active_id')
-        ).project_id.id
+        return self.env['crm.phonecall'].browse(self.env.context.get('active_id')).project_id.id
 
     task_id = fields.Many2one(
         'project.task',

@@ -68,10 +68,13 @@ class TaskTimer(models.AbstractModel):
         If no HR Timesheet exists, and manage_hr_timesheet is True, create it.
         """
         self.ensure_one()
-        employee = self.env['hr.employee'].search([
-            ('user_id', '=', self.get_user_id()),
-            ('company_id', '=', self.company_id.id),
-        ], limit=1)
+        employee = self.env['hr.employee'].search(
+            [
+                ('user_id', '=', self.get_user_id()),
+                ('company_id', '=', self.company_id.id),
+            ],
+            limit=1,
+        )
         if not employee:
             raise UserError(f'{self.env.user.name} has no Employee in {self.company_id.name}')
 
@@ -95,10 +98,14 @@ class TaskTimer(models.AbstractModel):
         if not manage_hr_time:
             return False
 
-        return TimesheetSheet.with_company(self.company_id.id).create({
-            'employee_id': employee.id,
-            'company_id': self.company_id.id,
-        }).id
+        return (
+            TimesheetSheet.with_company(self.company_id.id)
+            .create({
+                'employee_id': employee.id,
+                'company_id': self.company_id.id,
+            })
+            .id
+        )
 
     def _update_timesheets(self):
         """
@@ -127,9 +134,9 @@ class TaskTimer(models.AbstractModel):
 
             # Clear Sale Order Line on excluded timesheets
             data['so_line'] = False
-            task.timesheet_ids.filtered(
-                lambda ts: ts.exclude_from_sale_order
-            ).with_company(company_id).write(data)
+            task.timesheet_ids.filtered(lambda ts: ts.exclude_from_sale_order).with_company(
+                company_id
+            ).write(data)
 
     def _user_timer_status(self):
         for rec in self:
@@ -200,7 +207,7 @@ class TaskTimer(models.AbstractModel):
             'view_id': wizard_form.id,
             'res_id': switch.id,
             'view_mode': 'form',
-            'target': 'new'
+            'target': 'new',
         }
 
     def timer_start(self):
@@ -236,8 +243,12 @@ class TaskTimer(models.AbstractModel):
 
         Activity = self.env['mail.activity']
         user_id = self.get_user_id()
-        activity_type_id = self.env['mail.activity.type'].search([('name', '=', 'Sign Out')]).mapped('id')
-        res_model_id = self.env['ir.model'].sudo().search([('model', '=', 'project.task')]).mapped('id')
+        activity_type_id = (
+            self.env['mail.activity.type'].search([('name', '=', 'Sign Out')]).mapped('id')
+        )
+        res_model_id = (
+            self.env['ir.model'].sudo().search([('model', '=', 'project.task')]).mapped('id')
+        )
 
         if not activity_type_id:
             return
@@ -268,12 +279,12 @@ class TaskTimer(models.AbstractModel):
             activity.unlink()
 
     def _create_timesheet(
-            self,
-            time=0.0,
-            timer_status='running',
-            name='Work In Progress',
-            unit_amount=False,
-            factor=False
+        self,
+        time=0.0,
+        timer_status='running',
+        name='Work In Progress',
+        unit_amount=False,
+        factor=False,
     ):
         self.ensure_one()
         user_id = self.get_user_id()
@@ -290,7 +301,11 @@ class TaskTimer(models.AbstractModel):
             factor = self.env['hr_timesheet_invoice.factor'].search([('factor', '=', 0.0)], limit=1)
         offset = float(Param.get_param('start_stop.starting_time_offset', default=0))
 
-        AccountLine = self.env['account.analytic.line'].with_context(sheet_create=True).with_company(company_id)
+        AccountLine = (
+            self.env['account.analytic.line']
+            .with_context(sheet_create=True)
+            .with_company(company_id)
+        )
         timesheet = AccountLine.create({
             'name': name,
             'date_start': datetime.now() - timedelta(minutes=offset),
@@ -326,17 +341,18 @@ class TaskTimer(models.AbstractModel):
                     raise UserError('Please close all Running / Paused Timesheets first!')
 
         return self.timesheet_ids.filtered(
-            lambda ts: ts.timer_status in ('running', 'paused') and
-            (ts.match_user(user_id) if user_id else True)
+            lambda ts: ts.timer_status in ('running', 'paused')
+            and (ts.match_user(user_id) if user_id else True)
         )
 
     def timesheet_status_exists(self, status):
         """Timesheets of specified status exist"""
-        return self.sudo().timesheet_ids.search_count([
+        timesheets_status = self.sudo().timesheet_ids.search_count([
             ('timer_status', '=', status),
             ('task_id', '=', self.id),
             ('user_id', '=', self.get_user_id()),
-        ]) > 0
+        ])
+        return timesheets_status > 0
 
     def _get_timesheet_timer(self, status):
         """Get currently running timesheet to Pause / Stop timer"""
@@ -353,8 +369,9 @@ class TaskTimer(models.AbstractModel):
             raise UserError(
                 _(
                     'Multiple %s timesheets found for this Ticket/Task. '
-                    'Resolve any %s "Work In Progress" timesheet(s) manually.' % (status, status)
+                    'Resolve any %s "Work In Progress" timesheet(s) manually.'
                 )
+                % (status, status)
             )
         return timesheet
 

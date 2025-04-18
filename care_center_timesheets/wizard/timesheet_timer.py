@@ -69,10 +69,13 @@ class TimesheetTimerWizard(models.TransientModel):
         timesheet_duration = (stop - start).total_seconds() / 60.0
         full_duration = self.paused_duration * 60 + timesheet_duration
 
-        return round_timedelta(
-            td=timedelta(minutes=full_duration),
-            period=self.get_rounded_minutes(),
-        ).total_seconds() / 3600.0
+        return (
+            round_timedelta(
+                td=timedelta(minutes=full_duration),
+                period=self.get_rounded_minutes(),
+            ).total_seconds()
+            / 3600.0
+        )
 
     def get_rounded_minutes(self):
         """

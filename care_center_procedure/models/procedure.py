@@ -39,7 +39,7 @@ class ProcedureProcedure(models.Model):
         'Documentation',
         compute='_compile_documentation',
         help='Documentation for this Checklist, or the combined '
-             'documentation for all the Checklists of this Procedure.',
+        'documentation for all the Checklists of this Procedure.',
     )
 
     @api.model
@@ -184,7 +184,6 @@ class ProcedureAssignment(models.Model):
         }
 
     def set_parent_procedure_status(self):
-
         procedure = self.procedure_id.parent_id
         if not procedure:
             return
@@ -243,7 +242,6 @@ class ProcedureAssignment(models.Model):
 
     @api.model
     def decrement_planned_hours(self):
-
         task_hours = self.task_id and self.task_id.planned_hours or 0.0
         procedure_hours = self.procedure_id.planned_hours
 

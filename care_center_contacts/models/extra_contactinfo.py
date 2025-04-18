@@ -47,9 +47,7 @@ class ExtraContactInfo(models.Model):
     @api.constrains('name', 'type')
     def _validate_email_address(self):
         if self.type == 'email' and not valid_email.match(self.name):
-            raise ValidationError(
-                '{} is not a correctly formatted email address'.format(self.name)
-            )
+            raise ValidationError(f'{self.name} is not a correctly formatted email address')
 
     @api.onchange('name')
     def _format_phone_number(self):

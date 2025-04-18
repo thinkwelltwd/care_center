@@ -32,9 +32,9 @@ class AccountAnalyticLine(models.Model):
         copy=False,
         string='Invoice Status',
         help="Not Ready = Timesheets won't appear in Sales Order \n"
-             "Ready = Timesheets will appear in Sales Order \n"
-             "Invoiced = No changes can be made to Duration \n"
-             "Not Invoiceable = Timesheet cannot be invoiced \n",
+        "Ready = Timesheets will appear in Sales Order \n"
+        "Invoiced = No changes can be made to Duration \n"
+        "Not Invoiceable = Timesheet cannot be invoiced \n",
     )
 
     timer_status = fields.Selection(
@@ -78,7 +78,6 @@ class AccountAnalyticLine(models.Model):
         return super_call.create(vals)
 
     def write(self, values):
-
         locked_fields = LOCK_TS_FIELDS.intersection(values)
         if locked_fields:
             lfields = ', '.join(locked_fields)
@@ -153,7 +152,7 @@ class AccountAnalyticLine(models.Model):
             'view_id': wizard_form.id,
             'res_id': switch.id,
             'view_mode': 'form',
-            'target': 'new'
+            'target': 'new',
         }
 
     def pause_timer_if_running(self):

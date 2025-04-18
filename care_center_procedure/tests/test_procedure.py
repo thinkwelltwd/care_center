@@ -3,7 +3,6 @@ from odoo.tests import common
 
 
 class TestProcedure(common.TransactionCase):
-
     def setUp(self):
         super(TestProcedure, self).setUp()
 

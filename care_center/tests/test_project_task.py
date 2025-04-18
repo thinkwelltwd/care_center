@@ -3,7 +3,6 @@ from odoo.tests import common
 
 
 class TestTask(common.TransactionCase):
-
     def setUp(self):
         super(TestTask, self).setUp()
 
@@ -19,7 +18,6 @@ class TestTask(common.TransactionCase):
         })
 
     def test_child_tasks_must_be_closed(self):
-
         Task = self.env['project.task']
 
         task = Task.create({

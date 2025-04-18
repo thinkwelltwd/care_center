@@ -2,9 +2,7 @@ from odoo.tests import common
 
 
 class TestProject(common.TransactionCase):
-
     def test_alias_name_has_prefix(self):
-
         Param = self.env['ir.config_parameter']
         prefix = 'support'
 

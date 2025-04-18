@@ -3,9 +3,9 @@ from odoo.tests import common
 
 class TestReassignTask(common.TransactionCase):
     """
-        Testing the Reassign Tasks Wizard.
-        Currently this test succeeds, however I had to remove the required=True
-        from the field var_ticket_communication_mode.
+    Testing the Reassign Tasks Wizard.
+    Currently, this test succeeds, however I had to remove the required=True
+    from the field var_ticket_communication_mode.
     """
 
     def setUp(self):

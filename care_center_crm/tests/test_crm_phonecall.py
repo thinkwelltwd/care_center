@@ -2,7 +2,6 @@ from odoo.tests import common
 
 
 class TestCRMPhonecall(common.TransactionCase):
-
     def setUp(self):
         super(TestCRMPhonecall, self).setUp()
 
@@ -18,7 +17,6 @@ class TestCRMPhonecall(common.TransactionCase):
         })
 
     def test_phonecall_creates_task(self):
-
         Phonecall = self.env['crm.phonecall']
         Task = self.env['project.task']
 
